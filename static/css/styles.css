@@ -1,0 +1,29 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+main {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+footer {
+    margin: 1%;
+}
+
+#entrance_card {
+    padding-top: 4em;
+    padding-bottom: 4em;
+    box-shadow: 0px 0px 0.2em #007bff;
+}
+
+#error_rectangle {
+    padding: 1em;
+}
+
+#error_rectangle > * {
+    margin-bottom: 0;
+}
