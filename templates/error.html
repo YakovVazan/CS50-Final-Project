@@ -1,0 +1,16 @@
+{% extends "main_layout.html" %}
+
+{% block title %}
+    Error
+{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+            <div class="col-md-6 text-center bg-danger rounded-4" id="error_rectangle">
+                <h1>Error: {{ error_message }}</h1>
+                <p>Error code : {{ error_code }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

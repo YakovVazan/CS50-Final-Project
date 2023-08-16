@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialHub: {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <script src="../static/js/script.js"></script>
+
+  <!-- https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+  </script>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <!-- (Homepage) Logo -->
+        <a class="navbar-brand" href="/">SocialHub</a>
+
+        <!-- Button for mobile display -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Lists for desktop display -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <!-- Left side navbar -->
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="/my_apps">My Apps</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/available_apps">Available Apps</a>
+            </li>
+          </ul>
+          <!-- Right side navbar -->
+          <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown" id="themes_dropdown">
+              <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Theme
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <button class="dropdown-item theme_button" type="submit">Light</button>
+                  <hr class="dropdown-divider" />
+                  <button class="dropdown-item theme_button" type="submit">Dark</button>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/register">Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/login">Log In</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container-fluid py-5 text-center">
+    {% block main %}{% endblock %}
+  </main>
+
+  <footer class="small text-center text-muted">
+    Created by Yakov Vazan as CS50x Final Project
+  </footer>
+</body>
+
+</html>
