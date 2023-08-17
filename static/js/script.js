@@ -16,4 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
       root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
     });
   });
+
+  // Clear local storage once logged out
+  let logoutButton = document.getElementById("logout-button");
+  logoutButton.addEventListener("click", () => {
+    localStorage.clear();
+  });
 });

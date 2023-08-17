@@ -1,6 +1,8 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
+from flask_session import Session
+from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from socials import x
 
 # Configure flask app
 app = Flask(__name__)
@@ -9,6 +11,18 @@ app = Flask(__name__)
 db_path = "social_hub.db"
 
 # Configure session
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
+
+@app.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 def get_db_connection():
@@ -74,6 +88,9 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # Forget any user_id
+    session.clear()
+
     if request.method == "POST":
         inputed_name = request.form.get("username")
         inputed_password = request.form.get("password")
@@ -96,10 +113,24 @@ def login():
         ):
             return render_template("error.html", error_message="invalid username and/or password", error_code=403)
 
+        # Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+
         return redirect("/")
 
     else:
         return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
 
 
 @app.route("/my_apps")
