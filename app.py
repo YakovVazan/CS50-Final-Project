@@ -48,7 +48,7 @@ init_db()
 
 @app.route("/")
 def index():
-    return render_template("main_layout.html")
+    return render_template("index.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
