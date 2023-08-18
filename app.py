@@ -2,7 +2,7 @@ import sqlite3
 from flask_session import Session
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from socials import x
+from socials.x import x
 
 # Configure flask app
 app = Flask(__name__)
