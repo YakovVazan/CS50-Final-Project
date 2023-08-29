@@ -1,18 +1,20 @@
 body {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    min-height: fit-content;
 }
 
 main {
     margin: auto;
     display: flex;
     justify-content: center;
-    min-height: 82vh; /**/
+    flex: 1;
 }
 
 footer {
-    /* margin-bottom: 0; */
-    margin: 1%;
+    margin-top: 1%;
+    padding: 1%;
 }
 
 #entrance_card {
@@ -32,7 +34,7 @@ footer {
     padding: 1em;
 }
 
-#error_rectangle > * {
+#error_rectangle>* {
     margin-bottom: 0;
 }
 
@@ -54,10 +56,9 @@ footer {
     position: relative;
     display: flex;
     align-items: center;
-  }
-  
-  .svg-container {
+}
+
+.svg-container {
     position: absolute;
     right: 20px;
-  }
-  
+}
