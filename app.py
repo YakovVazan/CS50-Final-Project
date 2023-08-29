@@ -2,6 +2,7 @@ import sqlite3
 from flask_session import Session
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from data import socials
 
 # Configure flask app
 app = Flask(__name__)
@@ -47,7 +48,10 @@ init_db()
 
 @app.route("/")
 def index():
-    return render_template("main_layout.html")
+    if session:
+        return render_template("main_layout.html")
+    else:
+        return redirect("/login")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -134,12 +138,23 @@ def logout():
 
 @app.route("/my_apps")
 def my_apps():
-    return render_template("my_apps.html")
+    if session:
+        return render_template("my_apps.html")
+    else:
+        return redirect("/")
 
 
-@app.route("/available_apps")
+@app.route("/available_apps", methods=["GET", "POST"])
 def available_apps():
-    return render_template("available_apps.html")
+    if session:
+        if request.method == "GET":
+            sorted_list = sorted(socials, key=lambda x: x['name'])
+            return render_template("available_apps.html", socials=sorted_list)
+        else:
+            app_name = request.form.get("app-name")
+            return render_template("error.html", error_message=f"{app_name} is not available on SocialHub yet.", error_code=503)
+    else:
+        return redirect("/")
 
 
 if __name__ == '__main__':

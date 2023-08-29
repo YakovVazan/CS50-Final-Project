@@ -1,9 +1,45 @@
 {% extends "main_layout.html" %}
 
 {% block title %}
-    : Available Apps
+: Available Apps
 {% endblock %}
 
 {% block main %}
-    
+<div class="container">
+    <!-- Search Box -->
+    <div class="row pb-5">
+        <div class="col-4">
+            <div class="input-container">
+                <span class="svg-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-search d-sm-block d-none" viewBox="0 0 16 16">
+                        <path
+                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                </span>
+                <input autofocus id="search-field" class="form-control me-2" type="search" placeholder="Search App"
+                    aria-label="Search">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Icons -->
+    <div class="socials-section row g-5">
+        {% for social in socials %}
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="social-icon">
+                <form action="" method="post">
+                    <button class="social-button" type="submit" name="app-name" value="{{ social['name'] }}">
+                        <img src="{{ social['src'] }}" class="rounded-5 card-img-top" alt="{{ social['alt'] }}">
+                    </button>
+                </form>
+            </div>
+            <p class="app-name small text-center">
+                {{ social['name'] }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

@@ -1,20 +1,23 @@
 {% extends "entrance_card_layout.html" %}
 
 {% block title %}
-    : Register
+: Register
 {% endblock %}
 
 {% block entrance_card %}
-    <form action="/register" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="text">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation" type="text">
-        </div>
-        <button class="btn btn-primary" type="submit">Register</button>
-    </form>
+<form action="/register" method="post">
+    <div class="mb-3">
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username"
+            placeholder="Username" type="text">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="text">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation"
+            type="text">
+    </div>
+    <button class="btn btn-primary" type="submit">Register</button>
+</form>
+<p>Already have an account? <span><a href="/login">Log In</a></span></p>
 {% endblock %}
