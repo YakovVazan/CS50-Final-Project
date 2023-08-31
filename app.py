@@ -1,8 +1,9 @@
 import sqlite3
 from flask_session import Session
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from data import socials
+from datetime import datetime
 
 # Configure flask app
 app = Flask(__name__)
@@ -39,6 +40,15 @@ def init_db():
             hash TEXT NOT NULL
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY,
+            content TEXT NOT NULL,
+            date DATE,
+            user_id INTEGER REFERENCES users(id),
+            social_id INTEGER REFERENCES social_media(id)
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -49,9 +59,57 @@ init_db()
 @app.route("/")
 def index():
     if session:
-        return render_template("main_layout.html")
+        return render_template("chat_window.html")
     else:
         return redirect("/login")
+    
+
+@app.route("/get_data")
+def get_data():
+    data = display_history()
+    return jsonify(data)
+
+
+@app.route("/process_data", methods=["POST"])
+def process_data():
+    try:
+        new_post = request.get_json()
+
+        post(new_post['data'])
+
+        response = {"message": f"Processed data: {new_post['data']}"}
+        return jsonify(response), 200
+    except Exception as e:
+        response = {"message": "Error processing data"}
+        return jsonify(response), 500
+
+
+def post(new_post):
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # Insert new message
+    cursor.execute("INSERT INTO messages (content, date, user_id) VALUES (?, ?, ?)",
+                (new_post, current_datetime, session["user_id"]))
+    conn.commit()
+    conn.close()
+
+
+def display_history():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    messages = cursor.execute("SELECT content FROM messages WHERE user_id = ?", (session["user_id"],)).fetchall()
+
+    conn.close()
+
+    return [message["content"] for message in messages]
 
 
 @app.route("/register", methods=["GET", "POST"])

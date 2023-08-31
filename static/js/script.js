@@ -1,8 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Get the HTML tag
   let root = document.documentElement;
+
   // Set the entire page's theme the previous one
   root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
+
+  // Change theme with ctrl + 'M' key-press
+  document.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && event.key === "m") {
+      if (root.getAttribute("data-bs-theme") == "light") {
+        localStorage.setItem("theme", "dark");
+      } else {
+        localStorage.setItem("theme", "light");
+      }
+      root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
+      handleTheme();
+    }
+  });
 
   // Theme components
   let themeSvgIcon = document.querySelector("#theme-svg-icon");
@@ -54,7 +68,9 @@ document.addEventListener("DOMContentLoaded", function () {
         svgContainer.style.display = "";
       }
 
-      let iconsList = document.querySelectorAll(".col-6.col-sm-4.col-md-3.col-lg-2");
+      let iconsList = document.querySelectorAll(
+        ".col-6.col-sm-4.col-md-3.col-lg-2"
+      );
       iconsList.forEach((item) => {
         if (!item.innerText.toLowerCase().includes(searchFieldValue)) {
           item.style.display = "none";
@@ -114,5 +130,58 @@ document.addEventListener("DOMContentLoaded", function () {
         "M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"
       );
     }
+  }
+
+  // Scroll to bottom of messages on load
+  let messagesArea = document.getElementById("messages-area");
+  fetchData();
+
+  document.querySelector("#send-button").addEventListener("click", deliverData);
+
+  // Use AJAX to send message content to backend
+  function deliverData() {
+    let textArea = document.getElementById("text-area");
+    // Keep focus on the text area
+    textArea.focus();
+    let inputData = textArea.value;
+
+    // Create http request from front to back
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/process_data", true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // Fetch the updated data back to the front
+        fetchData();
+
+        // Empty the text-area
+        document.querySelector("#text-area").value = "";
+      }
+    };
+
+    // Prepare and send data from front to back
+    let data = JSON.stringify({
+      data: inputData,
+    });
+    xhr.send(data);
+  }
+
+  function fetchData() {
+    // Bring back updated messages data from back to front
+    fetch("/get_data")
+      .then((response) => response.json())
+      .then((messages) => {
+        let content = ``;
+        // Process the received data
+        messages.forEach((message) => {
+          content += `<p class="bg-primary m-3 p-3 rounded-5">${message}</p>`;
+        });
+        messagesArea.innerHTML = content;
+        // Keep the messages scrolled down
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
 });
