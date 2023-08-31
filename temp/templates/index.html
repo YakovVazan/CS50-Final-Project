@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Front-End and Back-End Communication</title>
+</head>
+
+<body>
+
+    <input autofocus type="text" id="dataInput" placeholder="Enter data">
+    <button type="button" id="submitButton">Submit</button>
+
+    <div id="resultContainer"></div>
+
+    <script>
+        document.getElementById("submitButton").addEventListener("click", function () {
+            var inputData = document.getElementById("dataInput").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/process_data", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    
+                    let newP = document.createElement("p");
+                    newP.textContent = response.message;
+                    document.getElementById("resultContainer").appendChild(newP);
+                }
+            };
+
+            var data = JSON.stringify({
+                data: inputData
+            });
+            xhr.send(data);
+        });
+    </script>
+</body>
+
+</html>
