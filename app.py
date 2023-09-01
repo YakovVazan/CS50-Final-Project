@@ -85,6 +85,8 @@ def process_data():
 
 
 def post(new_post):
+    # Call social media APIs right here
+    
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Get database
