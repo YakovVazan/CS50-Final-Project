@@ -176,7 +176,12 @@ document.addEventListener("DOMContentLoaded", function () {
         messages.forEach((message) => {
           content += `<p class="bg-primary m-3 p-3 rounded-5">${message}</p>`;
         });
-        messagesArea.innerHTML = content;
+        messagesArea.innerHTML =  
+          content.length > 0
+            ? content
+            : `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will show here once you post!</p>
+               </div>`;
         // Keep the messages scrolled down
         messagesArea.scrollTop = messagesArea.scrollHeight;
       })
@@ -184,4 +189,11 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error fetching data:", error);
       });
   }
+
+  // Prevent message-form from refreshing after submition
+  let messageForm = document.getElementById("message-form");
+  messageForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    deliverData();
+  });
 });
