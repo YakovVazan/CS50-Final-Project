@@ -56,6 +56,7 @@ footer {
     position: relative;
     display: flex;
     align-items: center;
+    padding-top: 2em;
 }
 
 .svg-container {
@@ -63,23 +64,123 @@ footer {
     right: 20px;
 }
 
+.animated-icon {
+    transition: transform 100ms ease;
+    transform: translateY(0);
+}
+
+.animated-icon:hover {
+    transform: translateY(-0.2em);
+}
+
 #chat-window {
     height: 25em;
-    width: 37.5em;
+    width: 50%;
+    background-color: #ffc107;
 }
 
-#text-area {
-    /* animation: text-bubble 1s ease-in 0s 1 normal both; */
+@media screen and (max-width: 768px) {
+    #chat-window {
+        width: 75%;
+    }
 }
 
-@keyframes text-bubble {
+#messages-area::-webkit-scrollbar {
+    display: none;
+}
+
+#date-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#date-bubble {
+    background-color: white;
+    color: black;
+    border-radius: 1em;
+    width: fit-content;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+#message-bubble {
+    display: flex;
+    flex-direction: column;
+    background-color: #0d6efd;
+    margin: 1rem;
+}
+
+#message-bubble-time {
+    display: flex;
+    justify-content: end;
+}
+
+#no-history-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.animated-new-post {
+    opacity: 0;
+    animation: new-bubble-animation 0.4s ease-in-out forwards;
+}
+
+@keyframes new-bubble-animation {
     0% {
-        border-radius: 10px;
+        opacity: 0;
+    }
+
+    50% {
+        scale: 1.02;
     }
 
     100% {
-        border-radius: 50px;
-        background-color: #0d6efd;
-        padding: 1rem;
+        opacity: 1;
+        scale: 1;
     }
+}
+
+#message-content {
+    font-weight: 600;
+    display: flex;
+    text-align: left;
+    padding-top: 1rem * .25;
+}
+
+#text-area:focus {
+    outline: none !important;
+    box-shadow: 0px 0px 1em #dc3545;
+}
+
+#text-area::-webkit-scrollbar {
+    display: none;
+}
+
+#send-button {
+    transition: background-color 1s ease-in;
+}
+
+.modal {
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    animation: new-bubble-animation 0.4s ease-in-out forwards;
+}
+
+.modal-content {
+    padding: 1em;
+    border-radius: var(--bs-border-radius-xxl)!important;
+    margin-left: 5em;
+    margin-right: 5em;
+}
+
+.bi.bi-send .bi.bi-plus {
+    fill: #0d6efd;
 }

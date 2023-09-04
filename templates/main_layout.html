@@ -24,15 +24,15 @@
         <!-- Left side of nav bar -->
         <div class="d-flex align-items-center">
           <!-- (Homepage) Logo -->
-          <a class="navbar-brand" href="/">SocialHub</a>
+          <a class="navbar-brand bg-danger rounded-3 px-3 fw-bolder text-warning" href="/">SocialHub</a>
 
           <!-- Apps Area -->
           {% if session["user_id"] %}
           <!-- For Mobile -->
           <div class="dropdown d-inline-block d-lg-none">
             <span role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stack"
-                viewBox="0 0 16 16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="animated-icon bi bi-stack" viewBox="0 0 16 16">
                 <path
                   d="m14.12 10.163 1.715.858c.22.11.22.424 0 .534L8.267 15.34a.598.598 0 0 1-.534 0L.165 11.555a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.66zM7.733.063a.598.598 0 0 1 .534 0l7.568 3.784a.3.3 0 0 1 0 .535L8.267 8.165a.598.598 0 0 1-.534 0L.165 4.382a.299.299 0 0 1 0-.535L7.733.063z" />
                 <path
@@ -70,7 +70,7 @@
               Theme
             </span>
             <!-- For Mobile -->
-            <span class="d-block d-lg-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="animated-icon d-block d-lg-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <svg id="theme-svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi" viewBox="0 0 16 16">
                 <path id="theme-path" d="" />
@@ -94,7 +94,7 @@
             </span>
             <span class="ps-4 d-block d-lg-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-person-circle" viewBox="0 0 16 16">
+                class="animated-icon bi bi-person-circle" viewBox="0 0 16 16">
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                 <path fill-rule="evenodd"
                   d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
@@ -114,7 +114,7 @@
     </nav>
   </header>
 
-  <main class="container-fluid pt-5 mt-5 text-center">
+  <main class="container-fluid pt-3 mt-5 text-center">
     {% block main %}{% endblock %}
   </main>
 

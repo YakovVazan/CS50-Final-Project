@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         svgContainer.style.display = "";
       }
 
+      // Filters apps according to the value in the search box
       let iconsList = document.querySelectorAll(
         ".col-6.col-sm-4.col-md-3.col-lg-2"
       );
@@ -132,18 +133,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Scroll to bottom of messages on load
   let messagesArea = document.getElementById("messages-area");
-  fetchData();
+  if (messagesArea) {
+    fetchData();
+  }
 
-  document.querySelector("#send-button").addEventListener("click", deliverData);
+  let sendButton = document.querySelector("#send-button");
+  if (sendButton) {
+    sendButton.addEventListener("click", deliverData("animated-new-post"));
+  }
 
   // Use AJAX to send message content to backend
-  function deliverData() {
+  function deliverData(animationClass) {
     let textArea = document.getElementById("text-area");
     // Keep focus on the text area
     textArea.focus();
     let inputData = textArea.value;
+
+    // Prevent sending an empty message
+    if (inputData === "") {
+      return;
+    }
 
     // Create http request from front to back
     let xhr = new XMLHttpRequest();
@@ -152,10 +162,10 @@ document.addEventListener("DOMContentLoaded", function () {
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         // Fetch the updated data back to the front
-        fetchData();
+        fetchData(animationClass);
 
         // Empty the text-area
-        document.querySelector("#text-area").value = "";
+        textArea.value = "";
       }
     };
 
@@ -166,24 +176,80 @@ document.addEventListener("DOMContentLoaded", function () {
     xhr.send(data);
   }
 
-  function fetchData() {
-    // Bring back updated messages data from back to front
+  // Bring back updated messages data from back to front
+  function fetchData(animationClass) {
     fetch("/get_data")
       .then((response) => response.json())
       .then((messages) => {
-        let content = ``;
+        // An array to push all posts inside of
+        let content = [];
+        // Keep track of dates for date bubble in chat
+        let previousDateString = "";
+
         // Process the received data
-        messages.forEach((message) => {
-          content += `<p class="bg-primary m-3 p-3 rounded-5">${message}</p>`;
-        });
-        messagesArea.innerHTML =  
-          content.length > 0
-            ? content
-            : `<div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-                <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will show here once you post!</p>
-               </div>`;
-        // Keep the messages scrolled down
-        messagesArea.scrollTop = messagesArea.scrollHeight;
+        for (let i = 0; i < messages.length; i++) {
+          // Collect current post's date
+          let dateString = messages[i]["date"].split("-");
+
+          // Check for same or different date
+          if (messages[i]["date"] !== previousDateString) {
+            // Create a new date bubble:
+
+            // Parse the date string into a Date object
+            let dateObj = new Date(dateString);
+            // Format the month name using the Date object
+            dateString[0] = dateObj.toLocaleString("default", {
+              month: "short",
+            });
+            // Final version of date
+            dateString = dateString[0] + " " + dateString[1];
+            // Add date header in chat
+            content.push(`<div id="date-container">
+                <span id="date-bubble">${dateString}</span>
+              </div>`);
+            // Update current date value
+            previousDateString = messages[i]["date"];
+          }
+          if (i < messages.length - 1) {
+            // Add next message content
+            content.push(`
+            <span id="message-bubble" class="px-4 rounded-5">
+              <div id="message-content"><span>${messages[i]["content"]}</span></div>
+              <div id="message-bubble-time"">
+                <p class="text-muted" style="margin-bottom: 0;">${messages[i]["time"]}</p>
+              </div>
+            </span>`);
+          } else {
+            // Add lastly-posted post to the array separately WITH animation class
+            content.push(`
+                      <span id="message-bubble" class="px-4 rounded-5 ${animationClass}">
+                        <div id="message-content">
+                          <span>
+                            ${messages[messages.length - 1]["content"]}
+                          </span>
+                        </div>
+                        <div id="message-bubble-time"">
+                          <p class="text-muted" style="margin-bottom: 0;">${
+                            messages[messages.length - 1]["time"]
+                          }</p>
+                        </div>
+                      </span>`);
+          }
+        }
+
+        if (messagesArea) {
+          // Deal with user without history of messages
+          messagesArea.innerHTML =
+            content.length > 0
+              ? // Convert array of HTML element into a one long string
+                content.join(" ")
+              : `<div id="no-history-message">
+              <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will appear here once you post!</p>
+             </div>`;
+
+          // Scroll to bottom of messages on load
+          messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -192,8 +258,84 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Prevent message-form from refreshing after submition
   let messageForm = document.getElementById("message-form");
-  messageForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-    deliverData();
-  });
+  if (messageForm) {
+    messageForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      deliverData("animated-new-post");
+    });
+  }
+
+  // Prevent the default Enter key behavior (new line)
+  if (document.getElementById("text-area")) {
+    document
+      .getElementById("text-area")
+      .addEventListener("keydown", function (e) {
+        // Check if the pressed key is Enter
+        if (e.key === "Enter") {
+          e.preventDefault();
+          deliverData("animated-new-post");
+        }
+      });
+  }
+
+  // Schedule sending messages //
+
+  let longClickTimer;
+
+  // Add event listeners for activating and deactivating modal
+  if (sendButton) {
+    sendButton.addEventListener("mousedown", function () {
+      if (document.getElementById("text-area").value) {
+        sendButton.style.backgroundColor = "#dc3545";
+        longClickTimer = setTimeout(activateModal, 1000);
+      }
+    });
+
+    sendButton.addEventListener("mouseup", function () {
+      sendButton.style.backgroundColor = "transparent";
+      clearTimeout(longClickTimer);
+    });
+
+    sendButton.addEventListener("touchstart", function () {
+      if (document.getElementById("text-area").value) {
+        sendButton.style.backgroundColor = "#dc3545";
+        longClickTimer = setTimeout(activateModal, 1000);
+      }
+    });
+
+    sendButton.addEventListener("touchend", function () {
+      sendButton.style.backgroundColor = "transparent";
+      clearTimeout(longClickTimer);
+    });
+  }
+
+  // Close modal
+  if (document.querySelector("#closeModal")) {
+    document
+      .querySelector("#closeModal")
+      .addEventListener("click", dactivateModal);
+  }
+  // Submit modal
+  if (document.querySelector("#submitModal")) {
+    document.querySelector("#submitModal").addEventListener("click", () => {
+      // const inputField = document.getElementById("inputField").value;
+      // alert(`You entered: ${inputField}`);
+      dactivateModal();
+    });
+  }
+
+  function activateModal() {
+    sendButton.style.backgroundColor = "transparent";
+    document.querySelector(".modal").style.display = "flex";
+
+    // Copy already-inputed text to the schedule modal content
+    if (document.querySelector("#inputField")) {
+      let inputField = document.querySelector("#inputField");
+      inputField.value = document.getElementById("text-area").value;
+    }
+  }
+
+  function dactivateModal() {
+    document.querySelector(".modal").style.display = "none";
+  }
 });
