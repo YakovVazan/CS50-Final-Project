@@ -33,6 +33,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
+    # Create users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
@@ -40,6 +41,7 @@ def init_db():
             hash TEXT NOT NULL
         )
     """)
+    # Create messages table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY,
@@ -59,10 +61,10 @@ init_db()
 @app.route("/")
 def index():
     if session:
-        return render_template("chat_window.html")
+        return render_template("chat_window.html", username=session["user_name"])
     else:
         return redirect("/login")
-    
+
 
 @app.route("/get_data")
 def get_data():
@@ -86,7 +88,7 @@ def process_data():
 
 def post(new_post):
     # Call social media APIs right here
-    
+
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Get database
@@ -96,7 +98,7 @@ def post(new_post):
 
     # Insert new message
     cursor.execute("INSERT INTO messages (content, date, user_id) VALUES (?, ?, ?)",
-                (new_post, current_datetime, session["user_id"]))
+                   (new_post, current_datetime, session["user_id"]))
     conn.commit()
     conn.close()
 
@@ -107,11 +109,20 @@ def display_history():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    messages = cursor.execute("SELECT content FROM messages WHERE user_id = ?", (session["user_id"],)).fetchall()
+    messages = cursor.execute(
+        "SELECT content, date FROM messages WHERE user_id = ?", (session["user_id"],)).fetchall()
+
+    full_messages = [{"content": message["content"], "date": message["date"].split(
+        ' ')[0].split(' ')[0][5:], "time": message["date"].split(' ')[1].rsplit(':', 1)[0]} for message in messages]
+    
+    # Format time stamp properly
+    for item in full_messages:
+        if item["time"][0] == '0' and item["time"][1] != '0':
+            item["time"] = item["time"][1:]
 
     conn.close()
 
-    return [message["content"] for message in messages]
+    return full_messages
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -178,6 +189,7 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
+        session["user_name"] = rows[0]["username"]
 
         return redirect("/")
 
