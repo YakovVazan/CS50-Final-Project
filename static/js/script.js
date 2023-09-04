@@ -38,11 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Clear local storage once logged out
+  // Clear local storage once logged out - COMMENTED OUT FOR NOW
   let logoutButton = document.getElementById("logout-button");
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
-      localStorage.clear();
+      // localStorage.clear();
     });
   }
 
