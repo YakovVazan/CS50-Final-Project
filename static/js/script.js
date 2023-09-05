@@ -265,17 +265,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Prevent the default Enter key behavior (new line)
-  if (document.getElementById("text-area")) {
-    document
-      .getElementById("text-area")
-      .addEventListener("keydown", function (e) {
-        // Check if the pressed key is Enter
-        if (e.key === "Enter") {
-          e.preventDefault();
-          deliverData("animated-new-post");
-        }
-      });
+  let textArea = document.getElementById("text-area");
+  if (textArea) {
+    textArea.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        // Prevent the default Enter key behavior (new line)
+        e.preventDefault();
+        
+        deliverData("animated-new-post");
+      }
+    });
   }
 
   // Schedule sending messages //
@@ -333,6 +332,13 @@ document.addEventListener("DOMContentLoaded", function () {
       let inputField = document.querySelector("#inputField");
       inputField.value = document.getElementById("text-area").value;
     }
+
+    // Decativate with Escape key
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        dactivateModal();
+      }
+    });
   }
 
   function dactivateModal() {
