@@ -51,6 +51,14 @@ def init_db():
             social_id INTEGER REFERENCES social_media(id)
         )
     """)
+    # Create messages table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS scheduled_posts (
+            id INTEGER PRIMARY KEY,
+            content TEXT NOT NULL,
+            date DATE NOT NULL
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -61,7 +69,7 @@ init_db()
 @app.route("/")
 def index():
     if session:
-        return render_template("chat_window.html", username=session["user_name"])
+        return render_template("index.html", username=session["user_name"])
     else:
         return redirect("/login")
 
@@ -114,7 +122,7 @@ def display_history():
 
     full_messages = [{"content": message["content"], "date": message["date"].split(
         ' ')[0].split(' ')[0][5:], "time": message["date"].split(' ')[1].rsplit(':', 1)[0]} for message in messages]
-    
+
     # Format time stamp properly
     for item in full_messages:
         if item["time"][0] == '0' and item["time"][1] != '0':
@@ -123,6 +131,29 @@ def display_history():
     conn.close()
 
     return full_messages
+
+
+@app.route("/schedule_task", methods=["POST"])
+def schedule_task():
+    try:
+        new_schedule_post = request.get_json()
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        cursor.execute('''INSERT INTO scheduled_posts (content, date) VALUES (?, ?)
+        ''', (new_schedule_post["content"], new_schedule_post["date"]))
+
+        conn.commit()
+        conn.close()
+
+        response = {"message": f"Processed data: {new_schedule_post}"}
+        return jsonify(response), 200
+    except Exception as e:
+        response = {"message": "Error scheduling post."}
+        return jsonify(response), 500
 
 
 @app.route("/register", methods=["GET", "POST"])
