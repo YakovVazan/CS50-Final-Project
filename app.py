@@ -52,11 +52,14 @@ def init_db():
         )
     """)
     # Create messages table
+    # cursor.execute("DROP TABLE scheduled_posts")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS scheduled_posts (
             id INTEGER PRIMARY KEY,
             content TEXT NOT NULL,
-            date DATE NOT NULL
+            date DATE NOT NULL,
+            user_id INTEGER REFERENCES users(id),
+            social_id INTEGER REFERENCES social_media(id)
         )
     """)
     conn.commit()
@@ -133,8 +136,8 @@ def display_history():
     return full_messages
 
 
-@app.route("/schedule_task", methods=["POST"])
-def schedule_task():
+@app.route("/schedule_post", methods=["POST"])
+def schedule_post():
     try:
         new_schedule_post = request.get_json()
 
@@ -142,9 +145,9 @@ def schedule_task():
         conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        
-        cursor.execute('''INSERT INTO scheduled_posts (content, date) VALUES (?, ?)
-        ''', (new_schedule_post["content"], new_schedule_post["date"]))
+
+        cursor.execute('''INSERT INTO scheduled_posts (content, date, user_id) VALUES (?, ?, ?)
+        ''', (new_schedule_post["content"], new_schedule_post["date"], session["user_id"]))
 
         conn.commit()
         conn.close()
@@ -154,6 +157,33 @@ def schedule_task():
     except Exception as e:
         response = {"message": "Error scheduling post."}
         return jsonify(response), 500
+    
+
+@app.route("/scheduled_posts", methods=["GET", "POST"])
+def scheduled_posts():
+    return render_template("scheduled_posts.html", posts=display_scheduled_posts())
+
+
+@app.route("/get_scheduled_posts")
+def get_scheduled_posts():
+    data = display_scheduled_posts()
+    return jsonify(data)
+
+
+def display_scheduled_posts():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    schedule_posts_details = cursor.execute(
+        "SELECT * FROM scheduled_posts WHERE user_id = ?", (session["user_id"], )).fetchall()
+    
+    user_scheduled_posts = [dict(single_post) for single_post in schedule_posts_details]
+    
+    conn.close()
+
+    return user_scheduled_posts
 
 
 @app.route("/register", methods=["GET", "POST"])
