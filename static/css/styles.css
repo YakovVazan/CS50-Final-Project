@@ -175,11 +175,39 @@ footer {
 
 .modal-content {
     padding: 1em;
-    border-radius: var(--bs-border-radius-xxl)!important;
+    border-radius: var(--bs-border-radius-xxl) !important;
     margin-left: 5em;
     margin-right: 5em;
 }
 
 .bi.bi-send .bi.bi-plus {
     fill: #0d6efd;
+}
+
+#schedule_icon {
+    z-index: 1;
+}
+
+#schedule_icon_pulse {
+    position: absolute;
+    right: 0.835em;
+    top: 0.31em;
+    width: 20px;
+    height: 20px;
+    background-color: #dc3545;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
 }

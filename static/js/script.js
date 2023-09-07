@@ -367,9 +367,9 @@ document.addEventListener("DOMContentLoaded", function () {
         dactivateModal();
         textArea.value = "";
 
-        // Create http request from front to back
+        // Create http request from front to back for SQL
         let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/schedule_task", true);
+        xhr.open("POST", "/schedule_post", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         // Prepare and send data from front to back
@@ -378,6 +378,11 @@ document.addEventListener("DOMContentLoaded", function () {
           date: dateInput,
         });
         xhr.send(data);
+        console.log(
+          document.querySelector(".navbar-nav.me-auto.mb-2.mb-lg-0").childNodes
+            .length === 5
+        );
+        document.querySelector(".schedule_area").style.display = "";
       } else {
         alert("Impossible to schedule a post without all fields filled.");
       }
@@ -423,5 +428,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Grand the focus to the post's input field
     document.getElementById("text-area").focus();
     inputField.blur();
+  }
+
+  if (document.querySelector(".schedule_area")) {
+    fetch("/get_scheduled_posts")
+      .then((response) => response.json())
+      .then((scheduled_posts) => {
+        if (scheduled_posts.length > 0) {
+          document.querySelector(".schedule_area").style.display = "";
+        } else {
+          document.querySelector(".schedule_area").style.display = "none";
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
   }
 });
