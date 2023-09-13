@@ -384,9 +384,16 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#submitModal").addEventListener("click", () => {
       let dateInput =
         document.querySelector("#dateInput").value.replace(/T/g, " ") + ":00";
-      if (dateInput != ":00" && inputField.value != "") {
+      if (
+        dateInput != ":00" &&
+        inputField.value != "" &&
+        new Date(dateInput) > new Date()
+      ) {
         alert(`You scheduld: ${inputField.value}\nto: ${dateInput}`);
         dactivateModal();
+        document
+          .querySelector("#schedule_icon")
+          .classList.remove("animated-icon");
         textArea.value = "";
 
         // Create http request from front to back for SQL
@@ -402,7 +409,9 @@ document.addEventListener("DOMContentLoaded", function () {
         xhr.send(data);
         document.querySelector("#schedule_icon_pulse").style.display = "";
       } else {
-        alert("Impossible to schedule a post without all fields filled.");
+        alert(
+          "Impossible to schedule a post without all fields filled or with illegal date."
+        );
       }
     });
   }
@@ -502,117 +511,129 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Control visuals of scheduled_posts page
   function handleSchedulingIconsAndPosts() {
-    fetch("/get_scheduled_posts")
-      .then((response) => response.json())
-      .then((scheduled_posts) => {
-        if (scheduled_posts.length > 0) {
-          // Handle nav-bar icon's animation
-          document.querySelector("#schedule_icon_pulse").style.display = "";
+    if (document.querySelector(".schedule_area")) {
+      fetch("/get_scheduled_posts")
+        .then((response) => response.json())
+        .then((scheduled_posts) => {
+          if (scheduled_posts.length > 0) {
+            // Handle nav-bar icon's animation
+            document.querySelector("#schedule_icon_pulse").style.display = "";
+            document
+              .querySelector("#schedule_icon")
+              .classList.remove("animated-icon");
 
-          // Handle scheduled-posts' list
-          // Display scheduled posts' countdown
-          let timeLeftElements = document.querySelectorAll(".time_left");
-          for (let i = 0; i < timeLeftElements.length; i++) {
-            // Calculate the countdown date for the current post
-            const countdownDate = new Date(
-              scheduled_posts[i]["execution_date"]
-            ).getTime();
+            // Handle scheduled-posts' list
+            // Display scheduled posts' countdown
+            let timeLeftElements = document.querySelectorAll(".time_left");
+            for (let i = 0; i < timeLeftElements.length; i++) {
+              // Calculate the countdown date for the current post
+              const countdownDate = new Date(
+                scheduled_posts[i]["execution_date"]
+              ).getTime();
 
-            // Initialize countdownInterval to null
-            let countdownInterval = null;
+              // Initialize countdownInterval to null
+              let countdownInterval = null;
 
-            // Update the countdown for the current post
-            function updateCountdown() {
-              const now = new Date().getTime();
-              const distance = countdownDate - now;
+              // Update the countdown for the current post
+              function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
 
-              // Calculate days, hours, minutes, and seconds
-              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-              const hours = Math.floor(
-                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-              );
-              const minutes = Math.floor(
-                (distance % (1000 * 60 * 60)) / (1000 * 60)
-              );
-              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-              // If the countdown is not yet expired, display the countdown
-              if (distance > 0) {
-                timeLeftElements[
-                  i
-                ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-              } else {
-                // Send a request to the server to delete the post from the data base
-                requestDeletion(
-                  timeLeftElements[i].parentElement.getAttribute("post-id"),
-                  true,
-                  ""
+                // Calculate days, hours, minutes, and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(
+                  (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
                 );
-                clearInterval(countdownInterval);
+                const minutes = Math.floor(
+                  (distance % (1000 * 60 * 60)) / (1000 * 60)
+                );
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // If the countdown is not yet expired, display the countdown
+                if (distance > 0) {
+                  timeLeftElements[
+                    i
+                  ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                  // Send a request to the server to delete the post from the data base
+                  requestDeletion(
+                    timeLeftElements[i].parentElement.getAttribute("post-id"),
+                    true,
+                    ""
+                  );
+                  clearInterval(countdownInterval);
+                }
               }
+
+              // Initial update before starting the interval
+              updateCountdown();
+
+              // Update the countdown every 1 second (1000 milliseconds) for the current post
+              countdownInterval = setInterval(updateCountdown, 1000);
             }
+          } else {
+            // Handle nav-bar icon's animation
+            document.querySelector("#schedule_icon_pulse").style.display =
+              "none";
+            document
+              .querySelector("#schedule_icon")
+              .classList.add("animated-icon");
 
-            // Initial update before starting the interval
-            updateCountdown();
-
-            // Update the countdown every 1 second (1000 milliseconds) for the current post
-            countdownInterval = setInterval(updateCountdown, 1000);
-          }
-        } else {
-          // Handle nav-bar icon's animation
-          document.querySelector("#schedule_icon_pulse").style.display = "none";
-
-          // Handle scheduled-posts' list
-          if (document.querySelector("#scheduleds-page")) {
-            let noScheduledPostsMessage = document.createElement("span");
-            noScheduledPostsMessage.innerHTML = `<div class="container d-flex justify-content-center align-items-center h-100">
+            // Handle scheduled-posts' list
+            if (document.querySelector("#scheduleds-page")) {
+              let noScheduledPostsMessage = document.createElement("span");
+              noScheduledPostsMessage.innerHTML = `<div class="container d-flex justify-content-center align-items-center h-100">
             <p class="bg-info m-3 p-3 rounded-5">Your scheduled posts will appear here once you schedule!</p>
                                                  </div>`;
-            document.querySelector("table").remove();
-            document
-              .querySelector("#scheduleds-page")
-              .appendChild(noScheduledPostsMessage);
+              document.querySelector("table").remove();
+              document
+                .querySelector("#scheduleds-page")
+                .appendChild(noScheduledPostsMessage);
+            }
           }
-        }
-      })
-      .catch((error) => {
-        console.error("Error in fetchData:", error);
-      });
+        })
+        .catch((error) => {
+          console.error("Error in fetchData:", error);
+        });
+    }
   }
   handleSchedulingIconsAndPosts();
 
   function controlCountdowns() {
-    const currentDate = new Date();
-    const seconds = currentDate.getSeconds();
+    if (document.querySelector(".schedule_area")) {
+      const currentDate = new Date();
+      const seconds = currentDate.getSeconds();
 
-    if (seconds === 0) {
-      fetch("/get_scheduled_posts")
-        .then((response) => response.json())
-        .then((data) => {
-          data.forEach((x) => {
-            const currentDate = new Date();
+      // Call API only every beggining of a minute
+      if (seconds === 0) {
+        fetch("/get_scheduled_posts")
+          .then((response) => response.json())
+          .then((data) => {
+            data.forEach((x) => {
+              const currentDate = new Date();
 
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-            const day = String(currentDate.getDate()).padStart(2, "0");
+              const year = currentDate.getFullYear();
+              const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+              const day = String(currentDate.getDate()).padStart(2, "0");
 
-            const hours = String(currentDate.getHours()).padStart(2, "0");
-            const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-            const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+              const hours = String(currentDate.getHours()).padStart(2, "0");
+              const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+              const seconds = String(currentDate.getSeconds()).padStart(2, "0");
 
-            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+              const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-            if (formattedTime === x["execution_date"]) {
-              requestDeletion(x["id"], true, "");
-              setTimeout(() => {
-                fetchData("animated-new-post");
-              }, 100);
-            }
+              if (formattedTime === x["execution_date"]) {
+                requestDeletion(x["id"], true, "");
+                setTimeout(() => {
+                  fetchData("animated-new-post");
+                }, 100);
+              }
+            });
           });
-        });
+      }
     }
   }
-  
+
   // Start tracking for rendering scheduled posts
   controlCountdowns();
   setInterval(() => {
