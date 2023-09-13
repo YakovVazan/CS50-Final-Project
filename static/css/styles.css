@@ -117,6 +117,7 @@ footer {
 #message-bubble-time {
     display: flex;
     justify-content: end;
+    align-items: center;
 }
 
 #no-history-message {
@@ -150,7 +151,7 @@ footer {
     font-weight: 600;
     display: flex;
     text-align: left;
-    padding-top: 1rem * .25;
+    word-break: break-all;
 }
 
 #text-area:focus {
@@ -210,4 +211,8 @@ footer {
         transform: scale(1.8);
         opacity: 0;
     }
+}
+
+#scheduleds-page {
+    width: 100%;
 }

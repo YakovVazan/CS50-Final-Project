@@ -210,39 +210,42 @@ document.addEventListener("DOMContentLoaded", function () {
             // Update current date value
             previousDateString = messages[i]["date"];
           }
-          if (i < messages.length - 1) {
-            // Add next message content
-            content.push(`
-            <span id="message-bubble" class="px-4 rounded-5">
-              <div id="message-content"><span>${messages[i]["content"].replace(
-                /\n/g,
-                "<br>"
-              )}</span></div>
-              <div id="message-bubble-time"">
-                <p class="text-muted" style="margin-bottom: 0;">${
-                  messages[i]["time"]
-                }</p>
-              </div>
-            </span>`);
-          } else {
-            // Add lastly-posted post to the array separately WITH animation class
-            content.push(`
-                      <span id="message-bubble" class="px-4 rounded-5 ${animationClass}">
-                        <div id="message-content">
-                          <span>
-                            ${messages[messages.length - 1]["content"].replace(
-                              /\n/g,
-                              "<br>"
-                            )}
-                          </span>
-                        </div>
-                        <div id="message-bubble-time"">
-                          <p class="text-muted" style="margin-bottom: 0;">${
-                            messages[messages.length - 1]["time"]
-                          }</p>
-                        </div>
-                      </span>`);
-          }
+          // Add next message content
+          content.push(`<span>
+                          <span id="message-bubble" class="px-4 rounded-5 ${
+                            // Add lastly-posted post to the array separately WITH animation class
+                            i === messages.length - 1 ? animationClass : ""
+                          }">
+                          <div id="message-content"><span>${
+                            // Preserve new-line from original text
+                            messages[i]["content"].replace(/\n/g, "<br>")
+                          }</span></div>
+                          <div id="message-bubble-time">
+                            ${
+                              messages[i]["is_scheduled"] === 1
+                                ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-clock-history" viewBox="0 0 16 16" style="margin-right: 0.5em;"
+                                    data-id=${messages[i]["id"]} id="scheduled-clock-icon">
+                                    <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z" />
+                                    <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z" />
+                                    <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z" />
+                                    </svg>`
+                                : ""
+                            }
+                            <p class="text-muted" style="margin-bottom: 0;">${
+                              messages[i]["time"]
+                            }</p>
+                          </div>
+                          ${
+                            messages[i]["is_scheduled"] === 1
+                              ? `<span id=${messages[i]["id"]} class="text-muted" style="display: none">
+                                  This post was originally scheduled at ${messages[i]["schedule_date"]}
+                                 </span>`
+                              : ""
+                          }
+                        </span>
+                      </span>
+                    `);
         }
 
         if (messagesArea) {
@@ -252,12 +255,37 @@ document.addEventListener("DOMContentLoaded", function () {
               ? // Convert array of HTML element into a one long string
                 content.join(" ")
               : `<div id="no-history-message">
-              <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will appear here once you post!</p>
-             </div>`;
+                  <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will appear here once you post!</p>
+                 </div>`;
 
           // Scroll to bottom of messages on load
           messagesArea.scrollTop = messagesArea.scrollHeight;
         }
+
+        // Show schedule details when clicking clock icon
+        document
+          .querySelectorAll("#scheduled-clock-icon")
+          .forEach((element) => {
+            element.classList.add("animated-icon");
+            element.style.cursor = "pointer";
+            element.addEventListener("mousedown", function () {
+              const id = this.getAttribute("data-id"); // Get the id from a data attribute
+              const scheduledElement = document.getElementById(id);
+
+              if (scheduledElement) {
+                scheduledElement.style.display = ""; // Show the scheduled element
+              }
+            });
+
+            element.addEventListener("mouseup", function () {
+              const id = this.getAttribute("data-id"); // Get the id from a data attribute
+              const scheduledElement = document.getElementById(id);
+
+              if (scheduledElement) {
+                scheduledElement.style.display = "none"; // Hide the scheduled element
+              }
+            });
+          });
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -320,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Schedule sending messages //
+  // Schedule sending messages
   let longClickTimer;
   // Add event listeners for activating and deactivating modal
   if (sendButton) {
@@ -362,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#submitModal").addEventListener("click", () => {
       let dateInput =
         document.querySelector("#dateInput").value.replace(/T/g, " ") + ":00";
-      if (dateInput != "" && inputField.value != "") {
+      if (dateInput != ":00" && inputField.value != "") {
         alert(`You scheduld: ${inputField.value}\nto: ${dateInput}`);
         dactivateModal();
         textArea.value = "";
@@ -378,16 +406,13 @@ document.addEventListener("DOMContentLoaded", function () {
           date: dateInput,
         });
         xhr.send(data);
-        console.log(
-          document.querySelector(".navbar-nav.me-auto.mb-2.mb-lg-0").childNodes
-            .length === 5
-        );
-        document.querySelector(".schedule_area").style.display = "";
+        document.querySelector("#schedule_icon_pulse").style.display = "";
       } else {
         alert("Impossible to schedule a post without all fields filled.");
       }
     });
   }
+
   let firstModalLoad = true;
   function activateModal() {
     sendButton.style.backgroundColor = "transparent";
@@ -430,18 +455,154 @@ document.addEventListener("DOMContentLoaded", function () {
     inputField.blur();
   }
 
-  if (document.querySelector(".schedule_area")) {
-    fetch("/get_scheduled_posts")
-      .then((response) => response.json())
-      .then((scheduled_posts) => {
-        if (scheduled_posts.length > 0) {
-          document.querySelector(".schedule_area").style.display = "";
-        } else {
-          document.querySelector(".schedule_area").style.display = "none";
+  // TODO: Edit posts
+  let editButtons = document.querySelectorAll(".edit-button");
+  if (editButtons) {
+    editButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        console.log("Make it editable.");
+      });
+    });
+  }
+
+  // Cancel posts
+  let cancelButtons = document.querySelectorAll(".cancel-button");
+  if (cancelButtons) {
+    cancelButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        deleteScheduledPost(btn);
+      });
+    });
+  }
+
+  // Scheduled posts visuals-deleter
+  function deleteScheduledPost(btn) {
+    let row = btn.parentElement.parentElement;
+    // Get the post ID from the data attribute
+    let postId = row.getAttribute("post-id");
+
+    // Send a request to the server to delete the post from the data base
+    fetch("/delete_scheduled_posts", {
+      method: "POST",
+      body: JSON.stringify({ postId: postId, isScheduleTime: false }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          row.remove();
+          showUpToDateScreen();
         }
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error("An error occurred:", error);
       });
   }
+
+  // Get scheduled Posts
+  async function getScheduledPosts() {
+    try {
+      const response = await fetch("/get_scheduled_posts");
+      const scheduled_posts = await response.json();
+      return scheduled_posts;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  // Control what shows on the screen after deletion
+  function showUpToDateScreen() {
+    if (document.querySelector(".schedule_area")) {
+      getScheduledPosts()
+        .then((scheduled_posts) => {
+          if (scheduled_posts.length > 0) {
+            document.querySelector("#schedule_icon_pulse").style.display = "";
+
+            // Display scheduled posts' countdown
+            let timeLeftElements = document.querySelectorAll(".time_left");
+            for (let i = 0; i < timeLeftElements.length; i++) {
+              // Calculate the countdown date for the current post
+              const countdownDate = new Date(
+                scheduled_posts[i]["execution_date"]
+              ).getTime();
+
+              // Initialize countdownInterval to null
+              let countdownInterval = null;
+
+              // Update the countdown for the current post
+              function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+
+                // Calculate days, hours, minutes, and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(
+                  (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                );
+                const minutes = Math.floor(
+                  (distance % (1000 * 60 * 60)) / (1000 * 60)
+                );
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // If the countdown is not yet expired, display the countdown
+                if (distance > 0) {
+                  timeLeftElements[
+                    i
+                  ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                  // Send a request to the server to delete the post from the data base
+                  fetch("/delete_scheduled_posts", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      postId:
+                        timeLeftElements[i].parentElement.getAttribute(
+                          "post-id"
+                        ),
+                      isScheduleTime: true,
+                    }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  })
+                    .then((response) => {
+                      if (response.ok) {
+                        showUpToDateScreen();
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("An error occurred:", error);
+                    });
+                  clearInterval(countdownInterval);
+                }
+              }
+
+              // Initial update before starting the interval
+              updateCountdown();
+
+              // Update the countdown every 1 second (1000 milliseconds) for the current post
+              countdownInterval = setInterval(updateCountdown, 1000);
+            }
+          } else {
+            document.querySelector("#schedule_icon_pulse").style.display =
+              "none";
+
+            if (document.querySelector("#scheduleds-page")) {
+              let noScheduledPostsMessage = document.createElement("span");
+              noScheduledPostsMessage.innerHTML = `<div class="container d-flex justify-content-center align-items-center h-100">
+            <p class="bg-info m-3 p-3 rounded-5">Your scheduled posts will appear here once you schedule!</p>
+                                                 </div>`;
+              document.querySelector("table").remove();
+              document
+                .querySelector("#scheduleds-page")
+                .appendChild(noScheduledPostsMessage);
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error in fetchData:", error);
+        });
+    }
+  }
+  showUpToDateScreen();
 });
