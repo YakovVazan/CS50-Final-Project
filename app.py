@@ -332,5 +332,32 @@ def available_apps():
         return redirect("/")
 
 
+@app.route("/delete_account", methods=["GET", "POST"])
+def delete_account():
+    if session:
+        if request.method == "GET":
+            return render_template("delete_account.html")
+        else:
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            # Delete every trace
+            cursor.execute(
+                "DELETE FROM scheduled_posts WHERE user_id = ?", (session["user_id"],))
+            cursor.execute(
+                "DELETE FROM messages WHERE user_id = ?", (session["user_id"],))
+            cursor.execute(
+                "DELETE FROM users WHERE id = ?", (session["user_id"],))
+
+            conn.commit()
+            conn.close()
+
+            return render_template("register.html")
+    else:
+        return redirect("/")
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=8888)
