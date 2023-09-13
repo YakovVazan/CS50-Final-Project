@@ -43,6 +43,7 @@
               <li><a class="dropdown-item" href="/my_apps">My Apps</a></li>
               <li><a class="dropdown-item" href="/available_apps">Available Apps</a></li>
             </ul>
+
             <!-- Schedule area -->
             <span class="schedule_area">
               <a id="schedule_icon" class="nav-link active mx-3" href="/scheduled_posts"><svg
@@ -77,8 +78,23 @@
 
         <!-- Right side of nav bar -->
         <div class="d-flex align-items-center">
+          <!-- Notifications -->
+          <div>
+            <!-- For Desktop -->
+            <a class="nav-link active d-none d-lg-block" href="/notifications">Notifications</a>
+            <!-- For Mobile -->
+            <a href="/notifications" class="nav-link">
+              <span class="d-block d-lg-none nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-bell-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
+                </svg>
+              </span>
+            </a>
+          </div>
           <!-- Themes -->
-          <div class="dropdown">
+          <div class="ps-4 dropdown">
             <!-- Dynamically rendered theme icon/title -->
 
             <!-- For Desktop -->
@@ -103,12 +119,12 @@
           </div>
 
           <!-- Account -->
-          <div class="dropdown">
+          <div class="ps-4 dropdown">
             <!-- Dynamically rendered account icon/name -->
-            <span class="ps-4 d-none d-lg-block" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="d-none d-lg-block" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Account
             </span>
-            <span class="ps-4 d-block d-lg-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="d-block d-lg-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="animated-icon bi bi-person-circle" viewBox="0 0 16 16">
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />

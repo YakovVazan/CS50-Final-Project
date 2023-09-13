@@ -33,6 +33,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
+
     # Create users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -46,18 +47,20 @@ def init_db():
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY,
             content TEXT NOT NULL,
-            date DATE,
+            date DATE NOT NULL,
+            is_scheduled BOOLEAN NOT NULL,
+            schedule_date DATE,
             user_id INTEGER REFERENCES users(id),
             social_id INTEGER REFERENCES social_media(id)
         )
     """)
-    # Create messages table
-    # cursor.execute("DROP TABLE scheduled_posts")
+    # Create scheduled_posts table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS scheduled_posts (
             id INTEGER PRIMARY KEY,
             content TEXT NOT NULL,
-            date DATE NOT NULL,
+            scheduling_date DATE NOT NULL,
+            execution_date DATE NOT NULL,
             user_id INTEGER REFERENCES users(id),
             social_id INTEGER REFERENCES social_media(id)
         )
@@ -108,8 +111,8 @@ def post(new_post):
     cursor = conn.cursor()
 
     # Insert new message
-    cursor.execute("INSERT INTO messages (content, date, user_id) VALUES (?, ?, ?)",
-                   (new_post, current_datetime, session["user_id"]))
+    cursor.execute("INSERT INTO messages (content, date, user_id, is_scheduled) VALUES (?, ?, ?, ?)",
+                   (new_post, current_datetime, session["user_id"], False))
     conn.commit()
     conn.close()
 
@@ -121,10 +124,10 @@ def display_history():
     cursor = conn.cursor()
 
     messages = cursor.execute(
-        "SELECT content, date FROM messages WHERE user_id = ?", (session["user_id"],)).fetchall()
+        "SELECT * FROM messages WHERE user_id = ?", (session["user_id"],)).fetchall()
 
-    full_messages = [{"content": message["content"], "date": message["date"].split(
-        ' ')[0].split(' ')[0][5:], "time": message["date"].split(' ')[1].rsplit(':', 1)[0]} for message in messages]
+    full_messages = [{"id": message["id"], "content": message["content"], "date": message["date"].split(
+        ' ')[0].split(' ')[0][5:], "time": message["date"].split(' ')[1].rsplit(':', 1)[0], "is_scheduled": message["is_scheduled"], "schedule_date": message["schedule_date"]} for message in messages]
 
     # Format time stamp properly
     for item in full_messages:
@@ -146,8 +149,8 @@ def schedule_post():
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
-        cursor.execute('''INSERT INTO scheduled_posts (content, date, user_id) VALUES (?, ?, ?)
-        ''', (new_schedule_post["content"], new_schedule_post["date"], session["user_id"]))
+        cursor.execute('''INSERT INTO scheduled_posts (content, scheduling_date, execution_date, user_id) VALUES (?, ?, ?, ?)
+        ''', (new_schedule_post["content"], datetime.now().strftime("%Y-%m-%d %H:%M:%S"), new_schedule_post["date"], session["user_id"]))
 
         conn.commit()
         conn.close()
@@ -157,9 +160,9 @@ def schedule_post():
     except Exception as e:
         response = {"message": "Error scheduling post."}
         return jsonify(response), 500
-    
 
-@app.route("/scheduled_posts", methods=["GET", "POST"])
+
+@app.route("/scheduled_posts")
 def scheduled_posts():
     return render_template("scheduled_posts.html", posts=display_scheduled_posts())
 
@@ -178,12 +181,52 @@ def display_scheduled_posts():
 
     schedule_posts_details = cursor.execute(
         "SELECT * FROM scheduled_posts WHERE user_id = ?", (session["user_id"], )).fetchall()
-    
-    user_scheduled_posts = [dict(single_post) for single_post in schedule_posts_details]
-    
+
+    user_scheduled_posts = [dict(single_post)
+                            for single_post in schedule_posts_details]
+
     conn.close()
 
     return user_scheduled_posts
+
+
+@app.route("/delete_scheduled_posts", methods=["POST"])
+def delete_scheduled_posts():
+    try:
+        post_to_delete = request.get_json()
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Get full body of deleting-scheduled-post
+        scheduled_post = [dict(post) for post in cursor.execute(
+            "SELECT * FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], )).fetchall()][0]
+
+        # Delete from scheduled_posts table
+        cursor.execute(
+            "DELETE FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], ))
+
+        if post_to_delete["isScheduleTime"]:
+            # Insert into messages table
+            print(scheduled_post)
+            cursor.execute("INSERT INTO messages (content, date, is_scheduled, schedule_date, user_id) VALUES (?, ?, ?, ?, ?)",
+                           (scheduled_post["content"], scheduled_post["execution_date"], True, scheduled_post["scheduling_date"], session["user_id"]))
+
+        conn.commit()
+        conn.close()
+
+        response = {"message": f"Processed data: {scheduled_post}"}
+        return jsonify(response), 200
+    except Exception as e:
+        response = {"message": "Error scheduling post."}
+        return jsonify(response), 500
+
+
+@app.route("/notifications")
+def notifications():
+    return render_template("error.html", error_message="Notifications page is currently under constructions.", error_code=400)
 
 
 @app.route("/register", methods=["GET", "POST"])
