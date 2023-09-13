@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Add next message content
           content.push(`<span>
                           <span id="message-bubble" class="px-4 rounded-5 ${
-                            // Add lastly-posted post to the array separately WITH animation class
+                            // Add lastly-posted post to the array WITH animation class
                             i === messages.length - 1 ? animationClass : ""
                           }">
                           <div id="message-content"><span>${
@@ -237,6 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             }</p>
                           </div>
                           ${
+                            // Details for scheduled posts
                             messages[i]["is_scheduled"] === 1
                               ? `<span id=${messages[i]["id"]} class="text-muted" style="display: none">
                                   This post was originally scheduled at ${messages[i]["schedule_date"]}
@@ -268,21 +269,14 @@ document.addEventListener("DOMContentLoaded", function () {
           .forEach((element) => {
             element.classList.add("animated-icon");
             element.style.cursor = "pointer";
-            element.addEventListener("mousedown", function () {
+            element.addEventListener("click", function () {
               const id = this.getAttribute("data-id"); // Get the id from a data attribute
               const scheduledElement = document.getElementById(id);
 
               if (scheduledElement) {
-                scheduledElement.style.display = ""; // Show the scheduled element
-              }
-            });
-
-            element.addEventListener("mouseup", function () {
-              const id = this.getAttribute("data-id"); // Get the id from a data attribute
-              const scheduledElement = document.getElementById(id);
-
-              if (scheduledElement) {
-                scheduledElement.style.display = "none"; // Hide the scheduled element
+                let displayStatus = scheduledElement.style.display;
+                scheduledElement.style.display =
+                  displayStatus === "" ? "none" : "";
               }
             });
           });
@@ -475,24 +469,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Scheduled posts visuals-deleter
+  // Scheduled posts deleter
   function deleteScheduledPost(btn) {
     let row = btn.parentElement.parentElement;
     // Get the post ID from the data attribute
     let postId = row.getAttribute("post-id");
 
-    // Send a request to the server to delete the post from the data base
+    requestDeletion(postId, false, row);
+  }
+
+  // Send a request to the server to delete the post from the data base
+  function requestDeletion(postId, isScheduleTime, row) {
     fetch("/delete_scheduled_posts", {
       method: "POST",
-      body: JSON.stringify({ postId: postId, isScheduleTime: false }),
+      body: JSON.stringify({ postId: postId, isScheduleTime: isScheduleTime }),
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((response) => {
         if (response.ok) {
-          row.remove();
-          showUpToDateScreen();
+          if (row) {
+            row.remove();
+          }
+          handleSchedulingIconsAndPosts();
         }
       })
       .catch((error) => {
@@ -500,109 +500,122 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // Get scheduled Posts
-  async function getScheduledPosts() {
-    try {
-      const response = await fetch("/get_scheduled_posts");
-      const scheduled_posts = await response.json();
-      return scheduled_posts;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
+  // Control visuals of scheduled_posts page
+  function handleSchedulingIconsAndPosts() {
+    fetch("/get_scheduled_posts")
+      .then((response) => response.json())
+      .then((scheduled_posts) => {
+        if (scheduled_posts.length > 0) {
+          // Handle nav-bar icon's animation
+          document.querySelector("#schedule_icon_pulse").style.display = "";
 
-  // Control what shows on the screen after deletion
-  function showUpToDateScreen() {
-    if (document.querySelector(".schedule_area")) {
-      getScheduledPosts()
-        .then((scheduled_posts) => {
-          if (scheduled_posts.length > 0) {
-            document.querySelector("#schedule_icon_pulse").style.display = "";
+          // Handle scheduled-posts' list
+          // Display scheduled posts' countdown
+          let timeLeftElements = document.querySelectorAll(".time_left");
+          for (let i = 0; i < timeLeftElements.length; i++) {
+            // Calculate the countdown date for the current post
+            const countdownDate = new Date(
+              scheduled_posts[i]["execution_date"]
+            ).getTime();
 
-            // Display scheduled posts' countdown
-            let timeLeftElements = document.querySelectorAll(".time_left");
-            for (let i = 0; i < timeLeftElements.length; i++) {
-              // Calculate the countdown date for the current post
-              const countdownDate = new Date(
-                scheduled_posts[i]["execution_date"]
-              ).getTime();
+            // Initialize countdownInterval to null
+            let countdownInterval = null;
 
-              // Initialize countdownInterval to null
-              let countdownInterval = null;
+            // Update the countdown for the current post
+            function updateCountdown() {
+              const now = new Date().getTime();
+              const distance = countdownDate - now;
 
-              // Update the countdown for the current post
-              function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = countdownDate - now;
+              // Calculate days, hours, minutes, and seconds
+              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+              const hours = Math.floor(
+                (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+              );
+              const minutes = Math.floor(
+                (distance % (1000 * 60 * 60)) / (1000 * 60)
+              );
+              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // Calculate days, hours, minutes, and seconds
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor(
-                  (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+              // If the countdown is not yet expired, display the countdown
+              if (distance > 0) {
+                timeLeftElements[
+                  i
+                ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+              } else {
+                // Send a request to the server to delete the post from the data base
+                requestDeletion(
+                  timeLeftElements[i].parentElement.getAttribute("post-id"),
+                  true,
+                  ""
                 );
-                const minutes = Math.floor(
-                  (distance % (1000 * 60 * 60)) / (1000 * 60)
-                );
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // If the countdown is not yet expired, display the countdown
-                if (distance > 0) {
-                  timeLeftElements[
-                    i
-                  ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                } else {
-                  // Send a request to the server to delete the post from the data base
-                  fetch("/delete_scheduled_posts", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      postId:
-                        timeLeftElements[i].parentElement.getAttribute(
-                          "post-id"
-                        ),
-                      isScheduleTime: true,
-                    }),
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  })
-                    .then((response) => {
-                      if (response.ok) {
-                        showUpToDateScreen();
-                      }
-                    })
-                    .catch((error) => {
-                      console.error("An error occurred:", error);
-                    });
-                  clearInterval(countdownInterval);
-                }
+                clearInterval(countdownInterval);
               }
-
-              // Initial update before starting the interval
-              updateCountdown();
-
-              // Update the countdown every 1 second (1000 milliseconds) for the current post
-              countdownInterval = setInterval(updateCountdown, 1000);
             }
-          } else {
-            document.querySelector("#schedule_icon_pulse").style.display =
-              "none";
 
-            if (document.querySelector("#scheduleds-page")) {
-              let noScheduledPostsMessage = document.createElement("span");
-              noScheduledPostsMessage.innerHTML = `<div class="container d-flex justify-content-center align-items-center h-100">
+            // Initial update before starting the interval
+            updateCountdown();
+
+            // Update the countdown every 1 second (1000 milliseconds) for the current post
+            countdownInterval = setInterval(updateCountdown, 1000);
+          }
+        } else {
+          // Handle nav-bar icon's animation
+          document.querySelector("#schedule_icon_pulse").style.display = "none";
+
+          // Handle scheduled-posts' list
+          if (document.querySelector("#scheduleds-page")) {
+            let noScheduledPostsMessage = document.createElement("span");
+            noScheduledPostsMessage.innerHTML = `<div class="container d-flex justify-content-center align-items-center h-100">
             <p class="bg-info m-3 p-3 rounded-5">Your scheduled posts will appear here once you schedule!</p>
                                                  </div>`;
-              document.querySelector("table").remove();
-              document
-                .querySelector("#scheduleds-page")
-                .appendChild(noScheduledPostsMessage);
-            }
+            document.querySelector("table").remove();
+            document
+              .querySelector("#scheduleds-page")
+              .appendChild(noScheduledPostsMessage);
           }
-        })
-        .catch((error) => {
-          console.error("Error in fetchData:", error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error in fetchData:", error);
+      });
+  }
+  handleSchedulingIconsAndPosts();
+
+  function controlCountdowns() {
+    const currentDate = new Date();
+    const seconds = currentDate.getSeconds();
+
+    if (seconds === 0) {
+      fetch("/get_scheduled_posts")
+        .then((response) => response.json())
+        .then((data) => {
+          data.forEach((x) => {
+            const currentDate = new Date();
+
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+            const day = String(currentDate.getDate()).padStart(2, "0");
+
+            const hours = String(currentDate.getHours()).padStart(2, "0");
+            const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+            const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+
+            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+            if (formattedTime === x["execution_date"]) {
+              requestDeletion(x["id"], true, "");
+              setTimeout(() => {
+                fetchData("animated-new-post");
+              }, 100);
+            }
+          });
         });
     }
   }
-  showUpToDateScreen();
+  
+  // Start tracking for rendering scheduled posts
+  controlCountdowns();
+  setInterval(() => {
+    controlCountdowns();
+  }, 1000);
 });

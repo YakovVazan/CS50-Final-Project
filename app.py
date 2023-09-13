@@ -210,7 +210,6 @@ def delete_scheduled_posts():
 
         if post_to_delete["isScheduleTime"]:
             # Insert into messages table
-            print(scheduled_post)
             cursor.execute("INSERT INTO messages (content, date, is_scheduled, schedule_date, user_id) VALUES (?, ?, ?, ?, ?)",
                            (scheduled_post["content"], scheduled_post["execution_date"], True, scheduled_post["scheduling_date"], session["user_id"]))
 
@@ -334,4 +333,4 @@ def available_apps():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8888)
