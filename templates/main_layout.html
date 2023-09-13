@@ -136,6 +136,8 @@
             <ul class="dropdown-menu dropdown-menu-end">
               {% if session["user_id"] %}
               <li><a class="dropdown-item" href="/logout" id="logout-button">Log Out</a></li>
+              <hr class="solid">
+              <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>
               {% else %}
               <li><a class="dropdown-item" href="/register">Register</a></li>
               <li><a class="dropdown-item" href="/login">Log In</a></li>
