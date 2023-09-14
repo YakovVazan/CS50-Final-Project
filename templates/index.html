@@ -4,10 +4,22 @@
 <div class="h-100 w-100 d-flex flex-column justify-content-evenly align-items-center">
     <h1 class="text-danger fw-bold">Welcome back, {{username}}!</h1>
     <!-- Chat window -->
-    <div id="chat-window" class="p-3 rounded-5 d-flex flex-column align-items-center justify-content-between">
+    <div id="chat-window"
+        class="p-3 rounded-5 d-flex flex-column align-items-center justify-content-between position-relative">
         <!-- Messages area -->
         <div id="messages-area" class="w-100 h-75 rounded-5 bg-dark-subtle overflow-auto">
         </div>
+
+        <!-- Filter -->
+        <span class="p-3 bg-warning rounded-top-5 d-none d-md-inline"
+            style="transform: rotate(90deg); position: absolute; top: 7em; right: -6em;">
+            <input id="filter-posts" type="range" class="form-range" min="0" max="2" value="0">
+        </span>
+
+        <!-- Filter Info -->
+        <span class="px-3 bg-info rounded-5 animated-new-post" id="filter-info"
+            style="position: absolute; display: none;">
+        </span>
 
         <!-- Bottom -->
         <div class="w-100 m-2 d-flex justify-content-center">
