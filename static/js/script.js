@@ -283,7 +283,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("filter-posts").value = 0;
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        createToast(`Error fetching data:<br>${error}`);
+        createNotification(`Error fetching data: ${error}`);
       });
   }
 
@@ -390,7 +391,9 @@ document.addEventListener("DOMContentLoaded", function () {
         inputField.value != "" &&
         new Date(dateInput) > new Date()
       ) {
-        alert(`You scheduld: ${inputField.value}\nto: ${dateInput}`);
+        // Toast post scheduled
+        createToast("Your post was scheduled successfully!");
+
         dactivateModal();
         document
           .querySelector("#schedule_icon")
@@ -410,7 +413,7 @@ document.addEventListener("DOMContentLoaded", function () {
         xhr.send(data);
         document.querySelector("#schedule_icon_pulse").style.display = "";
       } else {
-        alert(
+        createToast(
           "Impossible to schedule a post without all fields filled or with illegal date."
         );
       }
@@ -506,7 +509,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
       .catch((error) => {
-        console.error("An error occurred:", error);
+        createToast(`An error occurred:<br>${error}`);
       });
   }
 
@@ -594,7 +597,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
         .catch((error) => {
-          console.error("Error in fetchData:", error);
+          createToast(`Error in fetchData:<br>${error}`);
         });
     }
   }
@@ -626,6 +629,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
               if (formattedTime === x["execution_date"]) {
                 requestDeletion(x["id"], true, "");
+
+                // Toast schedule executed
+                createToast("Your scheduled post was just posted!");
+
                 // Delay so the DB will get time to update
                 setTimeout(() => {
                   fetchData("animated-new-post");
@@ -663,9 +670,8 @@ document.addEventListener("DOMContentLoaded", function () {
     currentInfo.style.top = infoData[currentValue]["top"];
     currentInfo.style.right = infoData[currentValue]["right"];
 
-    let infoInterval = setInterval(() => {
+    setTimeout(() => {
       currentInfo.style.display = "none";
-      clearInterval(infoInterval);
     }, 1500);
 
     // 'lastElementChild' will have an id of "message-bubble-time" if not scheduled
@@ -690,4 +696,109 @@ document.addEventListener("DOMContentLoaded", function () {
       messagesArea.scrollTop = messagesArea.scrollHeight;
     });
   }
+
+  function createToast(message) {
+    let toast = document.createElement("div");
+    toast.className = "toast";
+    toast.setAttribute("id", "notificationToast");
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+
+    toast.innerHTML = `
+    <div class="toast-header">
+      <strong class="me-auto px-1 bg-danger text-warning rounded-3 ">SocialHub</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      ${message}
+    </div>`;
+
+    let toastContainer = document.querySelector(".toast-container");
+    toastContainer.appendChild(toast);
+
+    let toastInstance = new bootstrap.Toast(toast);
+
+    toastInstance.show();
+  }
+
+  function createNotification(content) {
+    fetch("/manage_notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "CREATE", content: content, id: "" }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        getNotifications();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function getNotifications() {
+    let notificationsModal = document.querySelector(".modal-body");
+    fetch("/manage_notifications")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          notificationsModal.innerHTML = "";
+          data.forEach((d) => {
+            notificationsModal.innerHTML += `
+            <div class="d-flex justify-content-around align-items-center">
+              <strong class="me-auto">${d["content"]}</strong>
+              <span class="d-flex align-items-center">
+                <small>${d["date"]}</small>
+                <button id="notification-dismisser" notification-id=${d["id"]} class="btn">Dismiss</button>
+              </span>
+            </div>
+            <hr>
+            `;
+          });
+        } else {
+          notificationsModal.innerHTML = "No notificaitons.";
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+  getNotifications();
+
+  function deleteNotifications(id) {
+    fetch("/manage_notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "DELETE", content: "", id: id }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        getNotifications();
+        catchNotifications();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function catchNotifications() {
+    setTimeout(() => {
+      let notificationDismissers = document.querySelectorAll(
+        "#notification-dismisser"
+      );
+      if (notificationDismissers) {
+        notificationDismissers.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            deleteNotifications(btn.getAttribute("notification-id"));
+          });
+        });
+      }
+    }, 100);
+  }
+  catchNotifications();
 });

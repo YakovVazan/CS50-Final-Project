@@ -65,6 +65,15 @@ def init_db():
             social_id INTEGER REFERENCES social_media(id)
         )
     """)
+    # Create notifications table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY,
+            content TEXT NOT NULL,
+            date DATE NOT NULL,
+            user_id INTEGER REFERENCES users(id)
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -223,11 +232,6 @@ def delete_scheduled_posts():
         return jsonify(response), 500
 
 
-@app.route("/notifications")
-def notifications():
-    return render_template("error.html", error_message="Notifications page is currently under constructions.", error_code=400)
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -357,6 +361,44 @@ def delete_account():
             return render_template("register.html")
     else:
         return redirect("/")
+
+
+@app.route("/manage_notifications", methods=["GET", "POST"])
+def manage_notifications():
+    if session:
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        if request.method == "GET":
+            notifications_list = cursor.execute(
+                "SELECT * FROM notifications WHERE user_id = ?", (session["user_id"],))
+            full_notifications = [{"id": notification["id"], "content": notification["content"],
+                                   "date": notification["date"], "user_id": notification["user_id"]} for notification in notifications_list]
+            return jsonify(full_notifications)
+        else:
+            data = request.get_json()
+            action = data.get("action", "")
+            content = data.get("content", "")
+            id = data.get("id", "")
+            
+            if action == "CREATE":
+                cursor.execute(
+                    "INSERT INTO notifications (content, date, user_id) VALUES (?, ?, ?)",
+                    (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session["user_id"]))
+            elif action == "DELETE":
+                cursor.execute(
+                    "DELETE FROM notifications WHERE id = (?) AND user_id = ?", (id, session["user_id"]))
+                
+            conn.commit()
+            conn.close()
+
+            return jsonify({"message": f"{action} successful"})
+
+    else:
+        return redirect("/")
+
 
 
 if __name__ == '__main__':
