@@ -283,8 +283,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("filter-posts").value = 0;
       })
       .catch((error) => {
+        console.log("Error fetching data:", error);
         createToast(`Error fetching data:<br>${error}`);
-        createNotification(`Error fetching data: ${error}`);
+        createNotification("Check the console for details.", "#dc3545");
       });
   }
 
@@ -393,6 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ) {
         // Toast post scheduled
         createToast("Your post was scheduled successfully!");
+        createNotification("Your post was scheduled successfully!", "#ffc107");
 
         dactivateModal();
         document
@@ -632,6 +634,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Toast schedule executed
                 createToast("Your scheduled post was just posted!");
+                createNotification(
+                  "Your scheduled post was just posted!",
+                  "#0dcaf0"
+                );
 
                 // Delay so the DB will get time to update
                 setTimeout(() => {
@@ -722,13 +728,18 @@ document.addEventListener("DOMContentLoaded", function () {
     toastInstance.show();
   }
 
-  function createNotification(content) {
+  function createNotification(content, codeColor) {
     fetch("/manage_notifications", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ action: "CREATE", content: content, id: "" }),
+      body: JSON.stringify({
+        action: "CREATE",
+        content: content,
+        id: "",
+        codeColor: codeColor,
+      }),
     })
       .then((response) => response.json())
       .then(() => {
@@ -740,15 +751,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getNotifications() {
-    let notificationsModal = document.querySelector(".modal-body");
-    fetch("/manage_notifications")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length > 0) {
-          notificationsModal.innerHTML = "";
-          data.forEach((d) => {
-            notificationsModal.innerHTML += `
+    if (document.querySelector("main").children.length > 3) {
+      let notificationsModal = document.querySelector(".modal-body");
+      fetch("/manage_notifications")
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.length > 0) {
+            notificationsModal.innerHTML = "";
+            data.forEach((d) => {
+              notificationsModal.innerHTML += `
             <div class="d-flex justify-content-around align-items-center">
+              <svg width="100" height="100">
+                <circle cx="25" cy="50" r="10" fill=${d["codeColor"]} />
+              </svg>
               <strong class="me-auto">${d["content"]}</strong>
               <span class="d-flex align-items-center">
                 <small>${d["date"]}</small>
@@ -757,14 +772,32 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <hr>
             `;
-          });
-        } else {
-          notificationsModal.innerHTML = "No notificaitons.";
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+            });
+            // Control pill
+            document.querySelector("#notifications-pill").style.display = "";
+            document.querySelector("#notifications-pill").innerHTML =
+              data.length;
+            // Control pulse animation
+            document.querySelector("#notifications_icon_pulse").style.display =
+              "";
+            catchNotifications();
+          } else {
+            notificationsModal.innerHTML = `
+          <div id="no-history-message">
+            <p class="bg-info m-3 p-3 rounded-5">Your notifications will appear here once arrive!</p>
+          </div>`;
+            // Control pill
+            document.querySelector("#notifications-pill").style.display =
+              "none";
+            // Control pulse animation
+            document.querySelector("#notifications_icon_pulse").style.display =
+              "none";
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   }
   getNotifications();
 
@@ -774,12 +807,16 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ action: "DELETE", content: "", id: id }),
+      body: JSON.stringify({
+        action: "DELETE",
+        content: "",
+        id: id,
+        codeColor: "",
+      }),
     })
       .then((response) => response.json())
       .then(() => {
         getNotifications();
-        catchNotifications();
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -798,7 +835,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         });
       }
-    }, 100);
+    }, 500);
   }
   catchNotifications();
 });

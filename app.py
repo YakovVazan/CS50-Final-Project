@@ -70,6 +70,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS notifications (
             id INTEGER PRIMARY KEY,
             content TEXT NOT NULL,
+            codeColor TEXT NOT NULL,
             date DATE NOT NULL,
             user_id INTEGER REFERENCES users(id)
         )
@@ -375,18 +376,19 @@ def manage_notifications():
             notifications_list = cursor.execute(
                 "SELECT * FROM notifications WHERE user_id = ?", (session["user_id"],))
             full_notifications = [{"id": notification["id"], "content": notification["content"],
-                                   "date": notification["date"], "user_id": notification["user_id"]} for notification in notifications_list]
+                                   "date": notification["date"], "user_id": notification["user_id"], "codeColor": notification["codeColor"]} for notification in notifications_list]
             return jsonify(full_notifications)
         else:
             data = request.get_json()
             action = data.get("action", "")
+            codeColor = data.get("codeColor", "")
             content = data.get("content", "")
             id = data.get("id", "")
             
             if action == "CREATE":
                 cursor.execute(
-                    "INSERT INTO notifications (content, date, user_id) VALUES (?, ?, ?)",
-                    (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session["user_id"]))
+                    "INSERT INTO notifications (codeColor, content, date, user_id) VALUES (?, ?, ?, ?)",
+                    (codeColor, content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session["user_id"]))
             elif action == "DELETE":
                 cursor.execute(
                     "DELETE FROM notifications WHERE id = (?) AND user_id = ?", (id, session["user_id"]))
