@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="../static/css/styles.css">
   <script type="module" src="../static/js/script.js"></script>
 
-  <!-- https://getbootstrap.com/docs/5.3/getting-started/introduction/ -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
@@ -55,7 +54,7 @@
                   <path
                     d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z" />
                 </svg></a>
-              <span id="schedule_icon_pulse"></span>
+              <span class="icon_pulse" id="schedule_icon_pulse"></span>
             </span>
           </div>
 
@@ -94,7 +93,7 @@
                 <path
                   d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
               </svg>
-              <span id="notifications_icon_pulse"></span>
+              <span class="icon_pulse" id="notifications_icon_pulse"></span>
             </span>
             <!-- Notifications Pill -->
             <span id="notifications-pill" style="position: absolute; top: 0; left: -10px; display: none;"
@@ -161,7 +160,7 @@
     {% block main %}{% endblock %}
 
     <!-- Toast area -->
-    <div class="toast-container" style="position: absolute; bottom: 2em; right: 1em;">
+    <div class="toast-container" style="position: absolute; top: 4em; right: 0.5em;">
     </div>
 
     <!-- Modal for Notifications -->
