@@ -33,7 +33,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
-
+    
     # Create users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -204,6 +204,7 @@ def display_scheduled_posts():
 def delete_scheduled_posts():
     try:
         post_to_delete = request.get_json()
+        print(post_to_delete)
 
         # Get database
         conn = get_db_connection()
@@ -400,7 +401,6 @@ def manage_notifications():
 
     else:
         return redirect("/")
-
 
 
 if __name__ == '__main__':

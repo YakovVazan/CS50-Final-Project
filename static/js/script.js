@@ -3,17 +3,20 @@ document.addEventListener("DOMContentLoaded", function () {
   let root = document.documentElement;
 
   // Set the entire page's theme the previous one
-  root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
+  root.setAttribute("data-bs-theme", localStorage.getItem("SocialHubTheme"));
 
   // Change theme with ctrl + 'M' key-press
   document.addEventListener("keydown", function (event) {
     if (event.ctrlKey && event.key === "m") {
-      if (root.getAttribute("data-bs-theme") == "light") {
-        localStorage.setItem("theme", "dark");
+      if (root.getAttribute("data-bs-theme") === "light") {
+        localStorage.setItem("SocialHubTheme", "dark");
       } else {
-        localStorage.setItem("theme", "light");
+        localStorage.setItem("SocialHubTheme", "light");
       }
-      root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
+      root.setAttribute(
+        "data-bs-theme",
+        localStorage.getItem("SocialHubTheme")
+      );
       handleTheme();
     }
   });
@@ -30,9 +33,15 @@ document.addEventListener("DOMContentLoaded", function () {
   Array.from(themeButtons).forEach(function (element) {
     element.addEventListener("click", function (event) {
       // Update the local storage
-      localStorage.setItem("theme", event.target.textContent.toLowerCase());
+      localStorage.setItem(
+        "SocialHubTheme",
+        event.target.textContent.toLowerCase()
+      );
       // Update the page's theme
-      root.setAttribute("data-bs-theme", localStorage.getItem("theme"));
+      root.setAttribute(
+        "data-bs-theme",
+        localStorage.getItem("SocialHubTheme")
+      );
 
       handleTheme();
     });
@@ -116,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Update theme icon
   function handleTheme() {
-    if (localStorage.getItem("theme") == "dark") {
+    if (localStorage.getItem("SocialHubTheme") == "dark") {
       themeSvgIcon.classList.remove("bi-moon");
       themeSvgIcon.classList.add("bi-brightness-high");
       themePath.setAttribute(
@@ -280,7 +289,11 @@ document.addEventListener("DOMContentLoaded", function () {
               }
             });
           });
-        document.getElementById("filter-posts").value = 0;
+
+        // Zero posts filter
+        if (document.getElementById("filter-posts")) {
+          document.getElementById("filter-posts").value = 0;
+        }
       })
       .catch((error) => {
         console.log("Error fetching data:", error);
@@ -416,7 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#schedule_icon_pulse").style.display = "";
       } else {
         createToast(
-          "Impossible to schedule a post without all fields filled or with illegal date."
+          "Impossible to schedule a post without all fields filled with legal valus."
         );
       }
     });
@@ -464,13 +477,51 @@ document.addEventListener("DOMContentLoaded", function () {
     inputField.blur();
   }
 
-  // TODO: Edit posts
+  // Edit posts
   let editButtons = document.querySelectorAll(".edit-button");
   if (editButtons) {
     editButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        console.log("Make it editable.");
+        editMode(
+          btn.parentElement.parentElement.firstElementChild.firstElementChild
+        );
       });
+    });
+  }
+
+  function editMode(editable) {
+    let originalPostContent = editable.innerHTML;
+
+    // Change value
+    editable.innerHTML = `
+    <input
+      id="edit-input" class="form-control" rows="1" style="resize: none;" placeholder="Edit your post">
+    </input>
+    `;
+    document.getElementById("edit-input").value = originalPostContent;
+
+    // Catch buttons
+    let editButton =
+      editable.parentElement.parentElement.children[3].firstElementChild;
+    let cancelButton =
+      editable.parentElement.parentElement.children[3].lastElementChild;
+
+    // Change buttons layout
+    editButton.remove();
+    cancelButton.remove();
+    editable.parentElement.parentElement.children[3].innerHTML = `
+      <button id="repost" class="btn" style="background-color: purple;">Repost</button>
+      <button id="cancelRepost" class="btn btn-danger">Cancel</button>
+    `;
+
+    // Repost
+    document.querySelector("#repost").addEventListener("click", () => {
+      console.log("repost");
+    });
+
+    // Cancel reposting
+    document.querySelector("#cancelRepost").addEventListener("click", () => {
+      console.log("cancelRepost");
     });
   }
 
@@ -507,10 +558,15 @@ document.addEventListener("DOMContentLoaded", function () {
           if (row) {
             row.remove();
           }
+          // Toast schedule executed
+          createToast("Your scheduled post was just posted!");
+          // Notify schedule executed
+          createNotification("Your scheduled post was just posted!", "#0dcaf0");
           handleSchedulingIconsAndPosts();
         }
       })
       .catch((error) => {
+        console.log(error);
         createToast(`An error occurred:<br>${error}`);
       });
   }
@@ -561,6 +617,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     i
                   ].innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
                 } else {
+                  timeLeftElements[i].parentElement.remove();
                   // Send a request to the server to delete the post from the data base
                   requestDeletion(
                     timeLeftElements[i].parentElement.getAttribute("post-id"),
@@ -599,7 +656,8 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         })
         .catch((error) => {
-          createToast(`Error in fetchData:<br>${error}`);
+          console.log(error);
+          createToast("An error occurred.");
         });
     }
   }
@@ -607,7 +665,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Render in live scheduled posts to chat window
   function controlCountdowns() {
-    if (document.querySelector(".schedule_area")) {
+    if (
+      document.querySelector(".schedule_area") &&
+      !document.querySelector("#scheduleds-page")
+    ) {
       const currentDate = new Date();
       const seconds = currentDate.getSeconds();
 
@@ -632,16 +693,13 @@ document.addEventListener("DOMContentLoaded", function () {
               if (formattedTime === x["execution_date"]) {
                 requestDeletion(x["id"], true, "");
 
-                // Toast schedule executed
-                createToast("Your scheduled post was just posted!");
-                createNotification(
-                  "Your scheduled post was just posted!",
-                  "#0dcaf0"
-                );
-
                 // Delay so the DB will get time to update
                 setTimeout(() => {
-                  fetchData("animated-new-post");
+                  if (document.querySelector("#chat-window")) {
+                    fetchData("animated-new-post");
+                  } else {
+                    fetchData();
+                  }
                 }, 100);
               }
             });
@@ -751,28 +809,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getNotifications() {
-    if (document.querySelector("main").children.length > 3) {
+    if (!document.querySelector("#entrance_card")) {
       let notificationsModal = document.querySelector(".modal-body");
       fetch("/manage_notifications")
         .then((response) => response.json())
         .then((data) => {
           if (data.length > 0) {
             notificationsModal.innerHTML = "";
-            data.forEach((d) => {
+            // Reversing notifications
+            for (let i = data.length - 1; i >= 0; i--) {
               notificationsModal.innerHTML += `
-            <div class="d-flex justify-content-around align-items-center">
-              <svg width="100" height="100">
-                <circle cx="25" cy="50" r="10" fill=${d["codeColor"]} />
-              </svg>
-              <strong class="me-auto">${d["content"]}</strong>
-              <span class="d-flex align-items-center">
-                <small>${d["date"]}</small>
-                <button id="notification-dismisser" notification-id=${d["id"]} class="btn">Dismiss</button>
-              </span>
-            </div>
-            <hr>
-            `;
-            });
+              <div id="notification-body" class="d-flex justify-content-around align-items-center">
+                <svg width="100" height="100">
+                  <circle cx="25" cy="50" r="10" fill=${data[i]["codeColor"]} />
+                </svg>
+                <strong class="me-auto">${data[i]["content"]}</strong>
+                <span class="d-flex align-items-center">
+                  <small>${data[i]["date"]}</small>
+                  <button id="notification-dismisser" notification-id=${data[i]["id"]} class="btn btn-danger">Dismiss</button>
+                </span>
+              </div>
+              <hr>
+              `;
+            }
             // Control pill
             document.querySelector("#notifications-pill").style.display = "";
             document.querySelector("#notifications-pill").innerHTML =
@@ -793,6 +852,14 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelector("#notifications_icon_pulse").style.display =
               "none";
           }
+          document
+            .querySelector("#notificationsModal")
+            .addEventListener("click", () => {
+              // Control pulse animation
+              document.querySelector(
+                "#notifications_icon_pulse"
+              ).style.display = "none";
+            });
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -824,18 +891,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function catchNotifications() {
-    setTimeout(() => {
-      let notificationDismissers = document.querySelectorAll(
-        "#notification-dismisser"
-      );
-      if (notificationDismissers) {
+    let notificationDismissers = document.querySelectorAll(
+      "#notification-dismisser"
+    );
+
+    if (notificationDismissers) {
+      setTimeout(() => {
         notificationDismissers.forEach((btn) => {
           btn.addEventListener("click", () => {
             deleteNotifications(btn.getAttribute("notification-id"));
           });
         });
-      }
-    }, 500);
+      }, 500);
+      return notificationDismissers.length;
+    }
   }
   catchNotifications();
 });
