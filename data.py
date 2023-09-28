@@ -39,4 +39,9 @@ socials = [
     "alt": "instagram-logo",
     "name": "Instagram",
   },
+  {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png",
+    "alt": "whatsapp-logo",
+    "name": "WhatsApp",
+  },
 ]

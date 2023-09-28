@@ -33,7 +33,7 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     # Create users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -204,7 +204,6 @@ def display_scheduled_posts():
 def delete_scheduled_posts():
     try:
         post_to_delete = request.get_json()
-        print(post_to_delete)
 
         # Get database
         conn = get_db_connection()
@@ -356,6 +355,8 @@ def delete_account():
                 "DELETE FROM messages WHERE user_id = ?", (session["user_id"],))
             cursor.execute(
                 "DELETE FROM users WHERE id = ?", (session["user_id"],))
+            cursor.execute(
+                "DELETE FROM notifications WHERE user_id = ?", (session["user_id"],))
 
             conn.commit()
             conn.close()
