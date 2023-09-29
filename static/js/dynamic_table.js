@@ -1,6 +1,6 @@
-// Control visuals of scheduled_posts page
 import { requestDeletion } from "./deletion.js";
 
+// Control visuals of scheduled_posts page
 export function handleSchedulingIconsAndPosts() {
   if (document.querySelector(".schedule_area")) {
     fetch("/get_scheduled_posts")

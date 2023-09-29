@@ -4,6 +4,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from werkzeug.security import generate_password_hash, check_password_hash
 from data import socials
 from datetime import datetime
+import requests
+
+from socials.Telegram.secrets import token
 
 # Configure flask app
 app = Flask(__name__)
@@ -75,6 +78,16 @@ def init_db():
             user_id INTEGER REFERENCES users(id)
         )
     """)
+    # cursor.execute("drop table socials")
+    # Create socials table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS socials (
+            index_id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            social_id TEXT NOT NULL,
+            user_id INTEGER REFERENCES users(id)
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -111,8 +124,6 @@ def process_data():
 
 
 def post(new_post):
-    # Call social media APIs right here
-
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Get database
@@ -123,6 +134,9 @@ def post(new_post):
     # Insert new message
     cursor.execute("INSERT INTO messages (content, date, user_id, is_scheduled) VALUES (?, ?, ?, ?)",
                    (new_post, current_datetime, session["user_id"], False))
+
+    monitor_interface_with_socials(new_post)
+
     conn.commit()
     conn.close()
 
@@ -223,6 +237,8 @@ def delete_scheduled_posts():
             cursor.execute("INSERT INTO messages (content, date, is_scheduled, schedule_date, user_id) VALUES (?, ?, ?, ?, ?)",
                            (scheduled_post["content"], scheduled_post["execution_date"], True, scheduled_post["scheduling_date"], session["user_id"]))
 
+            monitor_interface_with_socials(scheduled_post["content"])
+
         conn.commit()
         conn.close()
 
@@ -231,6 +247,21 @@ def delete_scheduled_posts():
     except Exception as e:
         response = {"message": "Error scheduling post."}
         return jsonify(response), 500
+
+
+def monitor_interface_with_socials(content):
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # TODO: Call social media APIs right here
+    social_details = [dict(social_details) for social_details in cursor.execute(
+        "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()][0]
+
+    conn.close()
+
+    send_to_telegram_channel(social_details["social_id"], content)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -332,9 +363,55 @@ def available_apps():
             return render_template("available_apps.html", socials=sorted_list)
         else:
             app_name = request.form.get("app-name")
-            return render_template("error.html", error_message=f"{app_name} is not available on SocialHub yet.", error_code=503)
+            if app_name == "Telegram":
+                return redirect(url_for("telegram_login"))
+            # Add here more social media's login's logics
+            else:
+                return render_template("error.html", error_message=f"{app_name} is not available on SocialHub yet.", error_code=503)
     else:
         return redirect("/")
+
+
+@app.route("/available_apps/telegram_login", methods=["GET", "POST"])
+def telegram_login():
+    if session:
+        if request.method == "GET":
+            return render_template("login_telegram.html")
+        else:
+            chat_id = request.form.get("chat_id")
+
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            # Insert new social to socials table
+            cursor.execute(
+                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (chat_id, "Telegram", session["user_id"]))
+
+            conn.commit()
+            conn.close()
+            return redirect("/")
+    else:
+        return redirect("/")
+
+
+# Function to send a message to a Telegram channel
+def send_to_telegram_channel(chat_id, message):
+    if chat_id and message:
+        url = f'https://api.telegram.org/bot{token}/sendMessage'
+
+        data = {
+            'chat_id': chat_id,
+            'text': message,
+        }
+
+        response = requests.post(url, json=data)
+        response_data = response.json()
+
+        return response_data.get('ok')
+    else:
+        return False
 
 
 @app.route("/delete_account", methods=["GET", "POST"])
@@ -386,7 +463,7 @@ def manage_notifications():
             codeColor = data.get("codeColor", "")
             content = data.get("content", "")
             id = data.get("id", "")
-            
+
             if action == "CREATE":
                 cursor.execute(
                     "INSERT INTO notifications (codeColor, content, date, user_id) VALUES (?, ?, ?, ?)",
@@ -394,7 +471,7 @@ def manage_notifications():
             elif action == "DELETE":
                 cursor.execute(
                     "DELETE FROM notifications WHERE id = (?) AND user_id = ?", (id, session["user_id"]))
-                
+
             conn.commit()
             conn.close()
 
