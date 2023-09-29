@@ -25,9 +25,10 @@
           <!-- (Homepage) Logo -->
           <a class="navbar-brand bg-danger rounded-3 px-3 fw-bolder text-warning" href="/">SocialHub</a>
 
-          <!-- Apps Area -->
+          <!-- Apps and Schedule Area -->
           {% if session["user_id"] %}
           <!-- For Mobile -->
+          <!-- Apps -->
           <div class="dropdown d-flex d-lg-none">
             <span role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -43,7 +44,7 @@
               <li><a class="dropdown-item" href="/available_apps">Available Apps</a></li>
             </ul>
 
-            <!-- Schedule area -->
+            <!-- Schedule -->
             <span class="schedule_area">
               <a id="schedule_icon" class="nav-link active mx-3" href="/scheduled_posts"><svg
                   xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -163,7 +164,7 @@
     <div class="toast-container" style="position: absolute; top: 4em; right: 0.5em;">
     </div>
 
-    <!-- Modal for Notifications -->
+    <!-- Notifications' Modal -->
     <div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel"
       aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
