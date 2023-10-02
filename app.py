@@ -78,8 +78,8 @@ def init_db():
             user_id INTEGER REFERENCES users(id)
         )
     """)
-    # cursor.execute("drop table socials")
     # Create socials table
+    # cursor.execute("drop table socials")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS socials (
             index_id INTEGER PRIMARY KEY,
@@ -350,7 +350,22 @@ def logout():
 @app.route("/my_apps")
 def my_apps():
     if session:
-        return render_template("my_apps.html")
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Collect cureent user's apps
+        owned_socials = [dict(social_details) for social_details in cursor.execute(
+            "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()]
+
+        conn.close()
+
+        # Collect only already owned apps and sort by name
+        sorted_list = sorted([
+            s for os in owned_socials for s in socials if s["name"] == os["name"]], key=lambda x: x['name'])
+
+        return render_template("my_apps.html", socials=sorted_list)
     else:
         return redirect("/")
 
@@ -359,7 +374,26 @@ def my_apps():
 def available_apps():
     if session:
         if request.method == "GET":
-            sorted_list = sorted(socials, key=lambda x: x['name'])
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            # Collect cureent user's apps
+            owned_socials = [dict(social_details) for social_details in cursor.execute(
+                "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()]
+
+            conn.close()
+
+            # Sort by name
+            # Omit already owned apps if so
+            if len(owned_socials) > 0:
+                sorted_list = sorted(
+                    [s for os in owned_socials for s in socials if s["name"] != os["name"]], key=lambda x: x['name'])
+            # Show all available apps if none owned
+            else:
+                sorted_list = sorted(socials, key=lambda x: x['name'])
+
             return render_template("available_apps.html", socials=sorted_list)
         else:
             app_name = request.form.get("app-name")
@@ -372,11 +406,16 @@ def available_apps():
         return redirect("/")
 
 
-@app.route("/available_apps/telegram_login", methods=["GET", "POST"])
+@app.route("/available_apps/telegram", methods=["GET", "POST"])
 def telegram_login():
     if session:
         if request.method == "GET":
-            return render_template("login_telegram.html")
+            for s in socials:
+                if s["name"] == "Telegram":
+                    social_details = s
+                    break
+
+            return render_template("login_telegram.html", social_details=social_details)
         else:
             chat_id = request.form.get("chat_id")
 

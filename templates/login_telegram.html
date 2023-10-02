@@ -1,17 +1,32 @@
-<!DOCTYPE html>
-<html>
+{% extends "main_layout.html" %}
 
-<head>
-    <title>Post to Telegram</title>
-</head>
+{% block title %}: Telegram Login{% endblock %}
 
-<body>
-    <h1>Post to Telegram</h1>
-    <form action="/available_apps/telegram_login" method="POST">
-        <label for="chat_id">Chat ID or Username:</label>
-        <input type="text" id="chat_id" name="chat_id" required><br><br>
-        <input type="submit" value="Submit">
-    </form>
-</body>
+{% block main %}
+<div class="align-self-center" style="max-width: 50%;">
+    <div class="card mb-3">
+        <div class="card-header bg-danger"><img class="rounded-5" style="width: 8em;" src="{{ social_details['src'] }}"
+                alt="{{ social_details['alt'] }}">
+        </div>
+        <div class="card-body bg-gradient">
+            <h3 class="card-title text-warning">Log into Telegram</h3>
+            <p class="card-text">
+                In order to use SocialHub with your Telegram channel, You will have to add SocialHub's
+                bot to your channel as an
+                administrator.
+            </p>
+            <p class="card-text">
+                After adding the bot to your channel, come back here and type right below your channel's ID or its
+                Username.
+            </p>
 
-</html>
+            <!-- Form -->
+            <form id="telegram-login-form" class="input-group" action="/available_apps/telegram" method="POST">
+                <input class="form-control" type="text" id="chat_id" name="chat_id" placeholder="Channel's Link:"
+                    required autofocus><br><br>
+                <input class="btn btn-primary" type="submit" value="Log In">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
