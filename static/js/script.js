@@ -5,3 +5,4 @@ import "./posts_filter.js";
 import "./edit_scheduled_posts.js";
 import "./posts_backward.js";
 import "./dynamic_chat.js";
+import "./telegram_script.js";
