@@ -22,7 +22,9 @@ export function createNotification(content, codeColor) {
 
 export function getNotifications() {
   if (!document.querySelector("#entrance_card")) {
-    let notificationsModal = document.querySelector(".modal-body");
+    let notificationsModal = document.querySelector(
+      ".notifications-modal-body"
+    );
     fetch("/manage_notifications")
       .then((response) => response.json())
       .then((data) => {
@@ -143,7 +145,9 @@ function catchNotifications() {
     // Clear notifications
     let clearNotifications = document.createElement("span");
     clearNotifications.innerHTML = `<button id="clear-notifications" class="btn btn-outline-danger">Clear All</button>`;
-    document.querySelector(".modal-body").appendChild(clearNotifications);
+    document
+      .querySelector(".notifications-modal-body")
+      .appendChild(clearNotifications);
     document
       .querySelector("#clear-notifications")
       .addEventListener("click", () => {
