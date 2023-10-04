@@ -183,6 +183,10 @@ footer {
     margin-right: 5em;
 }
 
+#editsModal-content {
+    margin: 0;
+}
+
 .bi.bi-send .bi.bi-plus {
     fill: #0d6efd;
 }

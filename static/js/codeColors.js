@@ -1,5 +1,5 @@
 export const codeColors = {
-  "success": "#0dcaf0",
+  "success": "#ffc107",
   "error": "#dc3545",
   "info": "#0dcaf0",
 };
