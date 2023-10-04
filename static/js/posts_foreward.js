@@ -1,5 +1,6 @@
-import { createNotification } from "./notifications.js";
 import { createToast } from "./toasts.js";
+import { createNotification } from "./notifications.js";
+import { codeColors } from "./codeColors.js";
 
 // Bring back updated messages data from back to front
 export function fetchData(animationClass) {
@@ -110,8 +111,8 @@ export function fetchData(animationClass) {
     })
     .catch((error) => {
       console.log("Error fetching data:", error);
-      createToast(`Error fetching data:<br>${error}`);
-      createNotification("Check the console for details.", "#dc3545");
+      createToast(`Error fetching data:<br>${error}`, codeColors["error"]);
+      createNotification("Check the console for details.", codeColors["error"]);
     });
 }
 

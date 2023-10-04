@@ -1,4 +1,4 @@
-export function createToast(message) {
+export function createToast(message, codeColor) {
   let toast = document.createElement("div");
   toast.className = "toast";
   toast.setAttribute("id", "notificationToast");
@@ -8,8 +8,10 @@ export function createToast(message) {
 
   toast.innerHTML = `
     <div class="toast-header">
-      <strong class="me-auto px-1 bg-danger text-warning rounded-3 ">SocialHub</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      <svg width="25" height="25">
+        <circle cx="12.5" cy="12.5" r="8" fill=${codeColor} />
+      </svg>
+      <strong class="ms-auto px-1 bg-danger text-warning rounded-3 ">SocialHub</strong>
     </div>
     <div class="toast-body">
       ${message}

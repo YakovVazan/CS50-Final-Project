@@ -1,5 +1,6 @@
 import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
+import { codeColors } from "./codeColors.js";
 
 let telegramLoginForm = document.querySelector("#telegram-login-form");
 
@@ -8,10 +9,13 @@ if (telegramLoginForm) {
     // Delay form submission for toast and notification's sake
     event.preventDefault();
 
-    createToast("Telegram has been successfully added to SocialHub!");
+    createToast(
+      "Telegram has been successfully added to SocialHub!",
+      codeColors["info"]
+    );
     createNotification(
       "Telegram has been successfully added to SocialHub!",
-      "#ffc107"
+      codeColors["info"]
     );
 
     setTimeout(() => {
