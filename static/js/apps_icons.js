@@ -1,3 +1,7 @@
+import { createToast } from "./toasts.js";
+import { createNotification } from "./notifications.js";
+import { codeColors } from "./codeColors.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   // Collect all apps by name
   const elements = document.querySelectorAll(".app-name ");
@@ -65,5 +69,34 @@ document.addEventListener("DOMContentLoaded", function () {
   function removeClickEffect(event) {
     const button = event.target;
     button.classList.remove("clicked-button");
+  }
+
+  // Log out of owned apps
+  let ownedAppIcons = document.querySelectorAll(".owned-app-logout");
+  if (ownedAppIcons) {
+    ownedAppIcons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        fetch("./apps_logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(btn.parentElement.getAttribute("value")),
+        })
+          .then(() => {
+            createToast("Logged Out Successfully!", codeColors["success"]);
+            createNotification("Logged Out Successfully!", codeColors["success"]);
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          })
+          .catch((error) => {
+            createToast("Error Logging Out.", codeColors["error"]);
+            createNotification("Error Logging Out.", codeColors["error"]);
+            console.error("Error:", error);
+          });
+      });
+    });
   }
 });

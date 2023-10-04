@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from data import socials
 from datetime import datetime
 import requests
+import json
 
 from socials.Telegram.secrets import token
 
@@ -79,7 +80,6 @@ def init_db():
         )
     """)
     # Create socials table
-    # cursor.execute("drop table socials")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS socials (
             index_id INTEGER PRIMARY KEY,
@@ -370,6 +370,29 @@ def my_apps():
         return redirect("/")
 
 
+@app.route("/apps_logout", methods=["POST"])
+def apps_logout():
+    if session:
+        app_name = request.get_json()
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Collect cureent user's apps
+        cursor.execute(
+            "DELETE FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"]))
+
+        conn.commit()
+        conn.close()
+
+        # Didn't work, reloading from JS
+        return ""
+    else:
+        return redirect("/")
+
+
 @app.route("/available_apps", methods=["GET", "POST"])
 def available_apps():
     if session:
@@ -410,14 +433,28 @@ def available_apps():
 def telegram_login():
     if session:
         if request.method == "GET":
-            for s in socials:
-                if s["name"] == "Telegram":
-                    social_details = s
+            for social in socials:
+                if social["name"] == "Telegram":
+                    social_details = social
                     break
 
             return render_template("login_telegram.html", social_details=social_details)
         else:
-            chat_id = request.form.get("chat_id")
+            # Collect channel name
+            channel_name = request.form.get("chat_name")
+            channel_id = ""
+
+            response = requests.get(
+                f"https://api.telegram.org/bot{token}/getUpdates")
+
+            # Parse JSON string into a dictionary
+            dict_response = json.loads(response.text)
+
+            # Grab channel' ID from the bot's data
+            for x in dict_response["result"]:
+                if x["my_chat_member"]["chat"]["title"] == channel_name:
+                    channel_id = x["my_chat_member"]["chat"]["id"]
+                    break
 
             # Get database
             conn = get_db_connection()
@@ -426,7 +463,7 @@ def telegram_login():
 
             # Insert new social to socials table
             cursor.execute(
-                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (chat_id, "Telegram", session["user_id"]))
+                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (channel_id, "Telegram", session["user_id"]))
 
             conn.commit()
             conn.close()
@@ -473,6 +510,8 @@ def delete_account():
                 "DELETE FROM users WHERE id = ?", (session["user_id"],))
             cursor.execute(
                 "DELETE FROM notifications WHERE user_id = ?", (session["user_id"],))
+            cursor.execute(
+                "DELETE FROM socials WHERE user_id = ?", (session["user_id"],))
 
             conn.commit()
             conn.close()

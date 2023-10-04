@@ -27,10 +27,13 @@
     <div class="socials-section row g-5">
         {% for social in socials %}
         <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div class="social-icon">
-                <button class="social-button" name="app-name" value="{{ social['name'] }}">
+            <div class="owned-app-icon" style="position: relative;">
+                <span name="app-name" value="{{ social['name'] }}">
                     <img src="{{ social['src'] }}" class="rounded-5 card-img-top" alt="{{ social['alt'] }}">
-                </button>
+                    <span class="owned-app-logout text-primary bg-warning rounded-bottom-5">
+                        Log Out
+                    </span>
+                </span>
             </div>
             <p class="app-name small text-center">
                 {{ social['name'] }}

@@ -226,3 +226,24 @@ footer {
 #scheduleds-page {
     width: 100%;
 }
+
+.owned-app-logout {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -0.1em 0.8em #212529;
+    cursor: pointer;
+    height: 25%;
+    width: 100%;
+    font-weight: bold;
+    transition: height 0.2s, border-top-right-radius 0.2s, border-top-left-radius 0.2s;
+}
+
+.owned-app-logout:hover {
+    height: 100%;
+    border-top-right-radius: var(--bs-border-radius-xxl) !important;
+    border-top-left-radius: var(--bs-border-radius-xxl) !important;
+}

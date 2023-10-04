@@ -1,6 +1,7 @@
-import { createToast } from "./toasts.js";
 import { deliverData } from "./posts_backward.js";
+import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
+import { codeColors } from "./codeColors.js";
 
 let sendButton = document.querySelector("#send-button");
 // Schedule sending messages
@@ -51,8 +52,11 @@ if (document.querySelector("#submitModal")) {
       new Date(dateInput) > new Date()
     ) {
       // Toast post scheduled
-      createToast("Your post was scheduled successfully!");
-      createNotification("Your post was scheduled successfully!", "#ffc107");
+      createToast("Your post was scheduled successfully!", codeColors["success"]);
+      createNotification(
+        "Your post was scheduled successfully!",
+        codeColors["success"]
+      );
 
       dactivateModal();
       document
@@ -74,7 +78,12 @@ if (document.querySelector("#submitModal")) {
       document.querySelector("#schedule_icon_pulse").style.display = "";
     } else {
       createToast(
-        "Impossible to schedule a post without all fields filled with legal valus."
+        "Impossible to schedule a post without all fields filled with legal valus.",
+        codeColors["error"]
+      );
+      createNotification(
+        "Impossible to schedule a post without all fields filled with legal valus.",
+        codeColors["error"]
       );
     }
   });

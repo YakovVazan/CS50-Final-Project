@@ -1,5 +1,6 @@
 import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
+import { codeColors } from "./codeColors.js";
 import { handleSchedulingIconsAndPosts } from "./dynamic_table.js";
 
 // Cancel posts
@@ -36,16 +37,18 @@ export function requestDeletion(postId, isScheduleTime, row) {
           row.remove();
         }
         if (isScheduleTime) {
-          // Toast schedule executed
-          createToast("Your scheduled post was just posted!");
-          // Notify schedule executed
-          createNotification("Your scheduled post was just posted!", "#0dcaf0");
+          createToast("Your scheduled post was just posted!", codeColors["info"]);
+          createNotification(
+            "Your scheduled post was just posted!",
+            codeColors["info"]
+          );
         }
         handleSchedulingIconsAndPosts();
       }
     })
     .catch((error) => {
       console.log(error);
-      createToast(`An error occurred:<br>${error}`);
+      createToast(`An error occurred:<br>${error}`, codeColors["error"]);
+      createNotification(`An error occurred:<br>${error}`, codeColors["error"]);
     });
 }
