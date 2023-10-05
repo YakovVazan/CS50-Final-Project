@@ -43,7 +43,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form style="padding-top: 1em;">
+            <form id="reposting-form" style="padding-top: 1em;">
                 <div class="input-group mb-3">
                     <span class="input-group-text">Post:</span>
                     <input id="edited-post-content" type="text" class="form-control">
@@ -54,8 +54,8 @@
                 </div>
                 <hr>
                 <div style="display: flex; width: 100%; justify-content: space-between;" class="edited-post-buttons">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button id="edited-post-submit" type="button" class="btn"
+                    <button id="edited-post-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="edited-post-submit" type="submit" class="btn"
                         style="background-color: rgb(158, 0, 158);">Repost</button>
                 </div>
             </form>

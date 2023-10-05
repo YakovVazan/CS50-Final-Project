@@ -11,11 +11,11 @@ if (telegramLoginForm) {
 
     createToast(
       "Telegram has been successfully added to SocialHub!",
-      codeColors["info"]
+      codeColors["success"]
     );
     createNotification(
       "Telegram has been successfully added to SocialHub!",
-      codeColors["info"]
+      codeColors["success"]
     );
 
     setTimeout(() => {
