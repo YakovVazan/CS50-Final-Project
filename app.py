@@ -186,6 +186,29 @@ def schedule_post():
         return jsonify(response), 500
 
 
+@app.route("/edit_scheduled_post", methods=["POST"])
+def edit_scheduled_post():
+    try:
+        edited_post = request.get_json()
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute('''UPDATE scheduled_posts SET content = ?, execution_date = ? WHERE id = ?
+        ''', (edited_post["content"], edited_post["date"], edited_post["postId"]))
+
+        conn.commit()
+        conn.close()
+
+        response = {"message": f"Processed data: {edited_post}"}
+        return jsonify(response), 200
+    except Exception as e:
+        response = {"message": "Error editing post."}
+        return jsonify(response), 500
+
+
 @app.route("/scheduled_posts")
 def scheduled_posts():
     return render_template("scheduled_posts.html", posts=display_scheduled_posts())
