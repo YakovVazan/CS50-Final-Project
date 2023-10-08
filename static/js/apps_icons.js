@@ -85,7 +85,10 @@ document.addEventListener("DOMContentLoaded", function () {
         })
           .then(() => {
             createToast("Logged Out Successfully!", codeColors["success"]);
-            createNotification("Logged Out Successfully!", codeColors["success"]);
+            createNotification(
+              "Logged Out Successfully!",
+              codeColors["success"]
+            );
 
             setTimeout(() => {
               window.location.reload();
@@ -98,5 +101,39 @@ document.addEventListener("DOMContentLoaded", function () {
           });
       });
     });
+  }
+
+  // App icons on chat window
+  let appsCheckbox = document.querySelector("#apps-checkbox");
+  if (appsCheckbox) {
+    // Get owned apps
+    fetch("/owned_apps")
+      .then((response) => response.json())
+      .then((owned_apps) => {
+        // An array to push all app icons inside of
+        let content = [];
+
+        // Get apps data
+        fetch("/apps_data")
+          .then((res) => res.json())
+          .then((apps_data) => {
+            apps_data.forEach((app_data) => {
+              owned_apps.forEach((owned_app) => {
+                if (app_data["name"] === owned_app["name"]) {
+                  let appIcon = `
+                  <img id="app-icon-for-chat-window" src=${app_data["src"]} class="rounded-5" alt="${app_data["name"]}">
+                  `;
+                  content.push(appIcon);
+                  appsCheckbox.innerHTML = content.join(" ");
+                }
+              });
+            });
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        createToast("Error fetching app icons", codeColors["error"]);
+        createNotification("Error fetching app icons", codeColors["error"]);
+      });
   }
 });

@@ -251,3 +251,10 @@ footer {
     border-top-right-radius: var(--bs-border-radius-xxl) !important;
     border-top-left-radius: var(--bs-border-radius-xxl) !important;
 }
+
+#app-icon-for-chat-window {
+    width: 1.5em;
+    height: 1.5em;
+    cursor: pointer;
+    animation: new-bubble-animation 0.4s ease-in-out forwards;
+}
