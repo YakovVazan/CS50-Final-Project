@@ -6,7 +6,6 @@ from data import socials
 from datetime import datetime
 import requests
 import json
-
 from socials.Telegram.secrets import token
 
 # Configure flask app
@@ -268,23 +267,42 @@ def delete_scheduled_posts():
         response = {"message": f"Processed data: {scheduled_post}"}
         return jsonify(response), 200
     except Exception as e:
-        response = {"message": "Error scheduling post."}
+        response = {"message": f"Error scheduling post. {e}"}
         return jsonify(response), 500
 
 
 def monitor_interface_with_socials(content):
+    try:
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        social_details = [dict(social_details) for social_details in cursor.execute(
+            "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()][0]
+
+        conn.close()
+
+        # TODO: Call social media APIs right here
+        send_to_telegram_channel(social_details["social_id"], content)
+
+    except:
+        print("Not logged into any social account yet.")
+
+
+@app.route("/has_social_accounts")
+def has_social_accounts():
     # Get database
     conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # TODO: Call social media APIs right here
-    social_details = [dict(social_details) for social_details in cursor.execute(
-        "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()][0]
+    social_accounts = [dict(social_account) for social_account in cursor.execute(
+        "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()]
 
     conn.close()
 
-    send_to_telegram_channel(social_details["social_id"], content)
+    return jsonify(len(social_accounts))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -373,16 +391,7 @@ def logout():
 @app.route("/my_apps")
 def my_apps():
     if session:
-        # Get database
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
-        # Collect cureent user's apps
-        owned_socials = [dict(social_details) for social_details in cursor.execute(
-            "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()]
-
-        conn.close()
+        owned_socials = owned_apps()
 
         # Collect only already owned apps and sort by name
         sorted_list = sorted([
@@ -391,6 +400,27 @@ def my_apps():
         return render_template("my_apps.html", socials=sorted_list)
     else:
         return redirect("/")
+
+
+@app.route('/owned_apps')
+def owned_apps():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # Collect cureent user's apps
+    owned_socials = [dict(social_details) for social_details in cursor.execute(
+        "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()]
+
+    conn.close()
+
+    return owned_socials
+
+
+@app.route('/apps_data')
+def apps_data():
+    return socials
 
 
 @app.route("/apps_logout", methods=["POST"])
@@ -403,12 +433,19 @@ def apps_logout():
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
+        channel_id = [dict(social_details) for social_details in cursor.execute(
+            "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"])).fetchall()][0]["social_id"]
+
         # Collect cureent user's apps
         cursor.execute(
             "DELETE FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"]))
 
         conn.commit()
         conn.close()
+
+        # Send request to leave Telegram channel
+        print(requests.post(
+            f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
 
         # Didn't work, reloading from JS
         return ""
