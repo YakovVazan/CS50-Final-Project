@@ -1,0 +1,36 @@
+{% extends "main_layout.html" %}
+
+{% block title %}: Twitter Login{% endblock %}
+
+{% block main %}
+<div class="align-self-center" style="max-width: 50%;">
+    <div class="card mb-3">
+        <div class="card-header bg-danger"><img class="rounded-5" style="width: 8em;" src="{{ social_details['src'] }}"
+                alt="{{ social_details['alt'] }}">
+        </div>
+        <div class="card-body bg-gradient">
+            <h3 class="card-title text-warning">Log into Twitter</h3>
+            <p class="card-text">
+                In order to use SocialHub with your Twitter account, go
+                <a href="{{ url }}" target="_blank">here</a>
+                to authorize SocialHub to tweet on your behalf.
+            </p>
+            <p class="card-text">
+                After authorization, you'll get a PIN. Come back here and paste it down below and click Log In.
+            </p>
+            <p class="card-text">
+                Be aware that according to Twitter's policies it's impossible to post, in tools such as SocialHub, a
+                post
+                which its content is identical to a previously posted post (unless you delete it).
+            </p>
+
+            <!-- Form -->
+            <form id="social-media-login-form" class="input-group" action="/available_apps/twitter" method="POST">
+                <input class="form-control" type="text" id="pin" name="pin" placeholder="PIN:" required
+                    autofocus><br><br>
+                <input class="btn btn-primary" type="submit" value="Log In">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
