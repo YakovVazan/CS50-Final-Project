@@ -578,7 +578,7 @@ def monitor_interface_with_socials(content):
             cursor = conn.cursor()
             # Get channel's id
             channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
-                "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()][0]["social_id"])["channel_id"]
+                "SELECT * FROM socials WHERE user_id = ? AND name = ?", (session["user_id"], "Telegram")).fetchall()][0]["social_id"])["channel_id"]
             conn.close()
 
             send_to_telegram_channel(channel_id, content)
