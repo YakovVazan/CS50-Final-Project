@@ -493,14 +493,18 @@ def telegram_login():
 # Grab channel' ID from the bot's data by its name recursively
 def find_id_by_name(json_data, channel_name):
     if isinstance(json_data, dict):
-        for key, value in json_data.items():
-            if key == 'title' and value == channel_name:
-                if 'id' in json_data:
-                    return json_data['id']
-            else:
-                result = find_id_by_name(value, channel_name)
-                if result is not None:
-                    return result
+        if 'title' in json_data and json_data['title'] == channel_name:
+            return json_data.get('id')
+        for value in json_data.values():
+            result = find_id_by_name(value, channel_name)
+            if result is not None:
+                return result
+    elif isinstance(json_data, list):
+        for item in json_data:
+            result = find_id_by_name(item, channel_name)
+            if result is not None:
+                return result
+
 
 
 @app.route("/available_apps/twitter", methods=["GET", "POST"])
@@ -650,7 +654,7 @@ def apps_logout():
         if app_name == "Telegram":
             channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
                 "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
-
+            
             # Send request to leave Telegram channel
             print(requests.post(
                 f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
