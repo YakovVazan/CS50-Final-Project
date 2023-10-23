@@ -1,6 +1,5 @@
 flask
 flask_session
-werkzeug.security
 datetime
 requests
 json
