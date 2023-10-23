@@ -1,6 +1,5 @@
 flask
 flask_session
-sqlite3
 werkzeug.security
 datetime
 requests
