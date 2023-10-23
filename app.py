@@ -464,7 +464,6 @@ def telegram_login():
         else:
             # Collect channel name
             channel_name = request.form.get("chat_name")
-            channel_id = ""
 
             response = requests.get(
                 f"https://api.telegram.org/bot{token}/getUpdates")
@@ -472,11 +471,7 @@ def telegram_login():
             # Parse JSON string into a dictionary
             dict_response = json.loads(response.text)
 
-            # Grab channel' ID from the bot's data
-            for x in dict_response["result"]:
-                if x["my_chat_member"]["chat"]["title"] == channel_name:
-                    channel_id = x["my_chat_member"]["chat"]["id"]
-                    break
+            channel_id = find_id_by_name(dict_response, channel_name)
 
             # Get database
             conn = get_db_connection()
@@ -494,6 +489,18 @@ def telegram_login():
             return redirect("/")
     else:
         return redirect("/")
+
+# Grab channel' ID from the bot's data by its name recursively
+def find_id_by_name(json_data, channel_name):
+    if isinstance(json_data, dict):
+        for key, value in json_data.items():
+            if key == 'title' and value == channel_name:
+                if 'id' in json_data:
+                    return json_data['id']
+            else:
+                result = find_id_by_name(value, channel_name)
+                if result is not None:
+                    return result
 
 
 @app.route("/available_apps/twitter", methods=["GET", "POST"])
