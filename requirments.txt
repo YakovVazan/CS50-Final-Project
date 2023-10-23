@@ -4,3 +4,4 @@ werkzeug.security
 datetime
 requests
 json
+requests_oauthlib
