@@ -1,4 +1,6 @@
 import { requestDeletion } from "./deletion.js";
+import { createNotification } from "./notifications.js";
+import { createToast } from "./toasts.js";
 
 // Control visuals of scheduled_posts page
 export function handleSchedulingIconsAndPosts() {
@@ -85,7 +87,8 @@ export function handleSchedulingIconsAndPosts() {
       })
       .catch((error) => {
         console.log(error);
-        createToast("An error occurred.");
+        createToast("An error occurred. Check the console for details.");
+        createNotification("An error occurred. Check the console for details.");
       });
   }
 }

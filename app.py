@@ -327,14 +327,14 @@ def delete_scheduled_posts():
         # Get full body of deleting-scheduled-post
         scheduled_post = [dict(post) for post in cursor.execute(
             "SELECT * FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], )).fetchall()][0]
-
+        
         # Delete from scheduled_posts table
         cursor.execute(
             "DELETE FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], ))
 
         if post_to_delete["isScheduleTime"]:
             # Insert into messages table
-            cursor.execute("INSERT INTO messages (content, date, is_scheduled, schedule_date, social_platforms, user_id) VALUES (?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO messages (content, date, is_scheduled, schedule_date, social_platforms, user_id) VALUES (?, ?, ?, ?, ?, ?)",
                            (scheduled_post["content"], scheduled_post["execution_date"], True, scheduled_post["scheduling_date"], scheduled_post["social_platforms"], session["user_id"]))
 
             monitor_interface_with_socials(scheduled_post["content"])
@@ -346,6 +346,7 @@ def delete_scheduled_posts():
         return jsonify(response), 200
     except Exception as e:
         response = {"message": f"Error scheduling post. {e}"}
+        print(response)
         return jsonify(response), 500
 
 
