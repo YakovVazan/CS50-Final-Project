@@ -89,6 +89,7 @@ footer {
     height: 25em;
     width: 50%;
     background-color: #ffc107;
+    position: absolute;
 }
 
 #messages-area {
@@ -117,17 +118,18 @@ footer {
 
 /* Mobile */
 @media screen and (max-width: 768px) {
+    #main-block {
+        justify-content: space-between;
+    }
+
     #chat-window {
         width: 100%;
-        height: 100%;
+        min-height: 100%;
+        max-height: 100%;
     }
 
     footer {
         display: none;
-    }
-
-    #main-block {
-        justify-content: space-between;
     }
 
     #messages-area {
