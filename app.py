@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 import json
 from requests_oauthlib import OAuth1Session
+import copy
 from socials.Telegram.secrets import token
 from socials.X.secrets import keys_and_tokens
 
@@ -155,12 +156,12 @@ def login():
         ):
             return render_template("error.html", error_message="invalid username and/or password", error_code=403)
 
-        # Remember which user has logged in
+        # Store user details in flask's session
         session["user_id"] = rows[0]["id"]
         session["user_name"] = rows[0]["username"]
+        session["first_entrance"] = True
 
         return redirect("/")
-
     else:
         return render_template("login.html")
 
@@ -168,10 +169,29 @@ def login():
 @app.route("/")
 def index():
     if session:
-        return render_template("index.html", username=session["user_name"])
+        return render_template("index.html")
     else:
         return redirect("/login")
 
+
+@app.route('/first_entrance_notification')
+def first_entrance_notification():
+    data = {
+        "first_entrance": copy.copy(session["first_entrance"]),
+        "username": session["user_name"]
+    }
+
+    return jsonify(data)
+
+
+@app.route("/not_first_entrance", methods=["POST"])
+def not_first_entrance():
+    data = request.json
+    
+    session["first_entrance"] = data["first_entrance"]
+
+    return jsonify({"message": "Data received by Python"})
+    
 
 @app.route("/get_data")
 def get_data():
@@ -327,7 +347,7 @@ def delete_scheduled_posts():
         # Get full body of deleting-scheduled-post
         scheduled_post = [dict(post) for post in cursor.execute(
             "SELECT * FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], )).fetchall()][0]
-        
+
         # Delete from scheduled_posts table
         cursor.execute(
             "DELETE FROM scheduled_posts WHERE id = (?) ", (post_to_delete["postId"], ))
@@ -388,7 +408,8 @@ def available_apps():
             # Sort by name
             if len(owned_socials) > 0:
                 # Filter socials omitting duplicates
-                sorted_list = sorted([s for s in socials if s["name"] not in owned_socials], key=lambda x: x['name'])
+                sorted_list = sorted(
+                    [s for s in socials if s["name"] not in owned_socials], key=lambda x: x['name'])
 
             # Show all available apps if none owned
             else:
@@ -492,6 +513,8 @@ def telegram_login():
         return redirect("/")
 
 # Grab channel' ID from the bot's data by its name recursively
+
+
 def find_id_by_name(json_data, channel_name):
     if isinstance(json_data, dict):
         if 'title' in json_data and json_data['title'] == channel_name:
@@ -505,7 +528,6 @@ def find_id_by_name(json_data, channel_name):
             result = find_id_by_name(item, channel_name)
             if result is not None:
                 return result
-
 
 
 @app.route("/available_apps/twitter", methods=["GET", "POST"])
@@ -655,14 +677,14 @@ def apps_logout():
         if app_name == "Telegram":
             channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
                 "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
-            
+
             # Send request to leave Telegram channel
             print(requests.post(
                 f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
 
-        # Default apps deletion from db 
+        # Default apps deletion from db
         cursor.execute(
-                "DELETE FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"]))
+            "DELETE FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"]))
 
         conn.commit()
         conn.close()
