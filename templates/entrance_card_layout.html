@@ -1,9 +1,12 @@
 {% extends "main_layout.html" %}
 
 {% block main %}
-<div class="card" id="entrance_card">
-    <div class="card-body">
-        {% block entrance_card %}{% endblock %}
+<div class="d-flex flex-column justify-content-evenly h-100 align-items-center">
+    <a class="navbar-brand bg-danger rounded-3 px-3 fw-bolder text-warning d-md-none" href="/">SocialHub</a>
+    <div class="card m-sm-auto mt-5" id="entrance_card">
+        <div class="card-body">
+            {% block entrance_card %}{% endblock %}
+        </div>
     </div>
 </div>
 {% endblock %}
