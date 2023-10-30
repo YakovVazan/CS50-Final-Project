@@ -1,13 +1,12 @@
 {% extends "main_layout.html" %}
 
 {% block main %}
-<div class="h-100 w-100 d-flex flex-column justify-content-evenly align-items-center">
-    <h1 class="text-danger fw-bold">Welcome back, {{username}}!</h1>
+<div id="main-block" class="h-100 w-100 d-flex flex-column align-items-center">
     <!-- Chat window -->
     <div id="chat-window"
         class="p-3 rounded-5 d-flex flex-column align-items-center justify-content-between position-relative">
         <!-- Messages area -->
-        <div id="messages-area" class="w-100 h-75 rounded-5 bg-body overflow-auto">
+        <div id="messages-area" class="w-100 rounded-5 bg-body overflow-auto">
         </div>
 
         <!-- App Icons -->
@@ -16,20 +15,25 @@
 
         <!-- Bottom -->
         <div class="w-100 m-2 d-flex justify-content-center">
-            <form id="message-form" class="d-flex w-100 mx-2">
+            <form id="message-form" class="d-flex w-100 mx-2 input-group">
                 <!-- Add button -->
-                <button class="btn rounded-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
-                        class="bi bi-plus" viewBox="0 0 16 16">
-                        <path
-                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                    </svg>
                 </button>
+                <label for="fileInput" class="custom-file-input">
+                    <span class="btn btn-outline-secondary rounded-start-5">
+                        <input type="file" id="fileInput" class="visually-hidden" accept="image/*" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                            class="bi bi-plus" viewBox="0 0 16 16">
+                            <path
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                        </svg>
+                    </span>
+                </label>
+
                 <!-- Text area -->
                 <textarea id="text-area" class="form-control" rows="1" style="resize: none;"
                     placeholder="Your Post.."></textarea>
                 <!-- Send button -->
-                <button id="send-button" type="submit" class="btn rounded-5">
+                <button id="send-button" type="submit" class="btn btn-outline-secondary rounded-end-5">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                         class="bi bi-send" viewBox="0 0 16 16">
                         <path

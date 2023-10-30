@@ -1,6 +1,8 @@
 import { requestDeletion } from "./deletion.js";
 import { fetchData } from "./posts_foreward.js";
 import { getNotifications } from "./notifications.js";
+import { createToast } from "./toasts.js";
+import { codeColors } from "./codeColors.js";
 
 // Render in live scheduled posts to chat window
 function controlCountdowns() {
@@ -53,3 +55,26 @@ setInterval(() => {
     getNotifications();
   }
 }, 1000);
+
+// Greet user when first entrace occurs
+if (document.getElementById("main-block")) {
+  fetch("/first_entrance_notification")
+    .then((response) => response.json())
+    .then((details) => {
+      if (details["first_entrance"]) {
+        createToast(
+          `It's good to see you, ${details["username"]}!`,
+          codeColors["info"]
+        );
+
+        // Update db
+        let data = {
+          first_entrance: false,
+        };
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/not_first_entrance", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(data));
+      }
+    });
+}
