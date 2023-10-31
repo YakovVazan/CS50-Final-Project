@@ -227,7 +227,7 @@ main {
 
 #text-area:focus {
     outline: none !important;
-    box-shadow: 0px 0px 1em #dc3545;
+    box-shadow: 0px 0px 0px;
 }
 
 #text-area::-webkit-scrollbar {
