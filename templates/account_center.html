@@ -1,0 +1,15 @@
+{% extends "main_layout.html" %}
+
+{% block title %}: Account Center{% endblock %}
+
+{% block main %}
+<div>
+    <p>{{ details["username"] }}</p>
+    <p>{{ details["email_address"] }}</p>
+    {% if details["authenticated"] == 0 %}
+    <form action="/email_authentication">
+        <input id="authenticate_button" class="btn btn-primary" type="submit" value="Authenticate">
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

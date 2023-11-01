@@ -8,10 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Change theme with ctrl + 'M' key-press
   document.addEventListener("keydown", function (event) {
     if (event.ctrlKey && event.key === "m") {
-      if (root.getAttribute("data-bs-theme") === "light") {
-        localStorage.setItem("SocialHubTheme", "dark");
-      } else {
+      if (root.getAttribute("data-bs-theme") === "dark") {
         localStorage.setItem("SocialHubTheme", "light");
+      } else {
+        localStorage.setItem("SocialHubTheme", "dark");
       }
       root.setAttribute(
         "data-bs-theme",
@@ -51,8 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
   let logoutButton = document.getElementById("logout-button");
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
+      localStorage.setItem("SocialHubFirstEntrance", "true");
       // localStorage.clear();
     });
+  } else if (document.getElementById("entrance_card")) {
+    localStorage.setItem("SocialHubFirstEntrance", "true");
   }
 
   // Update theme icon
