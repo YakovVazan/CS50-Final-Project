@@ -58,23 +58,12 @@ setInterval(() => {
 
 // Greet user when first entrace occurs
 if (document.getElementById("main-block")) {
-  fetch("/first_entrance_notification")
+  fetch("/get_username")
     .then((response) => response.json())
-    .then((details) => {
-      if (details["first_entrance"]) {
-        createToast(
-          `It's good to see you, ${details["username"]}!`,
-          codeColors["info"]
-        );
-
-        // Update db
-        let data = {
-          first_entrance: false,
-        };
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/not_first_entrance", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify(data));
+    .then((username) => {
+      if (localStorage.getItem("SocialHubFirstEntrance") === "true") {
+        localStorage.setItem("SocialHubFirstEntrance", "false");
+        createToast(`It's good to see you, ${username}!`, codeColors["info"]);
       }
     });
 }

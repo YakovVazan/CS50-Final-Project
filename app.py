@@ -2,14 +2,19 @@ import sqlite3
 from flask_session import Session
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from data import socials
 from datetime import datetime
 import requests
 import json
 from requests_oauthlib import OAuth1Session
-import copy
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import secrets
+from data import socials
 from socials.Telegram.secrets import token
 from socials.X.secrets import keys_and_tokens
+from socials.Email.secrets import social_hub_email_details
+from socials.Email.secrets import email_visuals
 
 # Configure flask app
 app = Flask(__name__)
@@ -45,6 +50,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
             username TEXT NOT NULL,
+            email_address TEXT,
+            authenticated NUMERIC NOT NULL,
             hash TEXT NOT NULL
         )
     """)
@@ -98,10 +105,11 @@ def init_db():
 def register():
     if request.method == "POST":
         inputed_name = request.form.get("username")
+        inputed_email = request.form.get("email_address")
         inputed_password = request.form.get("password")
         inputed_confirmation = request.form.get("confirmation")
 
-        if not inputed_name or not inputed_password or not inputed_confirmation:
+        if not inputed_name or not inputed_password or not inputed_confirmation or not inputed_email:
             return render_template("error.html", error_message="All Fields are Required", error_code=400)
 
         hashed_password = generate_password_hash(inputed_password)
@@ -119,8 +127,8 @@ def register():
             if inputed_name == user["username"]:
                 return render_template("error.html", error_message="Username already exists.", error_code=400)
 
-        cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)",
-                       (inputed_name, hashed_password))
+        cursor.execute("INSERT INTO users (username, email_address, authenticated, hash) VALUES (?, ?, ?, ?)",
+                       (inputed_name, inputed_email, False, hashed_password))
         conn.commit()
         conn.close()
 
@@ -159,11 +167,97 @@ def login():
         # Store user details in flask's session
         session["user_id"] = rows[0]["id"]
         session["user_name"] = rows[0]["username"]
-        session["first_entrance"] = True
+
+        conn.commit()
 
         return redirect("/")
     else:
         return render_template("login.html")
+
+
+@app.route('/account_center')
+def account_center():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    rows = cursor.execute(
+        "SELECT * FROM users WHERE id = ?", (session["user_id"], )).fetchall()
+    user_dict = [dict(user) for user in rows]
+
+    conn.commit()
+
+    return render_template("account_center.html", details=user_dict[0])
+
+
+@app.route("/email_authentication", methods=["GET", "POST"])
+def email_authentication():
+    recipient = get_current_user_details()["email_address"]
+
+    if request.method == "GET":
+        session["one_time_code"] = secrets.randbelow(1000000)
+
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+        smtp_username = social_hub_email_details["email_address"]
+        smtp_password = social_hub_email_details["email_password"]
+
+        smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
+        smtp_connection.starttls()
+        smtp_connection.login(smtp_username, smtp_password)
+
+        msg = MIMEMultipart()
+        msg['From'] = smtp_username
+        msg['To'] = recipient
+        msg['Subject'] = 'SocialHub authentication'
+
+        body = f"Authenticate your Email account.\nCopy the code presented below and paste it in SocialHub site.\n{session['one_time_code']}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        smtp_connection.sendmail(smtp_username, recipient, msg.as_string())
+
+        smtp_connection.quit()
+
+        return render_template("login_email.html", email_visuals=email_visuals)
+    else:
+        given_code = int(request.form.get("email_auth_code"))
+
+        if given_code == session["one_time_code"]:
+            session.pop("one_time_code", None)
+
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE users SET authenticated = ? WHERE id = ? ", (1, session["user_id"]))
+            conn.commit()
+            conn.close()
+
+            return redirect("/")
+        else:
+            return render_template("error.html", error_message="Wrong code.", error_code=400)
+
+
+def get_current_user_details():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    rows = cursor.execute(
+        "SELECT * FROM users WHERE id = ?", (session["user_id"], )).fetchall()
+    user_dict = [dict(user) for user in rows]
+
+    conn.commit()
+
+    return user_dict[0]
+
+
+@app.route('/get_username')
+def get_username():
+    return jsonify(session["user_name"])
 
 
 @app.route("/")
@@ -173,25 +267,6 @@ def index():
     else:
         return redirect("/login")
 
-
-@app.route('/first_entrance_notification')
-def first_entrance_notification():
-    data = {
-        "first_entrance": copy.copy(session["first_entrance"]),
-        "username": session["user_name"]
-    }
-
-    return jsonify(data)
-
-
-@app.route("/not_first_entrance", methods=["POST"])
-def not_first_entrance():
-    data = request.json
-    
-    session["first_entrance"] = data["first_entrance"]
-
-    return jsonify({"message": "Data received by Python"})
-    
 
 @app.route("/get_data")
 def get_data():
@@ -512,10 +587,9 @@ def telegram_login():
     else:
         return redirect("/")
 
-# Grab channel' ID from the bot's data by its name recursively
-
 
 def find_id_by_name(json_data, channel_name):
+    # Grab channel' ID from the bot's data by its name recursively
     if isinstance(json_data, dict):
         if 'title' in json_data and json_data['title'] == channel_name:
             return json_data.get('id')

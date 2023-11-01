@@ -26,7 +26,8 @@
         <!-- Left side of nav bar -->
         <div class="d-flex align-items-center">
           <!-- (Homepage) Logo -->
-          <a class="navbar-brand bg-danger rounded-3 px-3 fw-bolder text-warning d-none d-md-block" href="/">SocialHub</a>
+          <a class="navbar-brand bg-danger rounded-3 px-3 fw-bolder text-warning d-none d-md-block"
+            href="/">SocialHub</a>
 
           <!-- Home, Apps and Schedule Area -->
           {% if session["user_id"] %}
@@ -155,6 +156,8 @@
             <!-- Account settings list -->
             <ul class="dropdown-menu dropdown-menu-end">
               {% if session["user_id"] %}
+              <li><a class="dropdown-item" href="/account_center">Account Center</a></li>
+              <hr class="solid">
               <li><a class="dropdown-item" href="/logout" id="logout-button">Log Out</a></li>
               <hr class="solid">
               <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>

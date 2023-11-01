@@ -54,8 +54,19 @@ export function getNotifications() {
           document.querySelector("#notifications-pill").style.display = "";
           document.querySelector("#notifications-pill").innerHTML = data.length;
           // Control pulse animation
-          document.querySelector("#notifications_icon_pulse").style.display =
-            "";
+          if (
+            localStorage.getItem("SocialHubNotificationsGreenPulse") === "on" ||
+            localStorage.getItem("SocialHubNotificationsLength") != data.length
+          ) {
+            localStorage.setItem("SocialHubNotificationsGreenPulse", "on");
+            localStorage.setItem("SocialHubNotificationsLength", data.length);
+            document.querySelector("#notifications_icon_pulse").style.display =
+              "";
+          } else {
+            localStorage.setItem("SocialHubNotificationsGreenPulse", "off");
+            document.querySelector("#notifications_icon_pulse").style.display =
+              "none";
+          }
           catchNotifications();
         } else {
           notificationsModal.innerHTML = `
@@ -65,6 +76,8 @@ export function getNotifications() {
           // Control pill
           document.querySelector("#notifications-pill").style.display = "none";
           // Control pulse animation
+          localStorage.setItem("SocialHubNotificationsGreenPulse", "off");
+          localStorage.setItem("SocialHubNotificationsLength", 0);
           document.querySelector("#notifications_icon_pulse").style.display =
             "none";
         }
@@ -72,6 +85,7 @@ export function getNotifications() {
           .querySelector("#notificationsModal")
           .addEventListener("click", () => {
             // Control pulse animation
+            localStorage.setItem("SocialHubNotificationsGreenPulse", "off");
             document.querySelector("#notifications_icon_pulse").style.display =
               "none";
           });
