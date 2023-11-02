@@ -58,12 +58,12 @@ setInterval(() => {
 
 // Greet user when first entrace occurs
 if (document.getElementById("main-block")) {
-  fetch("/get_username")
+  fetch("/get_current_user_details")
     .then((response) => response.json())
-    .then((username) => {
+    .then((currentUserDetails) => {
       if (localStorage.getItem("SocialHubFirstEntrance") === "true") {
         localStorage.setItem("SocialHubFirstEntrance", "false");
-        createToast(`It's good to see you, ${username}!`, codeColors["info"]);
+        createToast(`It's good to see you, ${currentUserDetails["username"]}!`, codeColors["info"]);
       }
     });
 }
