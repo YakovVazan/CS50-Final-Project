@@ -110,7 +110,7 @@ function activateModal() {
         firstModalLoad = false;
       }
     });
-    // Grand the focus to the modal's input field
+    // Grant the focus to the modal's input field
     document.getElementById("text-area").blur();
     inputField.focus();
   }

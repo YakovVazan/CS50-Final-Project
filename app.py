@@ -175,9 +175,8 @@ def login():
         return render_template("login.html")
 
 
-@app.route('/account_center')
-def account_center():
-    # Get database
+@app.route('/get_current_user_details')
+def get_current_user_details():
     conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -188,7 +187,48 @@ def account_center():
 
     conn.commit()
 
-    return render_template("account_center.html", details=user_dict[0])
+    return user_dict[0]
+
+
+@app.route('/account_center')
+def account_center():
+    user_details = get_current_user_details()
+
+    return render_template("account_center.html", details=user_details)
+
+
+@app.route('/update_personal_details', methods=["POST"])
+def update_personal_details():
+    old_details = get_current_user_details()
+    new_details = request.get_json()
+
+    if (check_password(old_details["hash"], new_details["oldPassword"])):
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        if new_details["newPassword"]:
+            new_hash = generate_password_hash(new_details["newPassword"])
+            cursor.execute(
+                "UPDATE users SET username = ?, email_address = ?, authenticated = ?, hash = ? WHERE id = ?",
+                (new_details["name"], new_details["email"],
+                    old_details["authenticated"], new_hash, session["user_id"])
+            )
+        else:
+            cursor.execute(
+                "UPDATE users SET username = ?, email_address = ?, authenticated = ? WHERE id = ?",
+                (new_details["name"], new_details["email"],
+                    old_details["authenticated"], session["user_id"])
+            )
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": "Details updated successfully!", "codeColor": "success"}), 200
+    else:
+        return jsonify({"message": "Wrong password.", "codeColor": "error"})
+
+
+def check_password(hash, password):
+    return check_password_hash(hash, password)
 
 
 @app.route("/email_authentication", methods=["GET", "POST"])
@@ -240,26 +280,6 @@ def email_authentication():
             return render_template("error.html", error_message="Wrong code.", error_code=400)
 
 
-def get_current_user_details():
-    # Get database
-    conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-
-    rows = cursor.execute(
-        "SELECT * FROM users WHERE id = ?", (session["user_id"], )).fetchall()
-    user_dict = [dict(user) for user in rows]
-
-    conn.commit()
-
-    return user_dict[0]
-
-
-@app.route('/get_username')
-def get_username():
-    return jsonify(session["user_name"])
-
-
 @app.route("/")
 def index():
     if session:
@@ -281,7 +301,7 @@ def process_data():
 
         post(new_post['data'])
 
-        response = {"error": f"Processed data: {new_post['data']}"}
+        response = {"message": f"Processed data: {new_post['data']}"}
         return jsonify(response), 200
     except Exception as e:
         response = {"error": f"Error processing data: {e}"}
