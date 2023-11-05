@@ -55,7 +55,7 @@ if (submitButton) {
     if (newPassword !== confirmNewPassword) {
       createToast("New passwords not matching", codeColors["error"]);
       createNotification("New passwords not matching", codeColors["error"]);
-    } else if (newPassword.length < 6) {
+    } else if (newPassword !== "" && newPassword.length < 6) {
       createToast(
         `Password must contain at least ${passwordLength} characters`,
         codeColors["info"]

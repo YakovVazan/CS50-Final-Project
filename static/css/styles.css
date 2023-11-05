@@ -98,6 +98,7 @@ footer {
 
 #login-director-card {
     width: 50%;
+    margin-top: inherit;
 }
 
 main {

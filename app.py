@@ -215,7 +215,7 @@ def update_password():
         session["user_id"] = user_details["id"]
         session["user_name"] = user_details["username"]
 
-        email_authentication(email_address)
+        email_authentication_logics(email_address)
 
         cursor.execute("UPDATE users SET email_address = ?, authenticated = ?, hash = ? WHERE id = ?",
                        (email_address, 1, generate_password_hash(str(session["one_time_code"])), session["user_id"]))
@@ -223,7 +223,7 @@ def update_password():
         conn.commit()
         conn.close()
 
-        session.pop("one_time_code", None)
+        session.pop("one_time_code", None)        
 
         return jsonify({'message': 'Your password was reseted successfully!.', "codeColor": "success"})
     else:
@@ -269,32 +269,11 @@ def check_password(hash, password):
 
 
 @app.route("/email_authentication", methods=["GET", "POST"])
-def email_authentication(email_address):
+def email_authentication():
     recipient = get_current_user_details()["email_address"]
 
-    if request.method == "GET" or email_address:
-        session["one_time_code"] = secrets.randbelow(1000000)
-
-        smtp_server = 'smtp.gmail.com'
-        smtp_port = 587
-        smtp_username = social_hub_email_details["email_address"]
-        smtp_password = social_hub_email_details["email_password"]
-
-        smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
-        smtp_connection.starttls()
-        smtp_connection.login(smtp_username, smtp_password)
-
-        msg = MIMEMultipart()
-        msg['From'] = smtp_username
-        msg['To'] = recipient
-        msg['Subject'] = 'SocialHub authentication'
-
-        body = f"Authenticate your Email account.\nCopy the code presented below and paste it in SocialHub site.\n{session['one_time_code']}"
-        msg.attach(MIMEText(body, 'plain'))
-
-        smtp_connection.sendmail(smtp_username, recipient, msg.as_string())
-
-        smtp_connection.quit()
+    if request.method == "GET":
+        email_authentication_logics(recipient)
 
         return render_template("login_email.html", email_visuals=email_visuals)
     else:
@@ -315,6 +294,31 @@ def email_authentication(email_address):
             return redirect("/")
         else:
             return render_template("error.html", error_message="Wrong code.", error_code=400)
+
+
+def email_authentication_logics(recipient):
+    session["one_time_code"] = secrets.randbelow(1000000)
+
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = social_hub_email_details["email_address"]
+    smtp_password = social_hub_email_details["email_password"]
+
+    smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
+    smtp_connection.starttls()
+    smtp_connection.login(smtp_username, smtp_password)
+
+    msg = MIMEMultipart()
+    msg['From'] = smtp_username
+    msg['To'] = recipient
+    msg['Subject'] = 'SocialHub authentication'
+
+    body = f"Authenticate your Email account.\nCopy the code presented below and paste it in SocialHub site.\n{session['one_time_code']}"
+    msg.attach(MIMEText(body, 'plain'))
+
+    smtp_connection.sendmail(smtp_username, recipient, msg.as_string())
+
+    smtp_connection.quit()
 
 
 @app.route("/")
