@@ -15,6 +15,7 @@ from socials.Telegram.secrets import token
 from socials.X.secrets import keys_and_tokens
 from socials.Email.secrets import social_hub_email_details
 from socials.Email.secrets import email_visuals
+from socials.SocialHub.secrets import app_owner_email
 
 # Configure flask app
 app = Flask(__name__)
@@ -126,6 +127,8 @@ def register():
         for user in user_dicts:
             if inputed_name == user["username"]:
                 return render_template("error.html", error_message="Username already exists.", error_code=400)
+            elif inputed_email == user["email_address"]:
+                return render_template("error.html", error_message="Email is already in use by other user.", error_code=400)
 
         cursor.execute("INSERT INTO users (username, email_address, authenticated, hash) VALUES (?, ?, ?, ?)",
                        (inputed_name, inputed_email, False, hashed_password))
@@ -167,6 +170,7 @@ def login():
         # Store user details in flask's session
         session["user_id"] = rows[0]["id"]
         session["user_name"] = rows[0]["username"]
+        session["app_owner"] = True if user_dict[0]["email_address"] == app_owner_email else False
 
         conn.commit()
 
@@ -223,10 +227,12 @@ def update_password():
         conn.commit()
         conn.close()
 
-        session.pop("one_time_code", None)        
+        session.pop("one_time_code", None)
 
         return jsonify({'message': 'Your password was reseted successfully!.', "codeColor": "success"})
     else:
+        conn.close()
+
         return jsonify({'message': 'An error occured while trying to reset your password.', "codeColor": "error"})
 
 
@@ -911,6 +917,36 @@ def delete_account():
             return redirect("/register")
     else:
         return redirect("/")
+
+
+@app.route("/app_owner_area")
+def app_owner_area():
+    if session and session["app_owner"]:
+        return render_template("app_owner_area.html")
+    else:
+        return redirect("/login")
+
+
+@app.route('/app_database')
+def app_database():
+    data = {}
+
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    data["users"] = [dict(user)
+             for user in cursor.execute("SELECT * FROM users").fetchall()]
+    data["posts"] = [dict(post) for post in cursor.execute(
+        "SELECT * FROM messages").fetchall()]
+    data["scheduled_posts"] = [dict(scheduled_post) for scheduled_post in cursor.execute(
+        "SELECT * FROM scheduled_posts").fetchall()]
+    data["linked_accounts"] = [dict(linked_account) for linked_account in cursor.execute(
+        "SELECT * FROM socials").fetchall()]
+
+    conn.close()
+
+    return jsonify(data)
 
 
 init_db()

@@ -1,0 +1,1 @@
+app_owner_email = "yakovvazan@gmail.com"

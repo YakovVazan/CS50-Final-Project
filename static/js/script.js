@@ -10,3 +10,4 @@ import "./accountCenter.js";
 import "./dropMenu.js";
 import "./resetPassword.js";
 import "./registrationLogics.js";
+import "./app_owner_area.js";
