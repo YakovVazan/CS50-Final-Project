@@ -88,6 +88,10 @@
           {% endif %}
         </div>
 
+        <!-- beta sign -->
+        <span class="btn btn-outline-success disabled center-horizontally"
+          style="position: absolute; left: 50%; transform: translateX(-50%);">beta</span>
+
         <!-- Right side of nav bar -->
         <div class="d-flex align-items-center">
           <!-- Notifications -->
@@ -161,6 +165,10 @@
               <li><a class="dropdown-item" href="/logout" id="logout-button">Log Out</a></li>
               <hr class="solid">
               <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>
+              {% if session["app_owner"] %}
+              <hr class="solid">
+              <li><a class="dropdown-item text-warning" href="/app_owner_area">App Onwers Area</a></li>
+              {% endif %}
               {% else %}
               <li><a class="dropdown-item" href="/register">Register</a></li>
               <li><a class="dropdown-item" href="/login">Log In</a></li>
