@@ -197,6 +197,39 @@ def account_center():
     return render_template("account_center.html", details=user_details)
 
 
+@app.route('/update_password', methods=["POST"])
+def update_password():
+    email_address = request.get_json()
+
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    email_addresses = [row[0] for row in cursor.execute(
+        "SELECT email_address FROM users").fetchall()]
+
+    if email_address in email_addresses:
+        user_details = [dict(row) for row in cursor.execute(
+            "SELECT * FROM users WHERE email_address = ?", (email_address, )).fetchall()][0]
+        # Log user in, in flask's session
+        session["user_id"] = user_details["id"]
+        session["user_name"] = user_details["username"]
+
+        email_authentication(email_address)
+
+        cursor.execute("UPDATE users SET email_address = ?, authenticated = ?, hash = ? WHERE id = ?",
+                       (email_address, 1, generate_password_hash(str(session["one_time_code"])), session["user_id"]))
+
+        conn.commit()
+        conn.close()
+
+        session.pop("one_time_code", None)
+
+        return jsonify({'message': 'Your password was reseted successfully!.', "codeColor": "success"})
+    else:
+        return jsonify({'message': 'An error occured while trying to reset your password.', "codeColor": "error"})
+
+
 @app.route('/update_personal_details', methods=["POST"])
 def update_personal_details():
     old_details = get_current_user_details()
@@ -206,6 +239,10 @@ def update_personal_details():
         conn = get_db_connection()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
+
+        if old_details["email_address"] != new_details["email"]:
+            old_details["authenticated"] = 0
+
         if new_details["newPassword"]:
             new_hash = generate_password_hash(new_details["newPassword"])
             cursor.execute(
@@ -232,10 +269,10 @@ def check_password(hash, password):
 
 
 @app.route("/email_authentication", methods=["GET", "POST"])
-def email_authentication():
+def email_authentication(email_address):
     recipient = get_current_user_details()["email_address"]
 
-    if request.method == "GET":
+    if request.method == "GET" or email_address:
         session["one_time_code"] = secrets.randbelow(1000000)
 
         smtp_server = 'smtp.gmail.com'
@@ -409,6 +446,7 @@ def scheduled_posts():
 @app.route("/get_scheduled_posts")
 def get_scheduled_posts():
     data = display_scheduled_posts()
+
     return jsonify(data)
 
 
@@ -864,7 +902,9 @@ def delete_account():
             conn.commit()
             conn.close()
 
-            return render_template("register.html")
+            session.clear()
+
+            return redirect("/register")
     else:
         return redirect("/")
 

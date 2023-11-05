@@ -1,4 +1,4 @@
-import { deliverData } from "./posts_backward.js";
+import { deliverData } from "./postsBackward.js";
 import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
 import { codeColors } from "./codeColors.js";

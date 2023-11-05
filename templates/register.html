@@ -3,7 +3,7 @@
 {% block title %}: Register{% endblock %}
 
 {% block entrance_card %}
-<form action="/register" method="post">
+<form action="/register" method="post" id="registration-form">
     <div class="mb-3">
         <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username"
             placeholder="Username" type="text">
@@ -13,13 +13,14 @@
             placeholder="Email" type="email">
     </div>
     <div class="mb-3">
-        <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="text">
+        <input class="form-control mx-auto w-auto password-registration" id="password" name="password"
+            placeholder="Password" type="password">
     </div>
     <div class="mb-3">
         <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirmation"
-            type="text">
+            type="password">
     </div>
-    <button class="btn btn-primary" type="submit">Register</button>
+    <button id="registration-form-submittion-button" class="btn btn-primary">Register</button>
 </form>
-<p>Already have an account? <span><a href="/login">Log In</a></span></p>
+<p>Already have an account? <a href="/login">Log In</a></p>
 {% endblock %}

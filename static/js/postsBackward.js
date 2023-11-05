@@ -1,6 +1,6 @@
 import { codeColors } from "./codeColors.js";
 import { createNotification } from "./notifications.js";
-import { fetchData } from "./posts_foreward.js";
+import { fetchData } from "./postsForeward.js";
 import { createToast } from "./toasts.js";
 
 // Use AJAX to send message content to backend
