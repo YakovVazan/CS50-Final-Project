@@ -15,7 +15,7 @@
         </form>
         {% endif %}
         <passwordGeneral>Password</passwordGeneral>
-        <passwordSpecific>********</passwordSpecific>
+        <passwordSpecific>******</passwordSpecific>
         <reset>
             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updatesModal">Edit</button>
         </reset>
@@ -41,8 +41,8 @@
                     <input id="update-email" type="email" class="form-control">
                 </div>
                 <div class="input-group mb-3">
-                    <span class="input-group-text">Old password:</span>
-                    <input id="update-old-password" type="password" class="form-control" value="">
+                    <span class="input-group-text">Current password:</span>
+                    <input id="update-old-password" type="password" class="form-control" value="" placeholder="Required">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">New password:</span>

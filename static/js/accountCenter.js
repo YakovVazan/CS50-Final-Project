@@ -1,6 +1,7 @@
 import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
 import { codeColors } from "./codeColors.js";
+import { passwordLength } from "./registrationLogics.js";
 
 let submitButton = document.querySelector("#submit-personal-changes");
 
@@ -54,6 +55,15 @@ if (submitButton) {
     if (newPassword !== confirmNewPassword) {
       createToast("New passwords not matching", codeColors["error"]);
       createNotification("New passwords not matching", codeColors["error"]);
+    } else if (newPassword.length < 6) {
+      createToast(
+        `Password must contain at least ${passwordLength} characters`,
+        codeColors["info"]
+      );
+      createNotification(
+        `Password must contain at least ${passwordLength} characters`,
+        codeColors["info"]
+      );
     } else if (oldPassword === "") {
       createToast("Enter your current password", codeColors["info"]);
       createNotification("Enter your current password", codeColors["info"]);

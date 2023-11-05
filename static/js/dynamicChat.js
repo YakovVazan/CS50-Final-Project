@@ -1,5 +1,5 @@
 import { requestDeletion } from "./deletion.js";
-import { fetchData } from "./posts_foreward.js";
+import { fetchData } from "./postsForeward.js";
 import { getNotifications } from "./notifications.js";
 import { createToast } from "./toasts.js";
 import { codeColors } from "./codeColors.js";
