@@ -1,0 +1,47 @@
+{% extends "main_layout.html" %}
+
+{% block title %}: Facebook Login{% endblock %}
+
+{% block main %}
+<div id="login-director-card" class="align-self-center">
+    <div class="card mb-3">
+        <div class="card-header bg-danger"><img class="rounded-5" style="width: 8em;" src="{{ social_details['src'] }}"
+                alt="{{ social_details['alt'] }}">
+        </div>
+        <div class="card-body bg-gradient">
+            <h3 class="card-title text-warning">Log into Facebook</h3>
+
+            <!-- Form -->
+            <!-- <form id="social-media-login-form" class="input-group" action="/available_apps/telegram" method="POST">
+                <input class="form-control" type="text" id="chat_name" name="chat_name" placeholder="Channel's Name:"
+                    required autofocus><br><br>
+                <input class="btn btn-primary" type="submit" value="Log In">
+            </form> -->
+        </div>
+    </div>
+    <div class="fb-like" data-share="true" data-width="450" data-show-faces="true">
+    </div>
+</div>
+
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '2036309483404357',
+            xfbml: true,
+            version: 'v18.0'
+        });
+        FB.AppEvents.logPageView();
+    };
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+{% endblock %}
