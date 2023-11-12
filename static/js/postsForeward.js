@@ -7,6 +7,11 @@ export function fetchData(animationClass) {
   fetch("/get_data")
     .then((response) => response.json())
     .then((messages) => {
+      // hide spinner
+      document.querySelector("#sender").style.display = "block";
+      document.querySelector("#spinner").style.display = "none";
+      document.querySelector("#send-button").disabled = false;
+      
       // An array to push all posts inside of
       let content = [];
       // Keep track of dates for date bubble in chat

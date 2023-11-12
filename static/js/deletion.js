@@ -1,7 +1,7 @@
 import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
 import { codeColors } from "./codeColors.js";
-import { handleSchedulingIconsAndPosts } from "./dynamic_table.js";
+import { handleSchedulingIconsAndPosts } from "./dynamicTable.js";
 
 // Cancel posts
 let cancelButtons = document.querySelectorAll(".cancel-button");

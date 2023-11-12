@@ -6,14 +6,17 @@ body {
 }
 
 nav {
+    position: fixed!important;
     top: 0;
     right: 0;
     left: 0;
     z-index: 1030;
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
 }
 
 main {
-    margin: auto;
+    margin-top: 84px;
     display: flex;
     justify-content: center;
     flex: 1;
@@ -98,11 +101,6 @@ footer {
 
 #login-director-card {
     width: 50%;
-    margin-top: inherit;
-}
-
-main {
-    margin-top: 3rem;
 }
 
 #messages-area::-webkit-scrollbar {
@@ -371,6 +369,7 @@ reset {
     }
 
     nav {
+        position: fixed!important;
         top: auto;
         bottom: 0;
     }
@@ -390,4 +389,8 @@ reset {
             ". reset ."
         ;
     }
+}
+
+#spinner {
+    display: none;
 }
