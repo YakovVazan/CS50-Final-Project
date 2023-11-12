@@ -34,6 +34,9 @@ if (appOwnerArea) {
         // posts ul
         let postsUl = document.createElement("ul");
         postsUl.classList.add("dropdown-menu");
+        postsUl.style.maxHeight = "10em";
+        postsUl.style.maxWidth = "20em";
+        postsUl.style.overflow = "auto";
         postsTd.appendChild(postsUl);
 
         // Filter user-specific posts
@@ -80,6 +83,9 @@ if (appOwnerArea) {
         // schedules posts ul
         let scheduledPostsUl = document.createElement("ul");
         scheduledPostsUl.classList.add("dropdown-menu");
+        scheduledPostsUl.style.maxHeight = "10em";
+        scheduledPostsUl.style.maxWidth = "20em";
+        scheduledPostsUl.style.overflow = "auto";
         scheduledPostsTd.appendChild(scheduledPostsUl);
 
         // Filter user-specific posts
@@ -128,6 +134,9 @@ if (appOwnerArea) {
         // schedules posts ul
         let linkedAccountsUl = document.createElement("ul");
         linkedAccountsUl.classList.add("dropdown-menu");
+        linkedAccountsUl.style.maxHeight = "10em";
+        linkedAccountsUl.style.maxWidth = "20em";
+        linkedAccountsUl.style.overflow = "auto";
         linkedAccountsTd.appendChild(linkedAccountsUl);
 
         // Filter user-specific posts
