@@ -565,6 +565,8 @@ def available_apps():
                 return redirect(url_for("telegram_login"))
             elif app_name == "Twitter":
                 return redirect(url_for("twitter_login_and_authorize"))
+            elif app_name == "Facebook":
+                return redirect(url_for("facebook_login"))
             else:
                 return render_template("error.html", error_message=f"{app_name} is not available on SocialHub yet.", error_code=503)
     else:
@@ -727,6 +729,18 @@ def twitter_login_and_authorize():
         del session["oauth_token"]
 
         return redirect("/")
+
+
+@app.route("/available_apps/facebook")
+def facebook_login():
+    # Get facebook visuals
+    if request.method == "GET":
+        for social in socials:
+            if social["name"] == "Facebook":
+                social_details = social
+                break
+
+    return render_template("login_facebook.html", social_details=social_details)
 
 
 def monitor_interface_with_socials(content):
@@ -936,7 +950,7 @@ def app_database():
     cursor = conn.cursor()
 
     data["users"] = [dict(user)
-             for user in cursor.execute("SELECT * FROM users").fetchall()]
+                     for user in cursor.execute("SELECT * FROM users").fetchall()]
     data["posts"] = [dict(post) for post in cursor.execute(
         "SELECT * FROM messages").fetchall()]
     data["scheduled_posts"] = [dict(scheduled_post) for scheduled_post in cursor.execute(
