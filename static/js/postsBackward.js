@@ -28,6 +28,11 @@ export function deliverData(animationClass) {
     .then((reponse) => reponse.json())
     .then((data) => {
       if (data === 0) {
+        // hide spinner
+        document.querySelector("#sender").style.display = "block";
+        document.querySelector("#spinner").style.display = "none";
+        sendButton.disabled = false;
+        
         createToast(
           "You must log into at least one social media account before posting from SocialHub.",
           codeColors["error"]
