@@ -5,6 +5,11 @@ import { createToast } from "./toasts.js";
 
 // Use AJAX to send message content to backend
 export function deliverData(animationClass) {
+  // show spinner
+  document.querySelector("#sender").style.display = "none";
+  document.querySelector("#spinner").style.display = "block";
+  sendButton.disabled = true;
+
   let textArea = document.getElementById("text-area");
   // Keep focus on the text area
   textArea.focus();
@@ -12,6 +17,10 @@ export function deliverData(animationClass) {
 
   // Prevent sending an empty message
   if (inputData === "") {
+    // hide spinner
+    document.querySelector("#sender").style.display = "block";
+    document.querySelector("#spinner").style.display = "none";
+    sendButton.disabled = false;
     return;
   }
 
