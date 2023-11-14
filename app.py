@@ -16,6 +16,7 @@ from socials.X.secrets import keys_and_tokens
 from socials.Email.secrets import social_hub_email_details
 from socials.Email.secrets import email_visuals
 from socials.SocialHub.secrets import app_owner_email
+from socials.SocialHub.secrets import version_numbering
 
 # Configure flask app
 app = Flask(__name__)
@@ -171,6 +172,7 @@ def login():
         session["user_id"] = rows[0]["id"]
         session["user_name"] = rows[0]["username"]
         session["app_owner"] = True if user_dict[0]["email_address"] == app_owner_email else False
+        session["version_numbering"] = version_numbering
 
         conn.commit()
 
@@ -933,10 +935,10 @@ def delete_account():
         return redirect("/")
 
 
-@app.route("/app_owner_area")
-def app_owner_area():
+@app.route("/dashboard")
+def dashboard():
     if session and session["app_owner"]:
-        return render_template("app_owner_area.html")
+        return render_template("dashboard.html")
     else:
         return redirect("/login")
 

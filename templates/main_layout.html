@@ -167,12 +167,14 @@
               <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>
               {% if session["app_owner"] %}
               <hr class="solid">
-              <li><a class="dropdown-item text-warning" href="/app_owner_area">App Onwers Area</a></li>
+              <li><a class="dropdown-item text-warning" href="/dashboard">Dashboard</a></li>
               {% endif %}
               {% else %}
               <li><a class="dropdown-item" href="/register">Register</a></li>
               <li><a class="dropdown-item" href="/login">Log In</a></li>
               {% endif %}
+              <hr class="solid">
+              <li class="text-muted text-center">{{session["version_numbering"]}}</li>
             </ul>
           </div>
         </div>

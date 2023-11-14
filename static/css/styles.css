@@ -6,17 +6,17 @@ body {
 }
 
 nav {
-    position: fixed!important;
+    position: fixed !important;
     top: 0;
-    right: 0;
     left: 0;
+    width: 100%;
     z-index: 1030;
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
 }
 
 main {
-    margin-top: 84px;
+    margin-top: 4rem;
     display: flex;
     justify-content: center;
     flex: 1;
@@ -85,6 +85,7 @@ footer {
 }
 
 #main-block {
+    margin-top: 20px;
     justify-content: space-evenly;
 }
 
@@ -369,9 +370,10 @@ reset {
     }
 
     nav {
-        position: fixed!important;
+        position: fixed !important;
         top: auto;
         bottom: 0;
+        padding: 0.5em !important;
     }
 
     main {
@@ -398,4 +400,13 @@ reset {
 #cookie-msg {
     margin-top: 1rem;
     margin-bottom: 0;
+}
+
+a.dropdown-item {
+    text-align: center;
+}
+
+th,
+td {
+    vertical-align: middle;
 }

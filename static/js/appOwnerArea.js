@@ -173,7 +173,7 @@ if (appOwnerArea) {
         // dm user button
         let dmUserButton = document.createElement("span");
         dmUserButton.classList.add("btn", "btn-outline-warning");
-        dmUserButton.textContent = "DM user";
+        dmUserButton.textContent = "DM";
         dmUserTd.appendChild(dmUserButton);
 
         // ban user td
