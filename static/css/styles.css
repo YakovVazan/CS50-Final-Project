@@ -402,8 +402,22 @@ reset {
     margin-bottom: 0;
 }
 
+/* items in account drop down */
 a.dropdown-item {
     text-align: center;
+}
+
+#dashboard-header {
+    vertical-align: middle;
+    width: fit-content;
+    font-weight: bold;
+    font-size: x-large;
+    border-bottom: 1px solid #dc3545;
+}
+
+#table {
+    width: 100%;
+    overflow: auto;
 }
 
 th,

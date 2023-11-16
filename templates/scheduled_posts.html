@@ -22,9 +22,11 @@
                     <td>{{post["execution_date"]}}</td>
                     <td class="time_left"></td>
                     <td class="d-flex justify-content-around">
-                        <button class="btn btn-warning edit-button" data-bs-toggle="modal"
-                            data-bs-target="#editsModal">Edit</button>
-                        <button class="btn btn-danger cancel-button">Cancel</button>
+                        <span>
+                            <button class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                data-bs-target="#editsModal">Edit</button>
+                            <button class="btn btn-danger cancel-button">Cancel</button>
+                        </span>
                     </td>
                     <td>Social Icons</td>
                 </tr>
@@ -54,7 +56,8 @@
                 </div>
                 <hr>
                 <div style="display: flex; width: 100%; justify-content: space-between;" class="edited-post-buttons">
-                    <button id="edited-post-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="edited-post-close" type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancel</button>
                     <button id="edited-post-submit" type="submit" class="btn"
                         style="background-color: rgb(158, 0, 158);">Repost</button>
                 </div>

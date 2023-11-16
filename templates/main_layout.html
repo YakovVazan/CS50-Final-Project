@@ -169,12 +169,13 @@
               <hr class="solid">
               <li><a class="dropdown-item text-warning" href="/dashboard">Dashboard</a></li>
               {% endif %}
-              {% else %}
-              <li><a class="dropdown-item" href="/register">Register</a></li>
-              <li><a class="dropdown-item" href="/login">Log In</a></li>
-              {% endif %}
               <hr class="solid">
               <li class="text-muted text-center">{{session["version_numbering"]}}</li>
+              {% else %}
+              <li><a class="dropdown-item" href="/register">Register</a></li>
+              <hr class="solid">
+              <li><a class="dropdown-item" href="/login">Log In</a></li>
+              {% endif %}
             </ul>
           </div>
         </div>
