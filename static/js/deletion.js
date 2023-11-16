@@ -15,7 +15,7 @@ if (cancelButtons) {
 
 // Scheduled posts deleter
 function deleteScheduledPost(btn) {
-  let row = btn.parentElement.parentElement;
+  let row = btn.parentElement.parentElement.parentElement;
   // Get the post ID from the data attribute
   let postId = row.getAttribute("post-id");
 
@@ -37,7 +37,10 @@ export function requestDeletion(postId, isScheduleTime, row) {
           row.remove();
         }
         if (isScheduleTime) {
-          createToast("Your scheduled post was just posted!", codeColors["info"]);
+          createToast(
+            "Your scheduled post was just posted!",
+            codeColors["info"]
+          );
           createNotification(
             "Your scheduled post was just posted!",
             codeColors["info"]

@@ -510,7 +510,7 @@ def delete_scheduled_posts():
         response = {"message": f"Processed data: {scheduled_post}"}
         return jsonify(response), 200
     except Exception as e:
-        response = {"message": f"Error scheduling post. {e}"}
+        response = {"message": f"Error deleting scheduled post. {e}"}
         print(response)
         return jsonify(response), 500
 
