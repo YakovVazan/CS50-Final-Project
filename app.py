@@ -19,7 +19,7 @@ from socials.SocialHub.secrets import app_owner_email
 from socials.SocialHub.secrets import version_numbering
 
 # Configure flask app
-app = Flask(__name__)
+app = Flask(__name__) # template_folder='frontend/templates'
 
 # Configure SQL db
 db_path = "social_hub.db"
