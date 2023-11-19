@@ -417,7 +417,9 @@ a.dropdown-item {
 
 #table {
     width: 100%;
-    overflow: auto;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
 }
 
 th,
