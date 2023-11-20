@@ -766,6 +766,7 @@ def callback():
 
     # Verify state to prevent CSRF attacks
     if received_state != state:
+        return code
         return 'Invalid state parameter', 400
 
     # Exchange the authorization code for an access token
