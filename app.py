@@ -794,7 +794,7 @@ def callback():
     else:
         print(f'Post failed with status code {response.status_code}: {response.text}')
     
-    return render_template("error.html", error_message=response.text + "\n" + data, error_code=0)
+    return render_template("error.html", error_message=response.text, error_code=0)
 
 
 def monitor_interface_with_socials(content):
