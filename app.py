@@ -760,7 +760,6 @@ def fb_auth():
 
 @app.route('/callback')
 def callback():
-    print("callback funtction")
     # Handle the callback from Facebook
     code = request.args.get('code')
     received_state = request.args.get('state')
@@ -773,6 +772,9 @@ def callback():
     token_url = f'https://graph.facebook.com/v18.0/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'
     response = requests.get(token_url)
     data = response.json()
+
+    print(data)
+
     access_token = data.get('access_token')
 
     # Now you have the user's access token, use it to make requests to the Facebook Graph API
@@ -791,7 +793,7 @@ def callback():
     else:
         print(f'Post failed with status code {response.status_code}: {response.text}')
     
-    return render_template("error.html", error_message=response.text, error_code=000)
+    return render_template("error.html", error_message=response.text, error_code=0)
 
 
 def monitor_interface_with_socials(content):
