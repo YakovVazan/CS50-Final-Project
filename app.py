@@ -788,10 +788,10 @@ def callback():
 
     if response.status_code == 200:
         print('Post successful!')
-        return redirect("/")
     else:
         print(f'Post failed with status code {response.status_code}: {response.text}')
-        return redirect("/delete_account")
+    
+    return render_template("error.html", error_message=response.text, error_code=000)
 
 
 def monitor_interface_with_socials(content):
