@@ -17,6 +17,7 @@ from socials.Email.secrets import social_hub_email_details
 from socials.Email.secrets import email_visuals
 from socials.SocialHub.secrets import app_owner_email
 from socials.SocialHub.secrets import version_numbering
+from socials.Facebook.secrets import app_credentials
 
 # Configure flask app
 app = Flask(__name__) # template_folder='frontend/templates'
@@ -743,6 +744,54 @@ def facebook_login():
                 break
 
     return render_template("login_facebook.html", social_details=social_details)
+
+
+app_id = app_credentials["app_id"]
+app_secret = app_credentials["app_secret"]
+redirect_uri = "https://realsocialhub.pythonanywhere.com/callback"
+state = 'random state' #########
+
+
+@app.route("/fb_auth")
+def fb_auth():
+    auth_url = f'https://www.facebook.com/v18.0/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&state={state}&scope=pages_manage_posts,pages_read_engagement'
+    return redirect(auth_url)
+
+
+@app.route('/callback')
+def callback():
+    print("callback funtction")
+    # Handle the callback from Facebook
+    code = request.args.get('code')
+    received_state = request.args.get('state')
+
+    # Verify state to prevent CSRF attacks
+    if received_state != state:
+        return 'Invalid state parameter', 400
+
+    # Exchange the authorization code for an access token
+    token_url = f'https://graph.facebook.com/v18.0/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'
+    response = requests.get(token_url)
+    data = response.json()
+    access_token = data.get('access_token')
+
+    # Now you have the user's access token, use it to make requests to the Facebook Graph API
+    # You can store this access token securely and use it for future requests
+
+    # For demonstration purposes, let's post a message to the user's feed
+    post_url = f'https://graph.facebook.com/v18.0/me/feed'
+    post_data = {
+        'message': 'Hello from the Facebook Page Poster!',
+        'access_token': access_token,
+    }
+    response = requests.post(post_url, data=post_data)
+
+    if response.status_code == 200:
+        print('Post successful!')
+    else:
+        print(f'Post failed with status code {response.status_code}: {response.text}')
+    
+    return redirect("/")
 
 
 def monitor_interface_with_socials(content):
