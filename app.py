@@ -766,15 +766,12 @@ def callback():
 
     # Verify state to prevent CSRF attacks
     if received_state != state:
-        return code
         return 'Invalid state parameter', 400
 
     # Exchange the authorization code for an access token
     token_url = f'https://graph.facebook.com/v18.0/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'
     response = requests.get(token_url)
     data = response.json()
-
-    print(data)
 
     access_token = data.get('access_token')
 
