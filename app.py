@@ -10,6 +10,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import secrets
+import facebook
 from data import socials
 from socials.Telegram.secrets import token
 from socials.X.secrets import keys_and_tokens
@@ -20,7 +21,7 @@ from socials.SocialHub.secrets import version_numbering
 from socials.Facebook.secrets import app_credentials
 
 # Configure flask app
-app = Flask(__name__) # template_folder='frontend/templates'
+app = Flask(__name__)  # template_folder='frontend/templates'
 
 # Configure SQL db
 db_path = "social_hub.db"
@@ -679,119 +680,98 @@ def find_id_by_name(json_data, channel_name):
 
 @app.route("/available_apps/twitter", methods=["GET", "POST"])
 def twitter_login_and_authorize():
-    consumer_key = keys_and_tokens["API Key"]
-    consumer_secret = keys_and_tokens["API Key Secret"]
+    if session:
+        consumer_key = keys_and_tokens["API Key"]
+        consumer_secret = keys_and_tokens["API Key Secret"]
 
-    if request.method == "GET":
-        # Get twitter visuals
         if request.method == "GET":
-            for social in socials:
-                if social["name"] == "Twitter":
-                    social_details = social
-                    break
+            # Get twitter visuals
+            if request.method == "GET":
+                for social in socials:
+                    if social["name"] == "Twitter":
+                        social_details = social
+                        break
 
-        # Get aouth token
-        request_token_url = "https://api.twitter.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write"
-        oauth = OAuth1Session(consumer_key, client_secret=consumer_secret)
+            # Get aouth token
+            request_token_url = "https://api.twitter.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write"
+            oauth = OAuth1Session(consumer_key, client_secret=consumer_secret)
 
-        fetch_response = oauth.fetch_request_token(request_token_url)
-        oauth_token = fetch_response.get("oauth_token")
+            fetch_response = oauth.fetch_request_token(request_token_url)
+            oauth_token = fetch_response.get("oauth_token")
 
-        # Store aouth token in flask's session temporarily
-        session["oauth_token"] = oauth_token
+            # Store aouth token in flask's session temporarily
+            session["oauth_token"] = oauth_token
 
-        return render_template("login_twitter.html", url=f"https://api.twitter.com/oauth/authorize?oauth_token={session['oauth_token']}", social_details=social_details)
+            return render_template("login_twitter.html", url=f"https://api.twitter.com/oauth/authorize?oauth_token={session['oauth_token']}", social_details=social_details)
+        else:
+            verifier = request.form.get("pin")
+            access_token_url = "https://api.twitter.com/oauth/access_token"
+            oauth = OAuth1Session(
+                consumer_key,
+                client_secret=consumer_secret,
+                resource_owner_key=session["oauth_token"],
+                verifier=verifier,
+            )
+            oauth_tokens = oauth.fetch_access_token(access_token_url)
+
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            tokens = {"access_token": oauth_tokens["oauth_token"],
+                    "access_token_secret":  oauth_tokens["oauth_token_secret"],
+                    "oauth_token": session["oauth_token"]}
+
+            # Insert new social into socials table
+            cursor.execute(
+                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(tokens), "Twitter", session["user_id"]))
+
+            conn.commit()
+            conn.close()
+
+            # Delete aouth token from flask's session after verification completed
+            del session["oauth_token"]
+
+            return redirect("/")
     else:
-        verifier = request.form.get("pin")
-        access_token_url = "https://api.twitter.com/oauth/access_token"
-        oauth = OAuth1Session(
-            consumer_key,
-            client_secret=consumer_secret,
-            resource_owner_key=session["oauth_token"],
-            verifier=verifier,
-        )
-        oauth_tokens = oauth.fetch_access_token(access_token_url)
-
-        # Get database
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
-        tokens = {"access_token": oauth_tokens["oauth_token"],
-                  "access_token_secret":  oauth_tokens["oauth_token_secret"],
-                  "oauth_token": session["oauth_token"]}
-
-        # Insert new social into socials table
-        cursor.execute(
-            "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(tokens), "Twitter", session["user_id"]))
-
-        conn.commit()
-        conn.close()
-
-        # Delete aouth token from flask's session after verification completed
-        del session["oauth_token"]
-
         return redirect("/")
 
 
-@app.route("/available_apps/facebook")
+@app.route("/available_apps/facebook", methods=["GET", "POST"])
 def facebook_login():
-    # Get facebook visuals
-    if request.method == "GET":
-        for social in socials:
-            if social["name"] == "Facebook":
-                social_details = social
-                break
+    if session:
+        if request.method == "GET":
+            # Get facebook visuals
+            if request.method == "GET":
+                for social in socials:
+                    if social["name"] == "Facebook":
+                        social_details = social
+                        break
 
-    return render_template("login_facebook.html", social_details=social_details)
+            return render_template("login_facebook.html", social_details=social_details)
+        else:
+            user_access_token = request.form.get("user_access_token")
+            page_id = request.form.get("page_id")
 
+            # Get database
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
 
-app_id = app_credentials["app_id"]
-app_secret = app_credentials["app_secret"]
-redirect_uri = "https://realsocialhub.pythonanywhere.com/callback"
-state = 'random state' #########
+            social_id = {
+                "user_access_token": f"{user_access_token}", "page_id": f"{page_id}"}
 
+            # Insert new social to socials table
+            cursor.execute(
+                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(social_id), "Facebook", session["user_id"]))
 
-@app.route("/fb_auth")
-def fb_auth():
-    auth_url = f'https://www.facebook.com/v18.0/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&state={state}&scope=pages_manage_posts,pages_read_engagement'
-    return redirect(auth_url)
+            conn.commit()
+            conn.close()
 
-
-@app.route('/callback')
-def callback():
-    # Handle the callback from Facebook
-    code = request.args.get('code')
-    received_state = request.args.get('state')
-
-    # Verify state to prevent CSRF attacks
-    if received_state != state:
-        return 'Invalid state parameter', 400
-
-    # Exchange the authorization code for an access token
-    token_url = f'https://graph.facebook.com/v18.0/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'
-    response = requests.get(token_url)
-    data = response.json()
-
-    access_token = data.get('access_token')
-
-    # Now you have the user's access token, use it to make requests to the Facebook Graph API
-    # You can store this access token securely and use it for future requests
-
-    # For demonstration purposes, let's post a message to the user's feed
-    post_url = f'https://graph.facebook.com/v18.0/me/feed'
-    post_data = {
-        'message': 'Hello from the Facebook Page Poster!',
-        'access_token': access_token,
-    }
-    response = requests.post(post_url, data=post_data)
-
-    if response.status_code == 200:
-        print('Post successful!')
+            return redirect("/")
     else:
-        print(f'Post failed with status code {response.status_code}: {response.text}')
-    
-    return render_template("error.html", error_message=response.text, error_code=0)
+        return redirect("/")
 
 
 def monitor_interface_with_socials(content):
@@ -814,6 +794,8 @@ def monitor_interface_with_socials(content):
             send_to_telegram_channel(channel_id, content)
         if "Twitter" in social_names:
             send_to_twitter(content)
+        if "Facebook" in social_names:
+            send_to_facebook(content)
 
     except:
         print("Not logged into any social account yet.")
@@ -868,6 +850,43 @@ def send_to_twitter(content):
     if response.status_code != 201:
         raise Exception("Request returned an error: {} {}".format(
             response.status_code, response.text))
+
+
+def send_to_facebook(content):
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    user_details = json.loads([dict(token) for token in cursor.execute("SELECT social_id FROM socials WHERE user_id = ? AND name = ?",
+                                                                       (session["user_id"], "Facebook")).fetchall()][0]["social_id"])
+
+    conn.close()
+
+    graph = facebook.GraphAPI(user_details["user_access_token"])
+    pages_info = graph.get_object("/me/accounts")
+
+    for page in pages_info['data']:
+        # allow user to choose to which page to post
+        if page['id'] == user_details["page_id"]:
+            post_to_fb_page(user_details["page_id"],
+                            page['access_token'], content)
+            break
+
+
+def post_to_fb_page(page_id, access_token, content):
+    data = {
+        'message': f"{content}",
+        # You can include other parameters like 'link', 'picture', 'caption', etc.
+    }
+
+    api_endpoint = f'https://graph.facebook.com/v18.0/{page_id}/feed'
+
+    params = {
+        'access_token': access_token,
+    }
+
+    requests.post(api_endpoint, data=data, params=params)
 
 
 @app.route("/apps_logout", methods=["POST"])

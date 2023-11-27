@@ -425,3 +425,7 @@ th,
 td {
     vertical-align: middle;
 }
+
+#facebook-login-ol>* {
+    text-align: end;
+}

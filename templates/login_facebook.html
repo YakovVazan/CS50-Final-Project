@@ -10,18 +10,52 @@
         </div>
         <div class="card-body bg-gradient">
             <h3 class="card-title text-warning">Log into Facebook</h3>
+            <p class="card-text text-danger fw-bold">
+                Using SocialHub to post on facebook is still under development.
+            </p>
             <p class="card-text">
-                Still in development :)
+                Nevertheless, we decided to release to the public the parts that are available to use.
+                Tech savvy users will have a better time going through the instructions and actually using SocialHub to
+                post.
+            </p>
+            <p class="card-text">
+                Heads out: for now, you can use SocialHub to post only on a facebook page.
+                We hope to add the ability to post to groups and to your private feed as well in the future.
+            </p>
+            <hr class="solid w-50">
+            <ol id="facebook-login-ol">
+                <li>Go to <a href="https://developers.facebook.com/apps/" target="_blank">facebook developer</a>
+                </li>
+                <li>If you didn't yet, Register.</li>
+                <li>Then, create yourself an app. Declare its type to be business.</li>
+                <li>Go to
+                    <a href="https://developers.facebook.com/tools/explorer/" target="_blank">Graph API Explorer</a>
+                </li>
+                <li>In the bottom of the right column, add the 3 following permissions:
+                    <span class="fst-italic">pages_show_list,</span>
+                    <span class="fst-italic">pages_read_engagement</span>
+                    and
+                    <span class="fst-italic">pages_manage_posts</span>
+                </li>
+                <li>Generate a user access token and copy it.</li>
+            </ol>
+            <hr class="solid w-50">
+            <p class="card-text">
+                If you made it so far, let's go find the page's id:<br>
+                The desired page's id can be found on page > about > page transparency
+            </p>
+            <form id="social-media-login-form" class="input-group mb-2" action="/available_apps/facebook" method="POST">
+                <input class="form-control" type="text" id="user_access_token" name="user_access_token"
+                    placeholder="User access token" required>
+                <input class="form-control" type="text" id="page_id" name="page_id" placeholder="Page ID" required>
+                <input class="btn btn-primary" type="submit" value="Submit">
+            </form>
+
+            <p class="card-text text-warning">
+                Meta's policies dictate that user access tokens are limited to use for only 2 hours.
+                When that time will pass, you will be prompted to go through that proccess again.
             </p>
 
-            <!-- Form -->
-            <!-- <form id="social-media-login-form" class="input-group" action="/available_apps/telegram" method="POST">
-                <input class="form-control" type="text" id="chat_name" name="chat_name" placeholder="Channel's Name:"
-                    required autofocus><br><br>
-                <input class="btn btn-primary" type="submit" value="Log In">
-            </form> -->
-
-            <a href="/fb_auth">Login with Facebook</a>
         </div>
     </div>
     <div class="fb-like" data-share="true" data-width="450" data-show-faces="true">
