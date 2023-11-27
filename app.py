@@ -743,11 +743,10 @@ def facebook_login():
     if session:
         if request.method == "GET":
             # Get facebook visuals
-            if request.method == "GET":
-                for social in socials:
-                    if social["name"] == "Facebook":
-                        social_details = social
-                        break
+            for social in socials:
+                if social["name"] == "Facebook":
+                    social_details = social
+                    break
 
             return render_template("login_facebook.html", social_details=social_details)
         else:
@@ -863,15 +862,18 @@ def send_to_facebook(content):
 
     conn.close()
 
-    graph = facebook.GraphAPI(user_details["user_access_token"])
-    pages_info = graph.get_object("/me/accounts")
+    try:
+        graph = facebook.GraphAPI(user_details["user_access_token"])
+        pages_info = graph.get_object("/me/accounts")
 
-    for page in pages_info['data']:
-        # allow user to choose to which page to post
-        if page['id'] == user_details["page_id"]:
-            post_to_fb_page(user_details["page_id"],
-                            page['access_token'], content)
-            break
+        for page in pages_info['data']:
+            # allow user to choose to which page to post
+            if page['id'] == user_details["page_id"]:
+                post_to_fb_page(user_details["page_id"],
+                                page['access_token'], content)
+                break
+    except:
+        return redirect(url_for("facebook_login"))
 
 
 def post_to_fb_page(page_id, access_token, content):
