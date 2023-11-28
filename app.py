@@ -792,7 +792,7 @@ def monitor_interface_with_socials(content):
         if "Twitter" in social_names:
             send_to_twitter(content)
         # if "Facebook" in social_names:
-        #     send_to_facebook(content)
+        #     send_to_facebook_page(content)
 
     except:
         print("Not logged into any social account yet.")
@@ -849,7 +849,7 @@ def send_to_twitter(content):
             response.status_code, response.text))
 
 
-def send_to_facebook(content):
+def send_to_facebook_page(content):
     # Get database
     conn = get_db_connection()
     conn.row_factory = sqlite3.Row

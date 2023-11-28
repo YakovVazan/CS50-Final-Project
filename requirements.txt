@@ -3,3 +3,4 @@ flask_session
 datetime
 requests
 requests_oauthlib
+facebook-sdk
