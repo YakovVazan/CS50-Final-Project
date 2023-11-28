@@ -27,7 +27,7 @@
         {% for social in socials %}
         <div class="col-6 col-sm-4 col-md-3 col-lg-2">
             <div class="social-icon">
-                <form action="" method="post">
+                <form action="/available_apps" method="post">
                     <button class="social-button" type="submit" name="app-name" value="{{ social['name'] }}">
                         <img src="{{ social['src'] }}" class="rounded-5 card-img-top" alt="{{ social['alt'] }}">
                     </button>

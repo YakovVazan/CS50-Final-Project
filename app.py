@@ -18,7 +18,7 @@ from socials.Email.secrets import social_hub_email_details
 from socials.Email.secrets import email_visuals
 from socials.SocialHub.secrets import app_owner_email
 from socials.SocialHub.secrets import version_numbering
-from socials.Facebook.secrets import app_credentials
+# from socials.Facebook.secrets import app_credentials
 
 # Configure flask app
 app = Flask(__name__)  # template_folder='frontend/templates'
@@ -564,15 +564,15 @@ def available_apps():
 
             return render_template("available_apps.html", socials=sorted_list)
         else:
-            app_name = request.form.get("app-name")
-            if app_name == "Telegram":
+            social_app_name = request.form.get("app-name")
+            if social_app_name == "Telegram":
                 return redirect(url_for("telegram_login"))
-            elif app_name == "Twitter":
+            elif social_app_name == "Twitter":
                 return redirect(url_for("twitter_login_and_authorize"))
-            elif app_name == "Facebook":
+            elif social_app_name == "Facebook":
                 return redirect(url_for("facebook_login"))
             else:
-                return render_template("error.html", error_message=f"{app_name} is not available on SocialHub yet.", error_code=503)
+                return render_template("error.html", error_message=f"{social_app_name} is not available on SocialHub yet.", error_code=503)
     else:
         return redirect("/")
 
@@ -768,9 +768,7 @@ def facebook_login():
             conn.commit()
             conn.close()
 
-            return redirect("/")
-    else:
-        return redirect("/")
+    return redirect("/")
 
 
 def monitor_interface_with_socials(content):
@@ -793,8 +791,8 @@ def monitor_interface_with_socials(content):
             send_to_telegram_channel(channel_id, content)
         if "Twitter" in social_names:
             send_to_twitter(content)
-        if "Facebook" in social_names:
-            send_to_facebook(content)
+        # if "Facebook" in social_names:
+        #     send_to_facebook(content)
 
     except:
         print("Not logged into any social account yet.")
@@ -873,6 +871,7 @@ def send_to_facebook(content):
                                 page['access_token'], content)
                 break
     except:
+        # add notification with socketio
         return redirect(url_for("facebook_login"))
 
 
@@ -894,7 +893,7 @@ def post_to_fb_page(page_id, access_token, content):
 @app.route("/apps_logout", methods=["POST"])
 def apps_logout():
     if session:
-        app_name = request.get_json()
+        social_app_name = request.get_json()
 
         # Get database
         conn = get_db_connection()
@@ -902,9 +901,9 @@ def apps_logout():
         cursor = conn.cursor()
 
         # Special telegram logout
-        if app_name == "Telegram":
+        if social_app_name == "Telegram":
             channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
-                "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
+                "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
 
             # Send request to leave Telegram channel
             print(requests.post(
@@ -912,7 +911,7 @@ def apps_logout():
 
         # Default apps deletion from db
         cursor.execute(
-            "DELETE FROM socials WHERE name = ? AND user_id = ?", (app_name, session["user_id"]))
+            "DELETE FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"]))
 
         conn.commit()
         conn.close()
