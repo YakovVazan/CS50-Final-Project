@@ -24,3 +24,14 @@ export function createToast(message, codeColor) {
 
   toastInstance.show();
 }
+
+// Generating toasts directly from backend using socketIO
+const socket = io.connect(
+  "http://" + window.location.hostname + ":" + location.port
+);
+
+socket.on("generate_toast", function (data) {
+  console.log("Data from the backend:", data);
+
+  createToast(data.message, data.codeColor);
+});

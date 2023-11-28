@@ -1,5 +1,6 @@
 import sqlite3
 from flask_session import Session
+from flask_socketio import SocketIO
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -22,6 +23,9 @@ from socials.SocialHub.secrets import version_numbering
 
 # Configure flask app
 app = Flask(__name__)  # template_folder='frontend/templates'
+
+# Configure socketIO
+socketio = SocketIO(app)
 
 # Configure SQL db
 db_path = "social_hub.db"
@@ -720,8 +724,8 @@ def twitter_login_and_authorize():
             cursor = conn.cursor()
 
             tokens = {"access_token": oauth_tokens["oauth_token"],
-                    "access_token_secret":  oauth_tokens["oauth_token_secret"],
-                    "oauth_token": session["oauth_token"]}
+                      "access_token_secret":  oauth_tokens["oauth_token_secret"],
+                      "oauth_token": session["oauth_token"]}
 
             # Insert new social into socials table
             cursor.execute(
@@ -791,8 +795,8 @@ def monitor_interface_with_socials(content):
             send_to_telegram_channel(channel_id, content)
         if "Twitter" in social_names:
             send_to_twitter(content)
-        # if "Facebook" in social_names:
-        #     send_to_facebook_page(content)
+        if "Facebook" in social_names:
+            send_to_facebook_page(content)
 
     except:
         print("Not logged into any social account yet.")
@@ -870,8 +874,9 @@ def send_to_facebook_page(content):
                 post_to_fb_page(user_details["page_id"],
                                 page['access_token'], content)
                 break
-    except:
-        # add notification with socketio
+    except Exception as e:
+        data = {"message": f"{e}", "codeColor": "#dc3545"}
+        socketio.emit('generate_toast', data)
         return redirect(url_for("facebook_login"))
 
 
@@ -1038,4 +1043,4 @@ init_db()
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

@@ -1,5 +1,6 @@
 flask
 flask_session
+Flask-SocketIO
 datetime
 requests
 requests_oauthlib
