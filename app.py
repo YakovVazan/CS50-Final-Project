@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import requests
 import json
+from functools import wraps
 from requests_oauthlib import OAuth1Session
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -34,6 +35,16 @@ db_path = "social_hub.db"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if session:
+            return func(*args, **kwargs)
+        else:
+            return redirect("/")
+    return wrapper
 
 
 @app.after_request
@@ -542,43 +553,41 @@ def apps_data():
 
 
 @app.route("/available_apps", methods=["GET", "POST"])
+@login_required
 def available_apps():
-    if session:
-        if request.method == "GET":
-            # Get database
-            conn = get_db_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
+    if request.method == "GET":
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
 
-            # Collect cureent user's apps
-            owned_socials = set(os["name"] for os in [dict(social_details) for social_details in cursor.execute(
-                "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()])
+        # Collect cureent user's apps
+        owned_socials = set(os["name"] for os in [dict(social_details) for social_details in cursor.execute(
+            "SELECT * FROM socials WHERE user_id = ?", (session["user_id"],)).fetchall()])
 
-            conn.close()
+        conn.close()
 
-            # Sort by name
-            if len(owned_socials) > 0:
-                # Filter socials omitting duplicates
-                sorted_list = sorted(
-                    [s for s in socials if s["name"] not in owned_socials], key=lambda x: x['name'])
+        # Sort by name
+        if len(owned_socials) > 0:
+            # Filter socials omitting duplicates
+            sorted_list = sorted(
+                [s for s in socials if s["name"] not in owned_socials], key=lambda x: x['name'])
 
-            # Show all available apps if none owned
-            else:
-                sorted_list = sorted(socials, key=lambda x: x['name'])
-
-            return render_template("available_apps.html", socials=sorted_list)
+        # Show all available apps if none owned
         else:
-            social_app_name = request.form.get("app-name")
-            if social_app_name == "Telegram":
-                return redirect(url_for("telegram_login"))
-            elif social_app_name == "Twitter":
-                return redirect(url_for("twitter_login_and_authorize"))
-            elif social_app_name == "Facebook":
-                return redirect(url_for("facebook_login"))
-            else:
-                return render_template("error.html", error_message=f"{social_app_name} is not available on SocialHub yet.", error_code=503)
+            sorted_list = sorted(socials, key=lambda x: x['name'])
+
+        return render_template("available_apps.html", socials=sorted_list)
     else:
-        return redirect("/")
+        social_app_name = request.form.get("app-name")
+        if social_app_name == "Telegram":
+            return redirect(url_for("telegram_login"))
+        elif social_app_name == "Twitter":
+            return redirect(url_for("twitter_login_and_authorize"))
+        elif social_app_name == "Facebook":
+            return redirect(url_for("facebook_login"))
+        else:
+            return render_template("error.html", error_message=f"{social_app_name} is not available on SocialHub yet.", error_code=503)
 
 
 @app.route("/has_social_accounts")
@@ -613,56 +622,52 @@ def owned_apps():
 
 
 @app.route("/my_apps")
+@login_required
 def my_apps():
-    if session:
-        owned_socials = owned_apps()
+    owned_socials = owned_apps()
 
-        # Collect only already owned apps and sort by name
-        sorted_list = sorted([
-            s for os in owned_socials for s in socials if s["name"] == os["name"]], key=lambda x: x['name'])
+    # Collect only already owned apps and sort by name
+    sorted_list = sorted([
+        s for os in owned_socials for s in socials if s["name"] == os["name"]], key=lambda x: x['name'])
 
-        return render_template("my_apps.html", socials=sorted_list)
-    else:
-        return redirect("/")
+    return render_template("my_apps.html", socials=sorted_list)
 
 
 @app.route("/available_apps/telegram", methods=["GET", "POST"])
+@login_required
 def telegram_login():
-    if session:
-        if request.method == "GET":
-            for social in socials:
-                if social["name"] == "Telegram":
-                    social_details = social
-                    break
+    if request.method == "GET":
+        for social in socials:
+            if social["name"] == "Telegram":
+                social_details = social
+                break
 
-            return render_template("login_telegram.html", social_details=social_details)
-        else:
-            # Collect channel name
-            channel_name = request.form.get("chat_name")
-
-            response = requests.get(
-                f"https://api.telegram.org/bot{token}/getUpdates")
-
-            # Parse JSON string into a dictionary
-            dict_response = json.loads(response.text)
-
-            channel_id = find_id_by_name(dict_response, channel_name)
-
-            # Get database
-            conn = get_db_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-
-            social_id = {"channel_id": f"{channel_id}"}
-
-            # Insert new social to socials table
-            cursor.execute(
-                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(social_id), "Telegram", session["user_id"]))
-
-            conn.commit()
-            conn.close()
-            return redirect("/")
+        return render_template("login_telegram.html", social_details=social_details)
     else:
+        # Collect channel name
+        channel_name = request.form.get("chat_name")
+
+        response = requests.get(
+            f"https://api.telegram.org/bot{token}/getUpdates")
+
+        # Parse JSON string into a dictionary
+        dict_response = json.loads(response.text)
+
+        channel_id = find_id_by_name(dict_response, channel_name)
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        social_id = {"channel_id": f"{channel_id}"}
+
+        # Insert new social to socials table
+        cursor.execute(
+            "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(social_id), "Telegram", session["user_id"]))
+
+        conn.commit()
+        conn.close()
         return redirect("/")
 
 
@@ -683,96 +688,92 @@ def find_id_by_name(json_data, channel_name):
 
 
 @app.route("/available_apps/twitter", methods=["GET", "POST"])
+@login_required
 def twitter_login_and_authorize():
-    if session:
-        consumer_key = keys_and_tokens["API Key"]
-        consumer_secret = keys_and_tokens["API Key Secret"]
+    consumer_key = keys_and_tokens["API Key"]
+    consumer_secret = keys_and_tokens["API Key Secret"]
 
+    if request.method == "GET":
+        # Get twitter visuals
         if request.method == "GET":
-            # Get twitter visuals
-            if request.method == "GET":
-                for social in socials:
-                    if social["name"] == "Twitter":
-                        social_details = social
-                        break
+            for social in socials:
+                if social["name"] == "Twitter":
+                    social_details = social
+                    break
 
-            # Get aouth token
-            request_token_url = "https://api.twitter.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write"
-            oauth = OAuth1Session(consumer_key, client_secret=consumer_secret)
+        # Get aouth token
+        request_token_url = "https://api.twitter.com/oauth/request_token?oauth_callback=oob&x_auth_access_type=write"
+        oauth = OAuth1Session(consumer_key, client_secret=consumer_secret)
 
-            fetch_response = oauth.fetch_request_token(request_token_url)
-            oauth_token = fetch_response.get("oauth_token")
+        fetch_response = oauth.fetch_request_token(request_token_url)
+        oauth_token = fetch_response.get("oauth_token")
 
-            # Store aouth token in flask's session temporarily
-            session["oauth_token"] = oauth_token
+        # Store aouth token in flask's session temporarily
+        session["oauth_token"] = oauth_token
 
-            return render_template("login_twitter.html", url=f"https://api.twitter.com/oauth/authorize?oauth_token={session['oauth_token']}", social_details=social_details)
-        else:
-            verifier = request.form.get("pin")
-            access_token_url = "https://api.twitter.com/oauth/access_token"
-            oauth = OAuth1Session(
-                consumer_key,
-                client_secret=consumer_secret,
-                resource_owner_key=session["oauth_token"],
-                verifier=verifier,
-            )
-            oauth_tokens = oauth.fetch_access_token(access_token_url)
-
-            # Get database
-            conn = get_db_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-
-            tokens = {"access_token": oauth_tokens["oauth_token"],
-                      "access_token_secret":  oauth_tokens["oauth_token_secret"],
-                      "oauth_token": session["oauth_token"]}
-
-            # Insert new social into socials table
-            cursor.execute(
-                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(tokens), "Twitter", session["user_id"]))
-
-            conn.commit()
-            conn.close()
-
-            # Delete aouth token from flask's session after verification completed
-            del session["oauth_token"]
-
-            return redirect("/")
+        return render_template("login_twitter.html", url=f"https://api.twitter.com/oauth/authorize?oauth_token={session['oauth_token']}", social_details=social_details)
     else:
+        verifier = request.form.get("pin")
+        access_token_url = "https://api.twitter.com/oauth/access_token"
+        oauth = OAuth1Session(
+            consumer_key,
+            client_secret=consumer_secret,
+            resource_owner_key=session["oauth_token"],
+            verifier=verifier,
+        )
+        oauth_tokens = oauth.fetch_access_token(access_token_url)
+
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        tokens = {"access_token": oauth_tokens["oauth_token"],
+                    "access_token_secret":  oauth_tokens["oauth_token_secret"],
+                    "oauth_token": session["oauth_token"]}
+
+        # Insert new social into socials table
+        cursor.execute(
+            "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(tokens), "Twitter", session["user_id"]))
+
+        conn.commit()
+        conn.close()
+
+        # Delete aouth token from flask's session after verification completed
+        del session["oauth_token"]
+
         return redirect("/")
 
 
 @app.route("/available_apps/facebook", methods=["GET", "POST"])
+@login_required
 def facebook_login():
-    if session:
-        if request.method == "GET":
-            # Get facebook visuals
-            for social in socials:
-                if social["name"] == "Facebook":
-                    social_details = social
-                    break
+    if request.method == "GET":
+        # Get facebook visuals
+        for social in socials:
+            if social["name"] == "Facebook":
+                social_details = social
+                break
 
-            return render_template("login_facebook.html", social_details=social_details)
-        else:
-            user_access_token = request.form.get("user_access_token")
-            page_id = request.form.get("page_id")
+        return render_template("login_facebook.html", social_details=social_details)
+    else:
+        user_access_token = request.form.get("user_access_token")
+        page_id = request.form.get("page_id")
 
-            # Get database
-            conn = get_db_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
 
-            social_id = {
-                "user_access_token": f"{user_access_token}", "page_id": f"{page_id}"}
+        social_id = {
+            "user_access_token": f"{user_access_token}", "page_id": f"{page_id}"}
 
-            # Insert new social to socials table
-            cursor.execute(
-                "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(social_id), "Facebook", session["user_id"]))
+        # Insert new social to socials table
+        cursor.execute(
+            "INSERT INTO socials (social_id, name, user_id) VALUES (?, ?, ?) ", (json.dumps(social_id), "Facebook", session["user_id"]))
 
-            conn.commit()
-            conn.close()
-
-    return redirect("/")
+        conn.commit()
+        conn.close()
 
 
 def monitor_interface_with_socials(content):
@@ -896,73 +897,68 @@ def post_to_fb_page(page_id, access_token, content):
 
 
 @app.route("/apps_logout", methods=["POST"])
+@login_required
 def apps_logout():
-    if session:
-        social_app_name = request.get_json()
+    social_app_name = request.get_json()
 
-        # Get database
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
 
-        # Special telegram logout
-        if social_app_name == "Telegram":
-            channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
-                "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
+    # Special telegram logout
+    if social_app_name == "Telegram":
+        channel_id = json.loads([dict(social_details) for social_details in cursor.execute(
+            "SELECT social_id FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"])).fetchall()][0]["social_id"])["channel_id"]
 
-            # Send request to leave Telegram channel
-            print(requests.post(
-                f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
+        # Send request to leave Telegram channel
+        print(requests.post(
+            f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
 
-        # Default apps deletion from db
-        cursor.execute(
-            "DELETE FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"]))
+    # Default apps deletion from db
+    cursor.execute(
+        "DELETE FROM socials WHERE name = ? AND user_id = ?", (social_app_name, session["user_id"]))
+
+    conn.commit()
+    conn.close()
+
+    # Didn't work, reloading from JS
+    return ""
+
+
+@app.route("/manage_notifications", methods=["GET", "POST"])
+@login_required
+def manage_notifications():
+    # Get database
+    conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    if request.method == "GET":
+        notifications_list = cursor.execute(
+            "SELECT * FROM notifications WHERE user_id = ?", (session["user_id"],))
+        full_notifications = [{"id": notification["id"], "content": notification["content"],
+                                "date": notification["date"], "user_id": notification["user_id"], "codeColor": notification["codeColor"]} for notification in notifications_list]
+        return jsonify(full_notifications)
+    else:
+        data = request.get_json()
+        action = data.get("action", "")
+        codeColor = data.get("codeColor", "")
+        content = data.get("content", "")
+        id = data.get("id", "")
+
+        if action == "CREATE":
+            cursor.execute(
+                "INSERT INTO notifications (codeColor, content, date, user_id) VALUES (?, ?, ?, ?)",
+                (codeColor, content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session["user_id"]))
+        elif action == "DELETE":
+            cursor.execute(
+                "DELETE FROM notifications WHERE id = (?) AND user_id = ?", (id, session["user_id"]))
 
         conn.commit()
         conn.close()
 
-        # Didn't work, reloading from JS
-        return ""
-    else:
-        return redirect("/")
-
-
-@app.route("/manage_notifications", methods=["GET", "POST"])
-def manage_notifications():
-    if session:
-        # Get database
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
-        if request.method == "GET":
-            notifications_list = cursor.execute(
-                "SELECT * FROM notifications WHERE user_id = ?", (session["user_id"],))
-            full_notifications = [{"id": notification["id"], "content": notification["content"],
-                                   "date": notification["date"], "user_id": notification["user_id"], "codeColor": notification["codeColor"]} for notification in notifications_list]
-            return jsonify(full_notifications)
-        else:
-            data = request.get_json()
-            action = data.get("action", "")
-            codeColor = data.get("codeColor", "")
-            content = data.get("content", "")
-            id = data.get("id", "")
-
-            if action == "CREATE":
-                cursor.execute(
-                    "INSERT INTO notifications (codeColor, content, date, user_id) VALUES (?, ?, ?, ?)",
-                    (codeColor, content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), session["user_id"]))
-            elif action == "DELETE":
-                cursor.execute(
-                    "DELETE FROM notifications WHERE id = (?) AND user_id = ?", (id, session["user_id"]))
-
-            conn.commit()
-            conn.close()
-
-            return jsonify({"message": f"{action} successful"})
-
-    else:
-        return redirect("/")
+        return jsonify({"message": f"{action} successful"})
 
 
 @app.route("/logout")
@@ -977,36 +973,34 @@ def logout():
 
 
 @app.route("/delete_account", methods=["GET", "POST"])
+@login_required
 def delete_account():
-    if session:
-        if request.method == "GET":
-            return render_template("delete_account.html")
-        else:
-            # Get database
-            conn = get_db_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-
-            # Delete every trace
-            cursor.execute(
-                "DELETE FROM users WHERE id = ?", (session["user_id"],))
-            cursor.execute(
-                "DELETE FROM messages WHERE user_id = ?", (session["user_id"],))
-            cursor.execute(
-                "DELETE FROM scheduled_posts WHERE user_id = ?", (session["user_id"],))
-            cursor.execute(
-                "DELETE FROM notifications WHERE user_id = ?", (session["user_id"],))
-            cursor.execute(
-                "DELETE FROM socials WHERE user_id = ?", (session["user_id"],))
-
-            conn.commit()
-            conn.close()
-
-            session.clear()
-
-            return redirect("/register")
+    if request.method == "GET":
+        return render_template("delete_account.html")
     else:
-        return redirect("/")
+        # Get database
+        conn = get_db_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Delete every trace
+        cursor.execute(
+            "DELETE FROM users WHERE id = ?", (session["user_id"],))
+        cursor.execute(
+            "DELETE FROM messages WHERE user_id = ?", (session["user_id"],))
+        cursor.execute(
+            "DELETE FROM scheduled_posts WHERE user_id = ?", (session["user_id"],))
+        cursor.execute(
+            "DELETE FROM notifications WHERE user_id = ?", (session["user_id"],))
+        cursor.execute(
+            "DELETE FROM socials WHERE user_id = ?", (session["user_id"],))
+
+        conn.commit()
+        conn.close()
+
+        session.clear()
+
+        return redirect("/register")
 
 
 @app.route("/dashboard")

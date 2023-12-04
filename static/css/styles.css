@@ -348,6 +348,7 @@ reset {
 /* Mobile */
 @media screen and (max-width: 768px) {
     #main-block {
+        margin-top: 0px;
         justify-content: space-between;
     }
 
