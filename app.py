@@ -959,7 +959,12 @@ def manage_notifications():
         conn.close()
 
         return jsonify({"message": f"{action} successful"})
+    
 
+@app.route("/privacy_policy")
+def privacy_policy():
+    return render_template("privacy_policy.html")
+    
 
 @app.route("/logout")
 def logout():
