@@ -729,8 +729,8 @@ def twitter_login_and_authorize():
         cursor = conn.cursor()
 
         tokens = {"access_token": oauth_tokens["oauth_token"],
-                    "access_token_secret":  oauth_tokens["oauth_token_secret"],
-                    "oauth_token": session["oauth_token"]}
+                  "access_token_secret":  oauth_tokens["oauth_token_secret"],
+                  "oauth_token": session["oauth_token"]}
 
         # Insert new social into socials table
         cursor.execute(
@@ -938,7 +938,7 @@ def manage_notifications():
         notifications_list = cursor.execute(
             "SELECT * FROM notifications WHERE user_id = ?", (session["user_id"],))
         full_notifications = [{"id": notification["id"], "content": notification["content"],
-                                "date": notification["date"], "user_id": notification["user_id"], "codeColor": notification["codeColor"]} for notification in notifications_list]
+                               "date": notification["date"], "user_id": notification["user_id"], "codeColor": notification["codeColor"]} for notification in notifications_list]
         return jsonify(full_notifications)
     else:
         data = request.get_json()
@@ -959,12 +959,12 @@ def manage_notifications():
         conn.close()
 
         return jsonify({"message": f"{action} successful"})
-    
+
 
 @app.route("/privacy_policy")
 def privacy_policy():
     return render_template("privacy_policy.html")
-    
+
 
 @app.route("/logout")
 def logout():
@@ -1042,4 +1042,4 @@ init_db()
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
