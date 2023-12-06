@@ -1,0 +1,7 @@
+#error_rectangle {
+    padding: 1em;
+}
+
+#error_rectangle>* {
+    margin-bottom: 0;
+}

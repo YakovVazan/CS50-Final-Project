@@ -27,6 +27,7 @@ if (socialMediaLoginForm) {
     }, 2000);
   });
 }
+
 if (emailAuthenticated) {
   emailAuthenticated.addEventListener("submit", (event) => {
     // Delay form submission for toast and notification's sake

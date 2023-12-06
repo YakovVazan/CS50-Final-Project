@@ -1,0 +1,72 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: fit-content;
+}
+
+nav {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1030;
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+}
+
+main {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+footer {
+    margin-top: 1%;
+    padding: 1%;
+}
+
+#table {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+}
+
+th,
+td {
+    vertical-align: middle;
+}
+
+/* items in account drop down */
+a.dropdown-item {
+    text-align: center;
+}
+
+#dashboard-header {
+    vertical-align: middle;
+    width: fit-content;
+    font-weight: bold;
+    font-size: x-large;
+    border-bottom: 1px solid #dc3545;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-top: 2em;
+}
+
+#scheduleds-page {
+    width: 100%;
+}
+
+#cookie-msg {
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+#facebook-login-ol>* {
+    text-align: start;
+}
