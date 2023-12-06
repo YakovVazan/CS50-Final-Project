@@ -1,0 +1,54 @@
+#account-center-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#details-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(auto, auto);
+    grid-template-areas:
+        "nameGeneral . nameSpecific"
+        "emailGeneral authentication-needed emailSpecific"
+        "passwordGeneral . passwordSpecific"
+        ". reset ."
+    ;
+}
+
+nameGeneral {
+    grid-area: nameGeneral;
+}
+
+nameSpecific {
+    grid-area: nameSpecific;
+}
+
+emailGeneral {
+    grid-area: emailGeneral;
+}
+
+emailSpecific {
+    grid-area: emailSpecific;
+}
+
+passwordGeneral {
+    grid-area: passwordGeneral;
+}
+
+passwordSpecific {
+    grid-area: passwordSpecific;
+}
+
+form {
+    grid-area: authentication-needed;
+}
+
+reset {
+    grid-area: reset;
+}
+
+#details-layout>:not(form, reset) {
+    border-bottom: 1px solid gray;
+    margin-bottom: 1em;
+}

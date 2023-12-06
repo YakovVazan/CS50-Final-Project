@@ -1,0 +1,63 @@
+/* Desktop */
+@media screen and (max-width: 1024px) {
+    main {
+        padding-top: 1rem;
+    }
+
+    #chat-window {
+        width: 75%;
+    }
+
+    #login-director-card {
+        width: 75%;
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+    #main-block {
+        margin-top: 0px;
+        justify-content: space-between;
+    }
+
+    #chat-window {
+        width: 100%;
+        min-height: 100%;
+        max-height: 100%;
+    }
+
+    footer {
+        display: none;
+    }
+
+    #messages-area {
+        height: 80%;
+    }
+
+    #login-director-card {
+        width: 100%;
+    }
+
+    nav {
+        position: fixed !important;
+        top: auto;
+        bottom: 0;
+        padding: 0.5em !important;
+    }
+
+    main {
+        margin-top: 0;
+        padding-bottom: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    #details-layout {
+        grid-template-areas:
+            "nameGeneral . nameSpecific"
+            "emailGeneral . emailSpecific"
+            ". . authentication-needed"
+            "passwordGeneral . passwordSpecific"
+            ". reset ."
+        ;
+    }
+}
