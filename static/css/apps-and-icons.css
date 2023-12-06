@@ -1,0 +1,91 @@
+.social-icon {
+    opacity: 1;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.05);
+}
+
+.clicked-button {
+    opacity: 0.5;
+    transform: scale(0.99);
+}
+
+.svg-container {
+    position: absolute;
+    right: 20px;
+}
+
+.animated-icon {
+    transition: transform 100ms ease;
+    transform: translateY(0);
+}
+
+.animated-icon:hover {
+    transform: translateY(-0.2em);
+}
+
+#schedule_icon {
+    z-index: 1;
+}
+
+.icon_pulse {
+    position: absolute;
+    top: 0.31em;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+#schedule_icon_pulse {
+    right: 0.835em;
+    background-color: #dc3545;
+}
+
+#notifications_icon_pulse {
+    background-color: #198754;
+    left: -0.13em;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}
+
+.owned-app-logout {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -0.1em 0.8em #212529;
+    cursor: pointer;
+    height: 25%;
+    width: 100%;
+    font-weight: bold;
+    transition: height 0.2s, border-top-right-radius 0.2s, border-top-left-radius 0.2s;
+}
+
+.owned-app-logout:hover {
+    height: 100%;
+    border-top-right-radius: var(--bs-border-radius-xxl) !important;
+    border-top-left-radius: var(--bs-border-radius-xxl) !important;
+}
+
+#app-icon-for-chat-window {
+    width: 1.5em;
+    height: 1.5em;
+    cursor: pointer;
+    animation: new-bubble-animation 0.4s ease-in-out forwards;
+}

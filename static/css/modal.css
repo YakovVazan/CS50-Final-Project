@@ -1,0 +1,15 @@
+.modal {
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    animation: new-bubble-animation 0.4s ease-in-out forwards;
+}
+
+.modal-content {
+    padding: 1em;
+    border-radius: var(--bs-border-radius-xxl) !important;
+}
+
+#editsModal-content {
+    margin: 0;
+}
