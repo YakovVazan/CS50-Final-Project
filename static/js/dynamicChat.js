@@ -86,3 +86,44 @@ if (document.getElementById("main-block")) {
       }
     });
 }
+
+// Controll the scroll down button
+function scrollToBottom() {
+  const chatWindow = document.getElementById("messages-area");
+  const scrollDownButton = document.getElementById("scrollDownButton");
+  scrollDownButton.addEventListener("click", () => {
+    scrollToBottom();
+  });
+
+  // Scroll to the bottom of the chat window with smooth behavior
+  chatWindow.scrollTo({
+    top: chatWindow.scrollHeight,
+    behavior: "smooth",
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const chatWindow = document.getElementById("messages-area");
+  const scrollDownButton = document.getElementById("scrollDownButton");
+
+  if (chatWindow && scrollDownButton) {
+    chatWindow.addEventListener("scroll", handleScroll);
+
+    function handleScroll() {
+      const currentScrollPosition = chatWindow.scrollTop;
+
+      // Show or hide the scroll down button based on scroll direction
+      if (currentScrollPosition >= 15400) {
+        // Scrolling down
+        scrollDownButton.style.display = "none";
+      } else {
+        // Scrolling up
+        scrollDownButton.style.display = "flex";
+        scrollDownButton.style.visibility = "visible";
+      }
+    }
+
+    // Call scrollToBottom when the page loads
+    scrollToBottom();
+  }
+});
