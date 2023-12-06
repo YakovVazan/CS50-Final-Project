@@ -2,6 +2,21 @@ import { createToast } from "./toasts.js";
 import { createNotification } from "./notifications.js";
 import { codeColors } from "./codeColors.js";
 
+const shortMonthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 // Bring back updated messages data from back to front
 export function fetchData(animationClass) {
   fetch("/get_data")
@@ -11,7 +26,7 @@ export function fetchData(animationClass) {
       document.querySelector("#sender").style.display = "block";
       document.querySelector("#spinner").style.display = "none";
       document.querySelector("#send-button").disabled = false;
-      
+
       // An array to push all posts inside of
       let content = [];
       // Keep track of dates for date bubble in chat
@@ -26,17 +41,11 @@ export function fetchData(animationClass) {
         if (messages[i]["date"] !== previousDateString) {
           // Create a new date bubble:
 
-          // Parse the date string into a Date object
-          let dateObj = new Date(dateString);
-          // Format the month name using the Date object
-          dateString[0] = dateObj.toLocaleString("default", {
-            month: "short",
-          });
-          // Final version of date
-          dateString = dateString[0] + " " + dateString[1];
           // Add date header in chat
           content.push(`<div id="date-container">
-                <span id="date-bubble">${dateString}</span>
+                <span id="date-bubble">${
+                  shortMonthNames[dateString[0] - 1] + " " + dateString[1]
+                }</span>
               </div>`);
           // Update current date value
           previousDateString = messages[i]["date"];
