@@ -82,6 +82,10 @@
     transition: background-color 1s ease-in;
 }
 
+#send-button:hover {
+    background-color: transparent;
+}
+
 .bi.bi-send .bi.bi-plus {
     fill: #0d6efd;
 }
