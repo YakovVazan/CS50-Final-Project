@@ -107,21 +107,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const scrollDownButton = document.getElementById("scrollDownButton");
 
   if (chatWindow && scrollDownButton) {
-    chatWindow.addEventListener("scroll", handleScroll);
-
-    function handleScroll() {
+    chatWindow.addEventListener("scroll", () => {
       const currentScrollPosition = chatWindow.scrollTop;
-
+      let rangeFilterValue = Number(
+        document.getElementById("filter-posts").value
+      );
+      
       // Show or hide the scroll down button based on scroll direction
-      if (currentScrollPosition >= 15400) {
-        // Scrolling down
-        scrollDownButton.style.display = "none";
-      } else {
+      if (
+        // for when all posts are visible
+        (currentScrollPosition < 15400 && rangeFilterValue === 0) ||
+        // for when only immediate posts are visisble
+        (currentScrollPosition < 8200 && rangeFilterValue === 1) ||
+        // for when only scheduled posts are visisble
+        (currentScrollPosition < 7000 && rangeFilterValue === 2)
+      ) {
         // Scrolling up
         scrollDownButton.style.display = "flex";
         scrollDownButton.style.visibility = "visible";
+      } else {
+        // Scrolling down
+        scrollDownButton.style.display = "none";
       }
-    }
+    });
 
     // Call scrollToBottom when the page loads
     scrollToBottom();
