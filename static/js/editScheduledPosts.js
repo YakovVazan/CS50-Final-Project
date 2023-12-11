@@ -7,9 +7,9 @@ if (editButtons) {
   editButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelector("#edited-post-content").value =
-        btn.parentElement.parentElement.children[0].children[0].innerHTML;
+        btn.parentElement.parentElement.parentElement.children[0].children[0].innerHTML;
       document.querySelector("#edited-post-date").value =
-        btn.parentElement.parentElement.children[1].innerHTML;
+        btn.parentElement.parentElement.parentElement.children[1].innerHTML;
 
       repost(btn.parentElement.parentElement.getAttribute("post-id"));
     });
