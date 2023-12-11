@@ -11,3 +11,4 @@ import "./dropMenu.js";
 import "./resetPassword.js";
 import "./registrationLogics.js";
 import "./appOwnerArea.js";
+import "./setUserTimezone.js";

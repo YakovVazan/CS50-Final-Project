@@ -14,6 +14,7 @@ from blueprints.apps.social_apps import social_apps_bp
 from blueprints.general.main_page import main_page_bp
 from blueprints.general.notifications import notifications_bp
 from blueprints.general.privacy_policy import privacy_policy_bp
+from blueprints.general.get_user_timezone import timezone_bp
 # from socials.Facebook.secrets import app_credentials
 
 # Configure flask app
@@ -32,12 +33,10 @@ app.register_blueprint(social_apps_bp)
 app.register_blueprint(main_page_bp)
 app.register_blueprint(notifications_bp)
 app.register_blueprint(privacy_policy_bp)
+app.register_blueprint(timezone_bp)
 
 # Configure socketIO
 socketio = SocketIO(app)
-
-# Configure SQL db
-db_path = "social_hub.db"
 
 # Configure session
 app.config["SESSION_PERMANENT"] = False

@@ -2,9 +2,10 @@ import sqlite3
 import json
 import requests
 import facebook
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, session, redirect, url_for
 from requests_oauthlib import OAuth1Session
+from blueprints.auth_and_account.account import get_current_user_details
 from blueprints.db.db import get_db_connection
 from blueprints.communications_and_posts.communications import get_social_names
 from socials.Telegram.secrets import token
@@ -15,7 +16,10 @@ posts_bp = Blueprint(
 
 
 def post(new_post):
-    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    utc_now = datetime.utcnow()
+    user_time = utc_now - timedelta(minutes=get_current_user_details()["time_zone_offset"])
+    
+    current_datetime = user_time.strftime("%Y-%m-%d %H:%M:%S")
 
     social_names = json.dumps(
         [name for social in get_social_names() for name in social.values()])
