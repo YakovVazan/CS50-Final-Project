@@ -1,5 +1,6 @@
 import sqlite3
 
+# Configure SQL db
 db_path = "social_hub.db"
 
 

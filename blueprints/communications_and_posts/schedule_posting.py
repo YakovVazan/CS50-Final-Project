@@ -1,6 +1,7 @@
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
+from blueprints.auth_and_account.account import get_current_user_details
 from blueprints.db.db import get_db_connection
 from blueprints.communications_and_posts.communications import get_social_names
 from blueprints.communications_and_posts.posts import monitor_interface_with_socials
@@ -12,6 +13,9 @@ schedule_posting = Blueprint(
 @schedule_posting.route("/schedule_post", methods=["POST"])
 def schedule_post():
     try:
+        utc_now = datetime.utcnow()
+        user_time = utc_now - timedelta(minutes=get_current_user_details()["time_zone_offset"])
+
         new_schedule_post = request.get_json()
 
         social_names = json.dumps(
@@ -23,7 +27,7 @@ def schedule_post():
         cursor = conn.cursor()
 
         cursor.execute('''INSERT INTO scheduled_posts (content, scheduling_date, execution_date, social_platforms, user_id) VALUES (?, ?, ?, ?, ?)
-        ''', (new_schedule_post["content"], datetime.now().strftime("%Y-%m-%d %H:%M:%S"), new_schedule_post["date"], social_names, session["user_id"]))
+        ''', (new_schedule_post["content"], user_time.strftime("%Y-%m-%d %H:%M:%S"), new_schedule_post["date"], social_names, session["user_id"]))
 
         conn.commit()
         conn.close()

@@ -56,8 +56,8 @@
 }
 
 #date-bubble {
-    background-color: white;
-    color: black;
+    background-color: rgb(235, 224, 168);
+    color: rgb(62, 56, 56);
     border-radius: 1em;
     width: fit-content;
     padding-left: 1em;
