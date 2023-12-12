@@ -1,11 +1,3 @@
-// document.addEventListener("DOMContentLoaded", () => {
-//   let filterInfoCover = document.getElementById("filter-info-cover")
-// console.log(document.getElementsByTagName("body").style.backgroundColor);
-//   if (filterInfoCover) {
-//     filterInfoCover.style.backgroundColor = document.getElementsByTagName("body").style.backgroundColor
-//   }
-// })
-
 // Filter posts with range input
 const rangeInput = document.getElementById("filter-posts");
 if (rangeInput) {
