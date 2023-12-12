@@ -20,7 +20,7 @@ socials = [
     "name": "LinkedIn",
   },
   {
-    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Slack_icon_2019.svg/1024px-Slack_icon_2019.svg.png",
+    "src": "https://th.bing.com/th/id/OIP.zQx4lAQ4wDnsHavraLPzOQHaHa?rs=1&pid=ImgDetMain",
     "alt": "slack-logo",
     "name": "Slack",
   },
@@ -30,7 +30,7 @@ socials = [
     "name": "Discord",
   },
   {
-    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Facebook_Messenger_logo_2020.svg/800px-Facebook_Messenger_logo_2020.svg.png",
+    "src": "https://i.insider.com/6081897a354dde0018c069cb",
     "alt": "messenger-logo",
     "name": "Messenger",
   },
@@ -40,7 +40,7 @@ socials = [
     "name": "Instagram",
   },
   {
-    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png",
+    "src": "https://p7.hiclipart.com/preview/68/534/326/whatsapp-android-messaging-apps-instant-messaging-whatsapp.jpg",
     "alt": "whatsapp-logo",
     "name": "WhatsApp",
   },
