@@ -23,7 +23,7 @@
         </div>
 
         <!-- Bottom -->
-        <div class="w-100 m-2 d-flex justify-content-center">
+        <div class="w-100 d-flex justify-content-center">
             <form id="message-form" class="d-flex w-100 mx-2 input-group">
                 <!-- Add button -->
                 </button>
@@ -60,12 +60,16 @@
         <!-- Filter -->
         <span class="p-3 bg-warning rounded-top-5 d-none d-md-inline"
             style="transform: rotate(90deg); position: absolute; top: 7em; right: -6em;">
-            <input id="filter-posts" type="range" class="form-range" min="0" max="2" value="0">
+            <input id="filter-posts" type="range" class="form-range" min="0" max="2" value="0"
+                title="Filter posts by type">
         </span>
 
-        <!-- Filter Info -->
-        <span class="px-3 bg-info rounded-5 animated-new-post" id="filter-info"
-            style="position: absolute; display: none;">
+        <!-- Filter info -->
+        <span id="filter-info">
+        </span>
+
+        <!-- Filter info cover -->
+        <span id="filter-info-cover">
         </span>
     </div>
 </div>

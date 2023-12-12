@@ -14,11 +14,7 @@
 }
 
 /* Medium */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-    #filter-info {
-        display: none;
-    }
-}
+@media screen and (min-width: 768px) and (max-width: 1024px) {}
 
 /* Mobile */
 @media screen and (max-width: 768px) {
