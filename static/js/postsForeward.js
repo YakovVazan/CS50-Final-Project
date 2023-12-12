@@ -97,7 +97,7 @@ export function fetchData(animationClass) {
               content.join(" ")
             : `<div id="no-history-message">
                   <p class="bg-info m-3 p-3 rounded-5">Your histroy posts will appear here once you post!</p>
-                 </div>`;
+               </div>`;
 
         // Scroll to bottom of messages on load
         messagesArea.scrollTop = messagesArea.scrollHeight;
