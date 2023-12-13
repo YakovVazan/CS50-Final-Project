@@ -1,17 +1,46 @@
-let appOwnerArea = document.querySelector("#app-owner-area");
+import { fetchDashboardData } from "./dashboardData.js";
 
-if (appOwnerArea) {
-  fetch("/app_database")
-    .then((response) => response.json())
-    .then((data) => {
+async function getDashboardData() {
+  let appOwnerArea = document.querySelector("#app-owner-area");
+
+  if (appOwnerArea) {
+    try {
+      const data = await fetchDashboardData();
+
       let tableBody = document.querySelector("tbody");
 
       data["users"].forEach((user) => {
         let row = document.createElement("tr");
+
         // names
         let nameTd = document.createElement("td");
+        nameTd.classList.add("username-td");
+        nameTd.style.position = "relative";
         nameTd.innerHTML = user["username"];
         row.appendChild(nameTd);
+
+        // bullets
+        let bulletsContainer = document.createElement("span");
+        bulletsContainer.innerHTML = `<ul class="bullets-ul">
+        <li class="bullet" title="Online-dev">
+          <span class="bullet-span" style="background-color: #ffe207;"></span>
+        </li>
+        ${
+          user["authenticated"] === 1
+            ? `<li id="bullet" title="Activated">
+                <span class="bullet-span" style="background-color: #67af8e;"></span>
+               </li>`
+            : ``
+        }
+        ${
+          user["premium"] === 1
+            ? `<li id="bullet" title="Premium"">
+                <span class="bullet-span" style="background-color: #dc3545;"></span>
+               </li>`
+            : ``
+        }
+         </ul>`;
+        nameTd.appendChild(bulletsContainer);
 
         // emails
         let emailTd = document.createElement("td");
@@ -188,9 +217,41 @@ if (appOwnerArea) {
         banUserTd.appendChild(banUserButton);
 
         tableBody.appendChild(row);
+
+        setUsersSearchBox();
       });
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("Error:", error);
+    }
+  }
+}
+
+getDashboardData();
+
+function setUsersSearchBox() {
+  // Collect user's input from search bar
+  let searchField = document.querySelector("#search-field");
+  if (searchField) {
+    searchField.addEventListener("input", function (event) {
+      let searchFieldValue = event.target.value.toLowerCase();
+
+      // Control magnifier icon appearance
+      let svgContainer = document.querySelector(".svg-container");
+      if (searchFieldValue) {
+        svgContainer.style.display = "none";
+      } else {
+        svgContainer.style.display = "";
+      }
+
+      // Filters users according to the value in the search box
+      let usernames = document.querySelectorAll(".username-td");
+      usernames.forEach((username) => {
+        if (!username.innerText.toLowerCase().includes(searchFieldValue)) {
+          username.parentElement.style.display = "none";
+        } else {
+          username.parentElement.style.display = "";
+        }
+      });
     });
+  }
 }

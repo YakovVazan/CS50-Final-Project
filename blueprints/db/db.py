@@ -19,7 +19,8 @@ def init_db():
             username TEXT NOT NULL,
             email_address TEXT,
             authenticated NUMERIC NOT NULL,
-            hash TEXT NOT NULL
+            hash TEXT NOT NULL,
+            premium BOOLEAN NOT NULL DEFAULT 0
         )
     """)
     # Create messages table
