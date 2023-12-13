@@ -8,7 +8,7 @@ from blueprints.auth_and_account.email_auth import email_auth_bp
 from blueprints.communications_and_posts.communications import communications_bp
 from blueprints.communications_and_posts.posts import posts_bp
 from blueprints.communications_and_posts.schedule_posting import schedule_posting
-from blueprints.admin.dashboard_and_data import dachboard_and_data_bp
+from blueprints.admin.dashboard_and_data import dashboard_and_data_bp
 from blueprints.apps.social_hub import social_hub_bp
 from blueprints.apps.social_apps import social_apps_bp
 from blueprints.general.main_page import main_page_bp
@@ -27,7 +27,7 @@ app.register_blueprint(email_auth_bp)
 app.register_blueprint(communications_bp)
 app.register_blueprint(posts_bp)
 app.register_blueprint(schedule_posting)
-app.register_blueprint(dachboard_and_data_bp)
+app.register_blueprint(dashboard_and_data_bp)
 app.register_blueprint(social_hub_bp)
 app.register_blueprint(social_apps_bp)
 app.register_blueprint(main_page_bp)

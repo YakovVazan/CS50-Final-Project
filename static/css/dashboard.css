@@ -1,0 +1,51 @@
+#table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#dashboard-header {
+    vertical-align: middle;
+    width: fit-content;
+    font-weight: bold;
+    font-size: x-large;
+    border-bottom: 1px solid #dc3545;
+}
+
+.charts-container {
+    margin-bottom: 3em;
+    padding-bottom: 1em;
+}
+
+.doughnut-container {
+    width: 25%;
+}
+
+#total-users {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+#total-users-number {
+    font-size: xx-large;
+    color: #dc3545;
+    font-weight: bolder;
+}
+
+.bullets-ul {
+    position: absolute;
+    display: flex;
+    top: 2px;
+    flex-direction: column;
+    padding: 0;
+    line-height: 1;
+}
+
+.bullet {
+    cursor: help;
+}
+
+.bullet-span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}

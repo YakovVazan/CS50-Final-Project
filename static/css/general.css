@@ -22,12 +22,6 @@ main {
     flex: 1;
 }
 
-#table {
-    width: 100%;
-    height: 100%;
-    overflow-x: auto;
-}
-
 th,
 td {
     vertical-align: middle;
@@ -36,14 +30,6 @@ td {
 /* items in account drop down */
 a.dropdown-item {
     text-align: center;
-}
-
-#dashboard-header {
-    vertical-align: middle;
-    width: fit-content;
-    font-weight: bold;
-    font-size: x-large;
-    border-bottom: 1px solid #dc3545;
 }
 
 .input-container {

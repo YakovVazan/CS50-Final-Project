@@ -4,23 +4,61 @@
 
 {% block main %}
 <div id="app-owner-area" class="container-fluid">
-    <p id="dashboard-header">SocialHub's Dashboard</p>
-    <div id="table">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">username</th>
-                    <th scope="col">email</th>
-                    <th scope="col">posts</th>
-                    <th scope="col">scheduled posts</th>
-                    <th scope="col">linked accounts</th>
-                    <th scope="col">Contact user</th>
-                    <th scope="col">Ban user</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+
+    <!-- charts area -->
+    <span>
+        <p id="dashboard-header">SocialHub's Charts</p>
+
+        <div class="charts-container">
+            <div class="doughnut-container">
+                <canvas id="users-chart" width="400" height="400"></canvas>
+                <span id="total-users">
+                    <span>Total users: </span>
+                    <span id="total-users-number"></span>
+                </span>
+            </div>
+        </div>
+    </span>
+
+    <!-- table area -->
+    <span>
+        <p id="dashboard-header">SocialHub's Tables</p>
+
+        <!-- search box -->
+        <div class="row pb-5">
+            <div class="col-4">
+                <div class="input-container">
+                    <span class="svg-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-search d-sm-block d-none" viewBox="0 0 16 16">
+                            <path
+                                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                        </svg>
+                    </span>
+                    <input id="search-field" class="form-control me-2" type="search" placeholder="Search users by name"
+                        aria-label="Search">
+                </div>
+            </div>
+        </div>
+
+        <!-- table -->
+        <div id="table">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">username</th>
+                        <th scope="col">email</th>
+                        <th scope="col">posts</th>
+                        <th scope="col">scheduled posts</th>
+                        <th scope="col">linked accounts</th>
+                        <th scope="col">Contact user</th>
+                        <th scope="col">Ban user</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </span>
 </div>
 {% endblock %}

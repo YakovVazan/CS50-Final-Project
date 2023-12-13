@@ -2,10 +2,10 @@ import sqlite3
 from blueprints.db.db import get_db_connection
 from flask import Blueprint, session, render_template, redirect, jsonify
 
-dachboard_and_data_bp = Blueprint(
-    "dachboard_and_data_bp", __name__, template_folder="../../templates")
+dashboard_and_data_bp = Blueprint(
+    "dashboard_and_data_bp", __name__, template_folder="../../templates")
 
-@dachboard_and_data_bp.route("/dashboard")
+@dashboard_and_data_bp.route("/dashboard")
 def dashboard():
     if session and session["app_owner"]:
         return render_template("dashboard.html")
@@ -13,7 +13,7 @@ def dashboard():
         return redirect("/login")
 
 
-@dachboard_and_data_bp.route('/app_database')
+@dashboard_and_data_bp.route('/app_database')
 def app_database():
     data = {}
 
