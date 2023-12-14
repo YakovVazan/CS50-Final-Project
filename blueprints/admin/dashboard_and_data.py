@@ -2,8 +2,10 @@ import sqlite3
 from blueprints.db.db import get_db_connection
 from flask import Blueprint, session, render_template, redirect, jsonify
 
+
 dashboard_and_data_bp = Blueprint(
     "dashboard_and_data_bp", __name__, template_folder="../../templates")
+
 
 @dashboard_and_data_bp.route("/dashboard")
 def dashboard():

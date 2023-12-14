@@ -31,7 +31,5 @@ const socket = io.connect(
 );
 
 socket.on("generate_toast", function (data) {
-  console.log("Data from the backend:", data);
-
   createToast(data.message, data.codeColor);
 });
