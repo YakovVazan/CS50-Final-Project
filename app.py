@@ -17,17 +17,21 @@ from blueprints.general.privacy_policy import privacy_policy_bp
 from blueprints.general.get_user_timezone import timezone_bp
 # from socials.Facebook.secrets import app_credentials
 
+
 # Configure flask app
 app = Flask(__name__)
 
+# Configure socketIO
+socketio = SocketIO(app)
+
 # Configure blueprints
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_bp, socketio=socketio)
 app.register_blueprint(account_bp)
 app.register_blueprint(email_auth_bp)
 app.register_blueprint(communications_bp)
 app.register_blueprint(posts_bp)
 app.register_blueprint(schedule_posting)
-app.register_blueprint(dashboard_and_data_bp)
+app.register_blueprint(dashboard_and_data_bp, socketio=socketio)
 app.register_blueprint(social_hub_bp)
 app.register_blueprint(social_apps_bp)
 app.register_blueprint(main_page_bp)
@@ -35,14 +39,10 @@ app.register_blueprint(notifications_bp)
 app.register_blueprint(privacy_policy_bp)
 app.register_blueprint(timezone_bp)
 
-# Configure socketIO
-socketio = SocketIO(app)
-
 # Configure session
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
 
 # Prevent cashing
 @app.after_request
@@ -54,7 +54,27 @@ def after_request(response):
     return response
 
 
+"""
+Controlling socket behavior
+"""
+
+connected_users = 0
+
+@socketio.on('connect')
+def handle_connect():
+    global connected_users
+    connected_users += 1
+    socketio.emit('update_users', {'count': connected_users})
+
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    global connected_users
+    connected_users -= 1
+    socketio.emit('update_users', {'count': connected_users})
+
+
 if __name__ == '__main__':
     init_db()
-
+    
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

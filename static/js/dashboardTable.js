@@ -27,14 +27,14 @@ async function getDashboardData() {
         </li>
         ${
           user["authenticated"] === 1
-            ? `<li id="bullet" title="Activated">
+            ? `<li id="bullet" title="Authenticated">
                 <span class="bullet-span" style="background-color: #67af8e;"></span>
                </li>`
             : ``
         }
         ${
           user["premium"] === 1
-            ? `<li id="bullet" title="Premium"">
+            ? `<li id="bullet" title="Premium">
                 <span class="bullet-span" style="background-color: #dc3545;"></span>
                </li>`
             : ``

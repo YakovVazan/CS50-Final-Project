@@ -10,12 +10,15 @@
         <p id="dashboard-header">SocialHub's Charts</p>
 
         <div class="charts-container">
-            <div class="doughnut-container">
-                <canvas id="users-chart" width="400" height="400"></canvas>
-                <span id="total-users">
-                    <span>Total users: </span>
-                    <span id="total-users-number"></span>
-                </span>
+
+            <!-- free vs premium -->
+            <div class="chart-container">
+                <canvas id="type-chart" width="400" height="400"></canvas>
+            </div>
+
+            <!-- accounts vs currently connected -->
+            <div class="chart-container">
+                <canvas id="status-chart" width="400" height="400"></canvas>
             </div>
         </div>
     </span>

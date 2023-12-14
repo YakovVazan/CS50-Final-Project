@@ -34,16 +34,20 @@ def register():
         user_dicts = [dict(user) for user in rows]
         for user in user_dicts:
             if inputed_name == user["username"]:
+                conn.close()
+
                 return render_template("error.html", error_message="Username already exists.", error_code=400)
             elif inputed_email == user["email_address"]:
-                return render_template("error.html", error_message="Email is already in use by other user.", error_code=400)
+                conn.close()
+
+                return render_template("error.html", error_message="Email is already in use by another user.", error_code=400)
 
         cursor.execute("INSERT INTO users (username, email_address, authenticated, hash) VALUES (?, ?, ?, ?)",
                        (inputed_name, inputed_email, False, hashed_password))
         conn.commit()
         conn.close()
 
-        return redirect(url_for("login"))
+        return redirect(url_for("auth_bp.login"))
     else:
         return render_template("register.html")
 

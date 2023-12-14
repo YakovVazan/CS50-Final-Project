@@ -14,21 +14,12 @@
 .charts-container {
     margin-bottom: 3em;
     padding-bottom: 1em;
+    display: flex;
 }
 
-.doughnut-container {
+/* .chart-container {
     width: 25%;
-}
-
-#total-users {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
-#total-users-number {
-    font-size: xx-large;
-    color: #dc3545;
-    font-weight: bolder;
-}
+} */
 
 .bullets-ul {
     position: absolute;

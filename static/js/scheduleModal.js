@@ -9,7 +9,10 @@ let longClickTimer;
 // Add event listeners for activating and deactivating modal
 if (sendButton) {
   sendButton.addEventListener("mousedown", function () {
-    if (document.getElementById("text-area").value) {
+    if (
+      document.getElementById("text-area").value &&
+      document.getElementById("apps-checkbox").children.length > 0
+    ) {
       sendButton.style.backgroundColor = "#dc3545";
       firstModalLoad = false;
       longClickTimer = setTimeout(activateModal, 1000);
@@ -22,7 +25,10 @@ if (sendButton) {
   });
 
   sendButton.addEventListener("touchstart", function () {
-    if (document.getElementById("text-area").value) {
+    if (
+      document.getElementById("text-area").value &&
+      document.getElementById("apps-checkbox").children.length > 0
+    ) {
       sendButton.style.backgroundColor = "#dc3545";
       firstModalLoad = false;
       longClickTimer = setTimeout(activateModal, 1000);
@@ -52,7 +58,10 @@ if (document.querySelector("#submitModal")) {
       new Date(dateInput) > new Date()
     ) {
       // Toast post scheduled
-      createToast("Your post was scheduled successfully!", codeColors["success"]);
+      createToast(
+        "Your post was scheduled successfully!",
+        codeColors["success"]
+      );
       createNotification(
         "Your post was scheduled successfully!",
         codeColors["success"]
@@ -142,7 +151,11 @@ if (textArea) {
     if (event.key === "Enter") {
       // Prevent the default Enter key behavior (new line)
       event.preventDefault();
-      if (firstKeyPress && textArea.value) {
+      if (
+        firstKeyPress &&
+        textArea.value &&
+        document.getElementById("apps-checkbox").children.length > 0
+      ) {
         // Collect only first input when user presses the Enter key for a long time
         firstKeyPress = false;
         sendButton.style.backgroundColor = "#dc3545";
