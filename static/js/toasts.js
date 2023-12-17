@@ -27,7 +27,7 @@ export function createToast(message, codeColor) {
 
 // Generating toasts directly from backend using socketIO
 const socket = io.connect(
-  "http://" + window.location.hostname + ":" + location.port
+  "https://" + window.location.hostname + ":" + location.port
 );
 
 socket.on("generate_toast", function (data) {
