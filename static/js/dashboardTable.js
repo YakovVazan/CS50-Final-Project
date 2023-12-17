@@ -1,5 +1,10 @@
 import { fetchDashboardData } from "./dashboardData.js";
 
+export function displayUpToDateTable() {
+  document.querySelector("tbody").innerHTML = ``;
+  getDashboardData();
+}
+
 async function getDashboardData() {
   let appOwnerArea = document.querySelector("#app-owner-area");
 
