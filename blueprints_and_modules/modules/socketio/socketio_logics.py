@@ -7,14 +7,14 @@ connected_users = 0
 def handle_connect():
     global connected_users
     connected_users += 1
-    socketio.emit('update_users', {'count': connected_users})
+    socketio.emit('new_connection', connected_users)
 
 
 @socketio.on('disconnect')
 def handle_disconnect():
     global connected_users
     connected_users -= 1
-    socketio.emit('update_users', {'count': connected_users})
+    socketio.emit('new_connection', connected_users)
 
 
 def new_account_added():

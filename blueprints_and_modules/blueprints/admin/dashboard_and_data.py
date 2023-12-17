@@ -1,6 +1,6 @@
 import sqlite3
-from blueprints_and_modules.blueprints.db.db import get_db_connection
 from flask import Blueprint, session, render_template, redirect, jsonify
+from blueprints_and_modules.blueprints.db.db import get_db_connection
 
 
 dashboard_and_data_bp = Blueprint(
