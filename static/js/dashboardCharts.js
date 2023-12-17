@@ -1,8 +1,12 @@
 import { fetchDashboardData } from "./dashboardData.js";
+import { displayUpToDateTable } from "./dashboardTable.js";
 
 let typeChart = null;
 let statusChart = null;
 const ctx = document.getElementById("type-chart");
+const socket = io.connect(
+  "http://" + window.location.hostname + ":" + location.port
+);
 
 async function getDashboardData() {
   try {
@@ -17,6 +21,17 @@ getDashboardData().then((dashboardData) => {
     createDoughnutChart(dashboardData);
     createBarChart(dashboardData);
   }
+});
+
+// Update charts that new account created
+socket.on("new_account", () => {
+  getDashboardData().then((dashboardData) => {
+    if (document.querySelector(".charts-container")) {
+      createDoughnutChart(dashboardData);
+      createBarChart(dashboardData);
+      displayUpToDateTable();
+    }
+  });
 });
 
 function createDoughnutChart(dashboardData) {
@@ -50,10 +65,7 @@ function createDoughnutChart(dashboardData) {
 }
 
 function createBarChart(dashboardData) {
-  const socket = io.connect(
-    "http://" + window.location.hostname + ":" + location.port
-  );
-
+  // Update charts that another user connected to the app
   socket.on("update_users", (connectedUsers) => {
     let data = {
       labels: ["Total Accounts", "Currently Connected"],
