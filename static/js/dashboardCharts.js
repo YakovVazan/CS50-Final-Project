@@ -5,7 +5,7 @@ let typeChart = null;
 let statusChart = null;
 const ctx = document.getElementById("type-chart");
 const socket = io.connect(
-  "https://" + window.location.hostname + ":" + location.port
+  "http://" + window.location.hostname + ":" + location.port
 );
 
 async function getDashboardData() {
@@ -79,7 +79,7 @@ function createBarChart(dashboardData) {
         },
         {
           label: "Currently Connected Users",
-          data: [, connectedUsers["count"] - 1],
+          data: [, connectedUsers["count"]],
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           borderColor: "rgba(255, 99, 132, 1)",
           borderWidth: 1,
