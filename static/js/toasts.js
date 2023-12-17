@@ -1,3 +1,5 @@
+import { socket } from "./socketio_init.js";
+
 export function createToast(message, codeColor) {
   let toast = document.createElement("div");
   toast.className = "toast";
@@ -26,10 +28,6 @@ export function createToast(message, codeColor) {
 }
 
 // Generating toasts directly from backend using socketIO
-const socket = io.connect(
-  "https://" + window.location.hostname + ":" + location.port
-);
-
 socket.on("generate_toast", function (data) {
   createToast(data.message, data.codeColor);
 });
