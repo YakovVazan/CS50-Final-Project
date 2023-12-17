@@ -5,7 +5,7 @@ let typeChart = null;
 let statusChart = null;
 const ctx = document.getElementById("type-chart");
 const socket = io.connect(
-  "http://" + window.location.hostname + ":" + location.port
+  "https://" + window.location.hostname + ":" + location.port
 );
 
 async function getDashboardData() {
