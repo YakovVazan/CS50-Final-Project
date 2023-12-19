@@ -7,6 +7,14 @@ let statusChart = null;
 let connectedUsers = 0;
 const ctx = document.getElementById("type-chart");
 
+async function getDashboardData() {
+  try {
+    return await fetchDashboardData();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function createDoughnutChart(dashboardData) {
   const freeUsers = dashboardData["users"].filter(
     (user) => user["premium"] === 0
@@ -80,14 +88,6 @@ function createBarChart(dashboardData) {
   });
 }
 
-async function getDashboardData() {
-  try {
-    return await fetchDashboardData();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 // Update charts that new account created
 socket.on("new_account", () => {
   showCharts();
@@ -100,13 +100,20 @@ socket.on("new_connection", (connected_users) => {
 });
 
 function showCharts() {
-  getDashboardData().then((dashboardData) => {
-    if (document.querySelector(".charts-container")) {
+  const spinners = document.getElementsByClassName("charts-spinner");
+  if (document.querySelector(".charts-container")) {
+    Array.from(spinners).forEach((spinner) => {
+      spinner.style.display = "block";
+    });
+
+    getDashboardData().then((dashboardData) => {
+      Array.from(spinners).forEach((spinner) => {
+        spinner.style.display = "none";
+      });
+
       createDoughnutChart(dashboardData);
       createBarChart(dashboardData);
       displayUpToDateTable();
-    }
-  });
+    });
+  }
 }
-
-showCharts();

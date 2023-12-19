@@ -17,9 +17,15 @@
     display: flex;
 }
 
-/* .chart-container {
-    width: 25%;
-} */
+.chart-container {
+    width: 33%;
+}
+
+.charts-spinner {
+    display: none;
+    margin-top: 50%;
+    margin-left: 45%;
+}
 
 .bullets-ul {
     position: absolute;
