@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from blueprints_and_modules.modules.socketio.socketio_logics import new_account_added
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
+from blueprints_and_modules.modules.socketio.socketio_logics import connected_users_ids, update_connections_chart
 from socials.SocialHub.secrets import app_owner_email
 from socials.SocialHub.secrets import version_numbering
 
@@ -96,8 +97,10 @@ def login():
 
 @auth_bp.route("/logout")
 def logout():
-    """Log user out"""
-
+    # Control charts
+    connected_users_ids.remove(session["user_id"])
+    update_connections_chart()
+    
     # Forget any user_id
     session.clear()
 
