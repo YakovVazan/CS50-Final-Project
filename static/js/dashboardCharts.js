@@ -15,6 +15,16 @@ async function getDashboardData() {
   }
 }
 
+function destroyOldCharts() {
+  if (typeChart) {
+    typeChart.destroy();
+  }
+
+  if (statusChart) {
+    statusChart.destroy();
+  }
+}
+
 function createDoughnutChart(dashboardData) {
   const freeUsers = dashboardData["users"].filter(
     (user) => user["premium"] === 0
@@ -29,15 +39,11 @@ function createDoughnutChart(dashboardData) {
       {
         label: "Users amount",
         data: [freeUsers.length, premiumUsers.length],
-        backgroundColor: ["#0dcaf0", "#dc3545"],
+        backgroundColor: ["#ffc234", "#ff436b"],
         hoverOffset: 4,
       },
     ],
   };
-
-  if (typeChart) {
-    typeChart.destroy();
-  }
 
   typeChart = new Chart(ctx, {
     type: "doughnut",
@@ -68,10 +74,6 @@ function createBarChart(dashboardData) {
 
   let ctx = document.getElementById("status-chart").getContext("2d");
 
-  if (statusChart) {
-    statusChart.destroy();
-  }
-
   statusChart = new Chart(ctx, {
     type: "bar",
     data: data,
@@ -101,7 +103,10 @@ socket.on("new_connection", (connected_users) => {
 
 function showCharts() {
   const spinners = document.getElementsByClassName("charts-spinner");
+
   if (document.querySelector(".charts-container")) {
+    destroyOldCharts();
+
     Array.from(spinners).forEach((spinner) => {
       spinner.style.display = "block";
     });
@@ -110,6 +115,7 @@ function showCharts() {
       Array.from(spinners).forEach((spinner) => {
         spinner.style.display = "none";
       });
+      ctx.style.display = "";
 
       createDoughnutChart(dashboardData);
       createBarChart(dashboardData);
