@@ -39,11 +39,11 @@ def available_apps():
     else:
         social_app_name = request.form.get("app-name")
         if social_app_name == "Telegram":
-            return redirect(url_for("telegram_login"))
+            return redirect(url_for("social_apps_bp.telegram_login"))
         elif social_app_name == "Twitter":
-            return redirect(url_for("twitter_login_and_authorize"))
+            return redirect(url_for("social_apps_bp.twitter_login_and_authorize"))
         elif social_app_name == "Facebook":
-            return redirect(url_for("facebook_login"))
+            return redirect(url_for("social_apps_bp.facebook_login"))
         else:
             return render_template("error.html", error_message=f"{social_app_name} is not available on SocialHub yet.", error_code=503)
         

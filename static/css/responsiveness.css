@@ -17,7 +17,7 @@
 @media screen and (min-width: 768px) and (max-width: 1024px) {}
 
 /* Mobile */
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 375px) and (max-width: 768px) {
     #main-block {
         margin-top: 0px;
         justify-content: space-between;
@@ -62,5 +62,15 @@
 
     footer {
         display: none;
+    }
+}
+
+/* Tiny */
+@media screen and (max-width: 375px) {
+    nav {
+        position: fixed !important;
+        top: auto;
+        bottom: 0;
+        padding-bottom: 1.8em !important;
     }
 }

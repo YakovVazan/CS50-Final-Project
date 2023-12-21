@@ -9,7 +9,7 @@ from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.modules.apps_data.data import socials
 from socials.X.secrets import keys_and_tokens
 
-social_apps_bp = Blueprint("social_apps_bp", __name__, template_folder="../../templates")
+social_apps_bp = Blueprint("social_apps_bp", __name__, template_folder="../../../templates")
 
 
 @social_apps_bp.route("/available_apps/telegram", methods=["GET", "POST"])
