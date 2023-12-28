@@ -1,7 +1,7 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from blueprints_and_modules.modules.socketio.socketio_logics import new_account_added
+from blueprints_and_modules.modules.socketio.socketio_logics import new_account_added, connected_users_ids
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 from blueprints_and_modules.modules.socketio.socketio_logics import connected_users_ids, update_connections_chart
@@ -98,9 +98,13 @@ def login():
 @auth_bp.route("/logout")
 def logout():
     # Control charts
-    connected_users_ids.remove(session["user_id"])
+    global connected_users_ids
+
+    # remove and update charts when a user logs out
+    connected_users_ids.remove(
+        [user for user in connected_users_ids if user["id"] == session["user_id"]][0])
     update_connections_chart()
-    
+
     # Forget any user_id
     session.clear()
 
