@@ -1,11 +1,11 @@
 import { fetchDashboardData } from "./dashboardData.js";
 
-export function displayUpToDateTable() {
+export function displayUpToDateTable(args) {
   document.querySelector("tbody").innerHTML = ``;
-  getDashboardData();
+  getDashboardData(args);
 }
 
-async function getDashboardData() {
+async function getDashboardData(args) {
   let appOwnerArea = document.querySelector("#app-owner-area");
 
   if (appOwnerArea) {
@@ -27,9 +27,21 @@ async function getDashboardData() {
         // bullets
         let bulletsContainer = document.createElement("span");
         bulletsContainer.innerHTML = `<ul class="bullets-ul">
-        <li class="bullet" title="Online-dev">
-          <span class="bullet-span" style="background-color: #ffe207;"></span>
-        </li>
+        ${
+          args
+            ? Array.from(args)
+                .map((arg) => {
+                  if (arg["id"] === user["id"]) {
+                    return `<li class="bullet" title="Online">
+                                <span class="bullet-span" style="background-color: #ffe207;"></span>
+                            </li>`;
+                  } else {
+                    return "";
+                  }
+                })
+                .join("")
+            : ""
+        }
         ${
           user["authenticated"] === 1
             ? `<li id="bullet" title="Authenticated">

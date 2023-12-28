@@ -3,6 +3,7 @@ from flask_session import Session
 from blueprints_and_modules.blueprints.db.db import init_db
 from blueprints_and_modules.modules.socketio.socketio_instance import socketio
 from blueprints_and_modules.modules.socketio.socketio_logics import *
+from blueprints_and_modules.modules.scheduler.scheduler import *
 from blueprints_and_modules.blueprints.auth_and_account.auth import auth_bp
 from blueprints_and_modules.blueprints.auth_and_account.account import account_bp
 from blueprints_and_modules.blueprints.auth_and_account.email_auth import email_auth_bp

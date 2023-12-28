@@ -96,12 +96,24 @@ socket.on("new_account", () => {
 });
 
 // Update charts that another user connected to the app
-socket.on("new_connection", (connected_users) => {
-  connectedUsers = connected_users;
-  showCharts();
+socket.on("new_connection", (data) => {
+  connectedUsers = data["connected_users"];
+  showCharts(data["connected_users_ids"]);
 });
 
-function showCharts() {
+// Function to check tab visibility
+function checkTabVisibility() {
+  const isTabVisible = !document.hidden;
+  socket.emit("tab_visibility", isTabVisible);
+}
+
+// Event listeners for visibility changes
+document.addEventListener("visibilitychange", checkTabVisibility);
+
+// Initial check when the page is loaded
+checkTabVisibility();
+
+function showCharts(args) {
   const spinners = document.getElementsByClassName("charts-spinner");
 
   if (document.querySelector(".charts-container")) {
@@ -119,7 +131,7 @@ function showCharts() {
 
       createDoughnutChart(dashboardData);
       createBarChart(dashboardData);
-      displayUpToDateTable();
+      displayUpToDateTable(args);
     });
   }
 }

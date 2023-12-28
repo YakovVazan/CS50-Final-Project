@@ -27,6 +27,25 @@
     margin-left: 45%;
 }
 
+#dashboard-announcement-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#dashboard-announcement {
+    display: flex;
+    flex-direction: column;
+    color: rgb(67, 65, 65);
+    padding: 1em;
+    margin: 1em;
+    width: 80%;
+    background-color: antiquewhite;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 0.5em
+}
+
 .bullets-ul {
     position: absolute;
     display: flex;
