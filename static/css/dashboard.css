@@ -58,6 +58,21 @@
     background-color: #d9d5d5;
 }
 
+#filter-button-container {
+    display: flex;
+    justify-content: end;
+}
+
+#filter-button {
+    padding-top: 2em;
+    align-self: self-end;
+}
+
+.filter-option {
+    display: flex;
+    justify-content: space-between;
+}
+
 .bullets-ul {
     position: absolute;
     display: flex;

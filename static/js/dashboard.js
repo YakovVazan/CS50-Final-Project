@@ -1,6 +1,7 @@
 import "./dashboardCharts.js";
 import "./dashboardTable.js";
 
+// logics to close dashboard announcement
 if (localStorage.getItem("SocialHubDashboardAccouncement") === "false") {
   document.querySelector("#dashboard-announcement-container").style.display =
     "none";

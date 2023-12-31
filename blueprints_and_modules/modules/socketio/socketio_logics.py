@@ -37,7 +37,7 @@ def handle_tab_visibility(is_visible):
         # update last seen value for returning user
         else:
             for user in connected_users_ids:
-                if user["id"] == session["user_id"]:
+                if session and user["id"] == session["user_id"]:
                     user["connected"] = True
                     user["last_time_seen"] = datetime.datetime.now().minute
                     break
