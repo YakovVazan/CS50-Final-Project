@@ -25,6 +25,7 @@
             </p>
             <p>• When a user closes the app without explicitly logging out - they will be considered offline at the
                 beginning of the next minute.</p>
+            <p>• All filters are zeroed at refresh.</p>
         </div>
     </div>
 
@@ -56,8 +57,9 @@
     <span>
         <p id="dashboard-header">SocialHub's Tables</p>
 
-        <!-- search box -->
-        <div class="row pb-5">
+        <!-- search filter -->
+        <div class="row pb-5 justify-content-between">
+            <!-- search box -->
             <div class="col-4">
                 <div class="input-container">
                     <span class="svg-container">
@@ -69,6 +71,40 @@
                     </span>
                     <input id="search-field" class="form-control me-2" type="search" placeholder="Search users by name"
                         aria-label="Search">
+                </div>
+            </div>
+            <!-- filter -->
+            <div id="filter-button-container" class="col-4">
+                <div id="filter-button" class="btn-group">
+                    <button id="main-filter-button" type="button" class="btn btn-outline-warning">Filter
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-funnel" viewBox="0 0 16 16">
+                            <path
+                                d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z" />
+                        </svg>
+                    </button>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item filter-option">
+                            All
+                        </li>
+                        <li class="dropdown-item filter-option">
+                            <span class="bullet-span" style="background-color: #ffe207; margin-right: 0.2em;">
+                            </span>
+                            Online
+                        </li>
+                        <li class="dropdown-item filter-option">
+                            <span class="bullet-span" style="background-color: #67af8e;"></span>
+                            Authenticated
+                        </li>
+                        <li class="dropdown-item filter-option">
+                            <span class="bullet-span" style="background-color: #dc3545;"></span>
+                            Premium
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
