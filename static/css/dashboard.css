@@ -29,7 +29,7 @@
 
 #dashboard-announcement-container {
     width: 100%;
-    display: flex;
+    display: none;
     justify-content: center;
 }
 
@@ -43,7 +43,19 @@
     background-color: antiquewhite;
     align-items: center;
     border: 1px solid black;
-    border-radius: 0.5em
+    border-radius: 0.5em;
+    position: relative;
+}
+
+#close-dashboard-announcement-button {
+    position: absolute;
+    left: 1em;
+    color: #434141;
+    cursor: pointer;
+}
+
+#close-dashboard-announcement-button:active {
+    background-color: #d9d5d5;
 }
 
 .bullets-ul {
