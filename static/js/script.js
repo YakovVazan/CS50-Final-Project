@@ -12,3 +12,4 @@ import "./resetPassword.js";
 import "./registrationLogics.js";
 import "./dashboard.js";
 import "./setUserTimezone.js";
+import "./bugsAndFb.js";

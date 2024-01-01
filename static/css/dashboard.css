@@ -92,3 +92,46 @@
     border-radius: 50%;
     display: inline-block;
 }
+
+#envelop-icon {
+    cursor: pointer;
+    position: fixed;
+    bottom: 5px;
+    left: 10px;
+}
+
+#reports-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    color: #67af8e;
+    border-bottom: 1px solid #d9d5d5;
+}
+
+.report-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d9d5d5;
+}
+
+.report-content {
+    width: 75px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.report-content:active {
+    white-space: wrap;
+    overflow: visible;
+    height: fit-content;
+}
+
+.reporter-id {
+    width: 30px;
+}
+
+#reports-badge {
+    display: none;
+}

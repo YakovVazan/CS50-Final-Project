@@ -1,23 +1,25 @@
 import "./dashboardCharts.js";
 import "./dashboardTable.js";
 
-// logics to close dashboard announcement
-if (localStorage.getItem("SocialHubDashboardAccouncement") === "false") {
-  document.querySelector("#dashboard-announcement-container").style.display =
-    "none";
-} else {
-  document.querySelector("#dashboard-announcement-container").style.display =
-    "flex";
-}
-
+let dashboardAnnouncementContainer = document.querySelector(
+  "#dashboard-announcement-container"
+);
 let closeDashboardAnnouncementButton = document.querySelector(
   "#close-dashboard-announcement-button"
 );
 
-if (closeDashboardAnnouncementButton) {
-  closeDashboardAnnouncementButton.addEventListener("click", () => {
-    document.querySelector("#dashboard-announcement-container").style.display =
-      "none";
-    localStorage.setItem("SocialHubDashboardAccouncement", false);
-  });
+if (dashboardAnnouncementContainer) {
+  // logics to close dashboard announcement
+  if (localStorage.getItem("SocialHubDashboardAccouncement") === "false") {
+    dashboardAnnouncementContainer.style.display = "none";
+  } else {
+    dashboardAnnouncementContainer.style.display = "flex";
+  }
+
+  if (closeDashboardAnnouncementButton) {
+    closeDashboardAnnouncementButton.addEventListener("click", () => {
+      dashboardAnnouncementContainer.style.display = "none";
+      localStorage.setItem("SocialHubDashboardAccouncement", false);
+    });
+  }
 }
