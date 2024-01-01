@@ -245,7 +245,9 @@ async function getDashboardData(args) {
   }
 }
 
-getDashboardData();
+if (window.location.pathname === "/dashboard") {
+  getDashboardData();
+}
 
 function setUsersSearchBox() {
   // Collect user's input from search bar

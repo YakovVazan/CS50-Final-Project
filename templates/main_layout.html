@@ -27,7 +27,7 @@
   <!-- socketIO -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
 
-  <!-- Chart.js -->
+  <!-- chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- google ads -->
@@ -184,7 +184,7 @@
               <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>
               {% if session["app_owner"] %}
               <hr class="solid">
-              <li><a class="dropdown-item text-warning" href="/dashboard">Dashboard</a></li>
+              <li id="admin-is-here"><a class="dropdown-item text-warning" href="/dashboard">Dashboard</a></li>
               {% endif %}
               <hr class="solid">
               <li class="text-muted text-center">{{session["version_numbering"]}}</li>
@@ -228,7 +228,57 @@
     <!-- Privacy Policy -->
     <span>&#8226;</span>
     <a href="/privacy_policy">Privacy Policy</a>
+    <!-- feedback -->
+    <span id="bug-icon" data-bs-target="#fbAndBugsModal" data-bs-toggle="modal" style="cursor: pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bug"
+        viewBox="0 0 16 16">
+        <path
+          d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A4.979 4.979 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A4.985 4.985 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623zM4 7v4a4 4 0 0 0 3.5 3.97V7zm4.5 0v7.97A4 4 0 0 0 12 11V7zM12 6a3.989 3.989 0 0 0-1.334-2.982A3.983 3.983 0 0 0 8 2a3.983 3.983 0 0 0-2.667 1.018A3.989 3.989 0 0 0 4 6z" />
+      </svg>
+    </span>
   </footer>
+
+  <!-- feebacks and bugs modal -->
+  <div class="modal fade" id="fbAndBugsModal" tabindex="-1" aria-labelledby="fbAndBugsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fw-bold text-danger" id="fbAndBugsModalLabel">Feedback and Bugs Center
+          </h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <span style="padding-top: 1em;">
+          <span>
+            <p>Found any bugs? have ideas to improve SocialHub? We wanna hear it all!</p>
+            <p>Please tell us about your satisfaction rate or let us know about bugs you found.</p>
+            <p class="text-warning">We're thrilled to hear from you!</p>
+          </span>
+          <div class="input-group">
+            <span class="input-group-text">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bug"
+                viewBox="0 0 16 16">
+                <path
+                  d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A4.979 4.979 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A4.985 4.985 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623zM4 7v4a4 4 0 0 0 3.5 3.97V7zm4.5 0v7.97A4 4 0 0 0 12 11V7zM12 6a3.989 3.989 0 0 0-1.334-2.982A3.983 3.983 0 0 0 8 2a3.983 3.983 0 0 0-2.667 1.018A3.989 3.989 0 0 0 4 6z" />
+              </svg>
+            </span>
+            <input id="bugs-input" class="form-control">
+          </div>
+          <div class="form-check mt-3">
+            <input id="bugs-check" class="form-check-input" type="checkbox">
+            <label class="form-check-label">
+              report anonymously
+            </label>
+          </div>
+          <hr>
+          <div style="display: flex; width: 100%; justify-content: space-between;">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal" id="bugs-and-fb-sender">Send</button>
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

@@ -52,6 +52,12 @@ a.dropdown-item {
     text-align: start;
 }
 
+#bug-icon {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+}
+
 footer {
     margin-top: 1%;
     padding: 1%;

@@ -56,3 +56,7 @@ def send_notification(message_data):
     data = {"message": message_data["message"],
             "codeColor": message_data["codeColor"]}
     socketio.emit('generate_toast', data)
+
+
+def new_report():
+    socketio.emit('new-report')

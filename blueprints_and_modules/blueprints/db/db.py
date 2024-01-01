@@ -65,5 +65,15 @@ def init_db():
             user_id INTEGER REFERENCES users(id)
         )
     """)
+    # Create reports table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reports (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date DATE NOT NULL,
+            content TEXT NOT NULL,
+            anonymous NUMERIC NOT NULL,
+            user_id INTEGER REFERENCES users(id)
+        )
+    """)
     conn.commit()
     conn.close()
