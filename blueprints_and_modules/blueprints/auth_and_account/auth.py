@@ -1,12 +1,11 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from blueprints_and_modules.modules.socketio.socketio_logics import new_account_added, connected_users_ids
-from blueprints_and_modules.blueprints.db.db import get_db_connection
-from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 from blueprints_and_modules.modules.socketio.socketio_logics import connected_users_ids, update_connections_chart
+from blueprints_and_modules.blueprints.db.db import get_db_connection
 from socials.SocialHub.secrets import app_owner_email
 from socials.SocialHub.secrets import version_numbering
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 auth_bp = Blueprint("auth_bp", __name__, template_folder="../../templates")
 
@@ -48,7 +47,7 @@ def register():
         conn.commit()
         conn.close()
 
-        new_account_added()
+        update_connections_chart()
 
         return redirect(url_for("auth_bp.login"))
     else:
@@ -96,48 +95,25 @@ def login():
 
 
 @auth_bp.route("/logout")
+@login_required
 def logout():
-    # Control charts
-    global connected_users_ids
-
-    # remove and update charts when a user logs out
-    connected_users_ids.remove(
-        [user for user in connected_users_ids if user["id"] == session["user_id"]][0])
-    update_connections_chart()
-
-    # Forget any user_id
-    session.clear()
+    handleLogout(session["user_id"])
 
     # Redirect user to login form
     return redirect("/")
 
 
-@auth_bp.route("/delete_account", methods=["GET", "POST"])
-@login_required
-def delete_account():
-    if request.method == "GET":
-        return render_template("delete_account.html")
-    else:
-        # Get database
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+def handleLogout(id):
+    # Forget any user_id
+    session.clear()
 
-        # Delete every trace
-        cursor.execute(
-            "DELETE FROM users WHERE id = ?", (session["user_id"],))
-        cursor.execute(
-            "DELETE FROM messages WHERE user_id = ?", (session["user_id"],))
-        cursor.execute(
-            "DELETE FROM scheduled_posts WHERE user_id = ?", (session["user_id"],))
-        cursor.execute(
-            "DELETE FROM notifications WHERE user_id = ?", (session["user_id"],))
-        cursor.execute(
-            "DELETE FROM socials WHERE user_id = ?", (session["user_id"],))
+    # Control charts
+    global connected_users_ids
+    
+    # remove and update charts when a user logs out
+    connected_users_ids.remove(
+        [user for user in connected_users_ids if user["id"] == id][0])
+    
+    update_connections_chart()
 
-        conn.commit()
-        conn.close()
-
-        session.clear()
-
-        return redirect("/register")
+    

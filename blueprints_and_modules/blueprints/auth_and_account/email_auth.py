@@ -7,19 +7,24 @@ from flask import Blueprint, request, render_template, session, redirect
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from socials.Email.secrets import social_hub_email_details
 from socials.Email.secrets import email_visuals
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 email_auth_bp = Blueprint(
     "email_auth_bp", __name__, template_folder="../../templates")
 
 
 @email_auth_bp.route("/email_authentication", methods=["GET", "POST"])
+@login_required
 def email_authentication():
-    from blueprints.auth_and_account.account import get_current_user_details
-    
-    recipient = get_current_user_details()["email_address"]
+    from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
+
+    recipient = details_getter(session["user_id"])["email_address"]
 
     if request.method == "GET":
-        email_authentication_logics(recipient)
+        session["one_time_code"] = secrets.randbelow(1000000)
+
+        email_authentication_logics(recipient, 'SocialHub authentication',
+                                    f"Authenticate your Email account.\nCopy the code presented below and paste it in SocialHub site.\n{session['one_time_code']}")
 
         return render_template("login_email.html", email_visuals=email_visuals)
     else:
@@ -42,9 +47,7 @@ def email_authentication():
             return render_template("error.html", error_message="Wrong code.", error_code=400)
 
 
-def email_authentication_logics(recipient):
-    session["one_time_code"] = secrets.randbelow(1000000)
-
+def email_authentication_logics(recipient, subject, body):
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
     smtp_username = social_hub_email_details["email_address"]
@@ -57,9 +60,8 @@ def email_authentication_logics(recipient):
     msg = MIMEMultipart()
     msg['From'] = smtp_username
     msg['To'] = recipient
-    msg['Subject'] = 'SocialHub authentication'
-
-    body = f"Authenticate your Email account.\nCopy the code presented below and paste it in SocialHub site.\n{session['one_time_code']}"
+    msg['Subject'] = subject
+    body = body
     msg.attach(MIMEText(body, 'plain'))
 
     smtp_connection.sendmail(smtp_username, recipient, msg.as_string())

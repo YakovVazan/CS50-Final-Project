@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime, timedelta
 from flask import Blueprint, request, session, jsonify
 from blueprints_and_modules.blueprints.db.db import get_db_connection
-from blueprints_and_modules.blueprints.auth_and_account.account import get_current_user_details
+from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 notifications_bp = Blueprint("notifications_bp", __name__, template_folder="../../templates")
@@ -24,7 +24,7 @@ def manage_notifications():
         return jsonify(full_notifications)
     else:
         utc_now = datetime.utcnow()
-        user_time = utc_now - timedelta(minutes=get_current_user_details()["time_zone_offset"])
+        user_time = utc_now - timedelta(minutes=details_getter(session["user_id"])["time_zone_offset"])
         
         data = request.get_json()
         action = data.get("action", "")

@@ -1,3 +1,4 @@
+import { socket } from "./socketio_init.js";
 import { fetchDashboardData } from "./dashboardData.js";
 
 export function displayUpToDateTable(args) {
@@ -223,17 +224,19 @@ async function getDashboardData(args) {
         dmUserButton.classList.add("btn", "btn-outline-warning");
         dmUserButton.textContent = "DM";
         dmUserTd.appendChild(dmUserButton);
+        dmUserButton.addEventListener("click", () => dmUser(user["id"]));
 
         // ban user td
         let banUserTd = document.createElement("td");
         banUserTd.classList.add("dropdown-center");
         row.appendChild(banUserTd);
 
-        // dm user button
+        // ban user button
         let banUserButton = document.createElement("span");
         banUserButton.classList.add("btn", "btn-outline-danger");
         banUserButton.textContent = "BAN";
         banUserTd.appendChild(banUserButton);
+        banUserButton.addEventListener("click", () => banUser(user["id"]));
 
         tableBody.appendChild(row);
 
@@ -329,4 +332,12 @@ function toggleRowVisibility(users, className) {
   document.querySelector("#main-filter-button").innerHTML = className
     .substring(1, className.indexOf("-", 1))
     .replace(/^[a-z]/, (match) => match.toUpperCase());
+}
+
+function dmUser(id) {
+  socket.emit("dmUser", id);
+}
+
+function banUser(id) {
+  socket.emit("banUser", { id: id });
 }

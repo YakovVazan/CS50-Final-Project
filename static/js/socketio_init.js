@@ -5,3 +5,8 @@ export const socket = io.connect(
     ":" +
     location.port
 );
+
+// page reload for just banned users
+socket.on("reload_page", () => {
+  window.location.href = "/register";
+});

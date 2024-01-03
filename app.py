@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_session import Session
 from blueprints_and_modules.blueprints.db.db import init_db
 from blueprints_and_modules.modules.socketio.socketio_instance import socketio
@@ -57,6 +57,12 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
+
+# prevent wrong pathes in url
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template('404.html')
 
 
 if __name__ == '__main__':
