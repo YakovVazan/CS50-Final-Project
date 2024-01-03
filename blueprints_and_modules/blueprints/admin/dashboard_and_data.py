@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Blueprint, session, render_template, redirect, jsonify
 from blueprints_and_modules.blueprints.db.db import get_db_connection
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 
 dashboard_and_data_bp = Blueprint(
@@ -8,8 +9,9 @@ dashboard_and_data_bp = Blueprint(
 
 
 @dashboard_and_data_bp.route("/dashboard")
+@login_required
 def dashboard():
-    if session and session["app_owner"]:
+    if session["app_owner"]:
         return render_template("dashboard.html")
     else:
         return redirect("/login")

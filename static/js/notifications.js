@@ -1,3 +1,5 @@
+import { socket } from "./socketio_init.js";
+
 export function createNotification(content, codeColor) {
   fetch("/manage_notifications", {
     method: "POST",
@@ -183,3 +185,8 @@ function catchNotifications() {
   }
 }
 catchNotifications();
+
+// Generating notifications directly from backend using socketIO
+socket.on("generate_notification", function (data) {
+  createNotification(data.message, data.codeColor);
+});

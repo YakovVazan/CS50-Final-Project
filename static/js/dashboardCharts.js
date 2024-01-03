@@ -90,15 +90,10 @@ function createBarChart(dashboardData) {
   });
 }
 
-// Update charts that new account created
-socket.on("new_account", () => {
-  showCharts();
-});
-
-// Update charts that another user connected to the app
+// Update charts when another user connected/new account created to the app
 socket.on("new_connection", (data) => {
-  connectedUsers = data["connected_users"];
-  showCharts(data["connected_users_ids"]);
+  connectedUsers = data["connected_users"].length;
+  showCharts(data["connected_users"]);
 });
 
 // Function to check tab visibility

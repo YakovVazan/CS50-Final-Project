@@ -3,9 +3,10 @@ import sqlite3
 from datetime import datetime, timedelta
 from flask import Blueprint, session, request, jsonify, render_template
 from blueprints_and_modules.blueprints.db.db import get_db_connection
-from blueprints_and_modules.blueprints.auth_and_account.account import get_current_user_details
+from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
 from blueprints_and_modules.blueprints.communications_and_posts.communications import get_social_names
 from blueprints_and_modules.blueprints.communications_and_posts.posts import monitor_interface_with_socials
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 schedule_posting = Blueprint(
     "schedule_posting", __name__, template_folder="../../templates")
@@ -14,7 +15,7 @@ schedule_posting = Blueprint(
 def schedule_post():
     try:
         utc_now = datetime.utcnow()
-        user_time = utc_now - timedelta(minutes=get_current_user_details()["time_zone_offset"])
+        user_time = utc_now - timedelta(minutes=details_getter(session["user_id"])["time_zone_offset"])
 
         new_schedule_post = request.get_json()
 
@@ -64,6 +65,7 @@ def edit_scheduled_post():
 
 
 @schedule_posting.route("/scheduled_posts")
+@login_required
 def scheduled_posts():
     return render_template("scheduled_posts.html", posts=display_scheduled_posts())
 

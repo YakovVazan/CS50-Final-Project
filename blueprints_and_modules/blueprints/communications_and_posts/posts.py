@@ -5,10 +5,10 @@ import facebook
 from datetime import datetime, timedelta
 from flask import Blueprint, session, redirect, url_for
 from requests_oauthlib import OAuth1Session
-from blueprints_and_modules.blueprints.auth_and_account.account import get_current_user_details
+from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.blueprints.communications_and_posts.communications import get_social_names
-from blueprints_and_modules.modules.socketio.socketio_logics import send_notification
+from blueprints_and_modules.modules.socketio.socketio_logics import send_toast
 from socials.Telegram.secrets import token
 from socials.X.secrets import keys_and_tokens
 
@@ -18,7 +18,7 @@ posts_bp = Blueprint(
 
 def post(new_post):
     utc_now = datetime.utcnow()
-    user_time = utc_now - timedelta(minutes=get_current_user_details()["time_zone_offset"])
+    user_time = utc_now - timedelta(minutes=details_getter(session["user_id"])["time_zone_offset"])
     
     current_datetime = user_time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -141,7 +141,7 @@ def send_to_facebook_page(content):
                 break
     except Exception as e:
         data = {"message": f"{e}", "codeColor": "#dc3545"}
-        send_notification(data)
+        send_toast(data)
         
         return redirect(url_for("facebook_login"))
 

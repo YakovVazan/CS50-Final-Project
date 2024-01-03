@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Blueprint, request, jsonify, session
 from blueprints_and_modules.blueprints.db.db import get_db_connection
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 
 timezone_bp = Blueprint("timezone_bp", __name__,
@@ -8,6 +9,7 @@ timezone_bp = Blueprint("timezone_bp", __name__,
 
 
 @timezone_bp.route("/set_timezone", methods=['POST'])
+@login_required
 def set_timezone():
     """get timezone using ip and use it for the charts"""
     # import requests
