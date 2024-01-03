@@ -4,21 +4,26 @@ from blueprints_and_modules.modules.socketio.socketio_instance import socketio
 from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
 from blueprints_and_modules.blueprints.auth_and_account.email_auth import email_authentication_logics
 from blueprints_and_modules.blueprints.auth_and_account.account import account_deleter
+from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
 connected_users_ids = []
 
 
 @socketio.on('connect')
+@login_required
 def handle_connect():
     global connected_users_ids
 
-    if session and session["user_id"] not in [user["id"] for user in connected_users_ids]:
+    if session["user_id"] not in [user["id"] for user in connected_users_ids]:
         connected_users_ids.append(
             {"id": session["user_id"], "sid": request.sid, "last_time_seen": datetime.datetime.now().minute, "connected": True})
 
         update_connections_chart()
-    elif session and session["app_owner"]:
-        update_connections_chart()
+    else:
+        for user in connected_users_ids:
+            if user["id"] == session["user_id"]:
+                user["sid"] = request.sid
+                break
 
 
 @socketio.on('tab_visibility')
@@ -81,7 +86,6 @@ def banUser(data):
         email_address, "SocialHub ban", message_data["message"])
 
     account_deleter(data["id"])
-    
 
 
 def get_user_sid(id):
