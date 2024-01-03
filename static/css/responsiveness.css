@@ -63,6 +63,12 @@
     footer {
         display: none;
     }
+
+    #notifications-toasts-container {
+        top: 1em;
+        right: 50%;
+        transform: translateX(50%);
+    }
 }
 
 /* Tiny */

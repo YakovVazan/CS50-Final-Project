@@ -27,6 +27,12 @@ td {
     vertical-align: middle;
 }
 
+#notifications-toasts-container {
+    position: absolute;
+    top: 4em;
+    right: 0.8em;
+}
+
 /* items in account drop down */
 a.dropdown-item {
     text-align: center;
