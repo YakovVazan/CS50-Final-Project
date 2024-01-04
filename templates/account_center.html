@@ -4,21 +4,94 @@
 
 {% block main %}
 <div id="account-center-block">
-    <div id="details-layout">
-        <nameGeneral>Name</nameGeneral>
-        <nameSpecific>{{ details["username"] }}</nameSpecific>
-        <emailGeneral>Email</emailGeneral>
-        <emailSpecific>{{ details["email_address"] }}</emailSpecific>
-        {% if details["authenticated"] == 0 %}
-        <form action="/email_authentication">
-            <input id="authenticate_button" class="btn btn-success" type="submit" value="Authenticate">
-        </form>
-        {% endif %}
-        <passwordGeneral>Password</passwordGeneral>
-        <passwordSpecific>******</passwordSpecific>
-        <reset>
+    <!-- stats area -->
+    <div id="stats">
+        <div id="stats-header">
+            <span id="stats-header-left">
+                <a href="#stats" id="stats-header-link">
+                    <h2 class="account-center-sub-header">Stats</h2>
+                </a>
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-graph-up" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07" />
+                </svg> -->
+            </span>
+            <span class="account-center-hr"></span>
+        </div>
+        <div id="stats-body">
+            <div id="stats-posts">
+                <div class="card">
+                    <div class="card-header">Toatl Posts</div>
+                    <div class="card-body">
+                        <h5 class="card-title">#</h5>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Scheduled Posts</div>
+                    <div class="card-body">
+                        <h5 class="card-title">#</h5>
+                    </div>
+                </div>
+            </div>
+            <div id="stats-session">
+                <div class="card">
+                    <div class="card-header">average session duration</div>
+                    <div class="card-body">
+                        <h5 class="card-title">#</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- details area -->
+    <div id="details">
+        <div id="details-header">
+            <span id="stats-header-left">
+                <a href="#details" id="details-header-link">
+                    <h2 class="account-center-sub-header">Details</h2>
+                </a>
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-person-vcard" viewBox="0 0 16 16">
+                    <path
+                        d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5" />
+                    <path
+                        d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z" />
+                </svg> -->
+            </span>
+            <span class="account-center-hr"></span>
+        </div>
+
+        <!-- details table -->
+        <table class="table table-bordered rounded">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <td id="username">{{ details["username"] }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td id="user_email">{{ details["email_address"] }}</td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td>******</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- details buttons -->
+        <div class="btn-group" role="group">
+            {% if details["authenticated"] == 0 %}
+            <button class="btn btn-success">
+                <form action="/email_authentication">
+                    <input id="authenticate_button" class="btn btn-success" type="submit" value="Authenticate">
+                </form>
+            </button>
+            {% endif %}
             <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updatesModal">Edit</button>
-        </reset>
+        </div>
     </div>
 </div>
 
@@ -42,7 +115,8 @@
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">Current password:</span>
-                    <input id="update-old-password" type="password" class="form-control" value="" placeholder="Required">
+                    <input id="update-old-password" type="password" class="form-control" value=""
+                        placeholder="Required">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">New password:</span>

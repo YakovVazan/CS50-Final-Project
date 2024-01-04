@@ -1,54 +1,81 @@
 #account-center-block {
+    width: 100vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
 }
 
-#details-layout {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: minmax(auto, auto);
-    grid-template-areas:
-        "nameGeneral . nameSpecific"
-        "emailGeneral authentication-needed emailSpecific"
-        "passwordGeneral . passwordSpecific"
-        ". reset ."
-    ;
+#stats {
+    height: 60%;
+    width: 100%;
 }
 
-nameGeneral {
-    grid-area: nameGeneral;
+#details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
-nameSpecific {
-    grid-area: nameSpecific;
+#stats,
+#details {
+    padding-left: 2%;
+    padding-right: 2%;
 }
 
-emailGeneral {
-    grid-area: emailGeneral;
+#stats-header,
+#details-header {
+    display: flex;
+    width: 100%;
+    height: 10%;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
 }
 
-emailSpecific {
-    grid-area: emailSpecific;
+#stats-header-link,
+#details-header-link {
+    text-decoration: none;
+    color: var(--bs-body-color);
 }
 
-passwordGeneral {
-    grid-area: passwordGeneral;
+#stats-header-left {
+    display: flex;
+    align-items: center;
+    width: 10%;
 }
 
-passwordSpecific {
-    grid-area: passwordSpecific;
+.account-center-hr {
+    height: 1px;
+    width: 85%;
+    background-color: var(--bs-body-color);
 }
 
-form {
-    grid-area: authentication-needed;
+#stats-body {
+    display: flex;
+    height: 90%;
 }
 
-reset {
-    grid-area: reset;
+#stats-posts {
+    align-items: start;
 }
 
-#details-layout>:not(form, reset) {
-    border-bottom: 1px solid gray;
+#stats-session {
+    align-items: end;
+}
+
+#stats-posts,
+#stats-session {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 50%;
+    justify-content: space-between;
+}
+
+#stats-posts>*,
+#stats-session>* {
+    width: 98%;
+    height: 100%;
     margin-bottom: 1em;
 }
