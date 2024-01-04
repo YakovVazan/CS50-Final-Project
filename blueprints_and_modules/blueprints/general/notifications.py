@@ -5,7 +5,8 @@ from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 
-notifications_bp = Blueprint("notifications_bp", __name__, template_folder="../../templates")
+notifications_bp = Blueprint(
+    "notifications_bp", __name__, template_folder="../../templates")
 
 
 @notifications_bp.route("/manage_notifications", methods=["GET", "POST"])
@@ -24,8 +25,10 @@ def manage_notifications():
         return jsonify(full_notifications)
     else:
         utc_now = datetime.utcnow()
-        user_time = utc_now - timedelta(minutes=details_getter(session["user_id"])["time_zone_offset"])
-        
+        user_time = utc_now - \
+            timedelta(minutes=details_getter(
+                session["user_id"])["time_zone_offset"])
+
         data = request.get_json()
         action = data.get("action", "")
         codeColor = data.get("codeColor", "")

@@ -7,7 +7,7 @@ let submitButton = document.querySelector("#submit-personal-changes");
 
 if (submitButton) {
   // name
-  let oldName = document.querySelector("nameSpecific").innerHTML,
+  let oldName = document.querySelector("#username").innerHTML,
     newName = oldName;
   // catch old name
   document.querySelector("#update-name").value = oldName;
@@ -17,7 +17,7 @@ if (submitButton) {
   });
 
   // email
-  let oldEmail = document.querySelector("emailSpecific").innerHTML,
+  let oldEmail = document.querySelector("#user_email").innerHTML,
     newEmail = oldEmail;
   // catch old email
   document.querySelector("#update-email").value = oldEmail;
