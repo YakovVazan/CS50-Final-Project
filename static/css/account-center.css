@@ -12,9 +12,10 @@
 
 #details {
     width: 100%;
+    height: 40%;
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: center;
 }
 
 #stats,
@@ -31,12 +32,6 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1em;
-}
-
-#stats-header-link,
-#details-header-link {
-    text-decoration: none;
-    color: var(--bs-body-color);
 }
 
 #stats-header-left {
@@ -78,4 +73,9 @@
     width: 98%;
     height: 100%;
     margin-bottom: 1em;
+}
+
+#total-posts, #total-scheduled-posts {
+    font-size: 3em;
+    font-family: monospace;
 }

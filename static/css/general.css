@@ -27,6 +27,11 @@ td {
     vertical-align: middle;
 }
 
+.undecorated-link {
+    text-decoration: none;
+    color: var(--bs-body-color);
+}
+
 #notifications-toasts-container {
     position: absolute;
     top: 4em;

@@ -7,6 +7,7 @@ from blueprints_and_modules.modules.scheduler.scheduler import *
 from blueprints_and_modules.blueprints.admin.reports import reports_bp
 from blueprints_and_modules.blueprints.auth_and_account.auth import auth_bp
 from blueprints_and_modules.blueprints.auth_and_account.account import account_bp
+from blueprints_and_modules.blueprints.auth_and_account.user_data import user_data_bp
 from blueprints_and_modules.blueprints.auth_and_account.email_auth import email_auth_bp
 from blueprints_and_modules.blueprints.communications_and_posts.communications import communications_bp
 from blueprints_and_modules.blueprints.communications_and_posts.posts import posts_bp
@@ -30,6 +31,7 @@ socketio.init_app(app)
 # Configure blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(account_bp)
+app.register_blueprint(user_data_bp)
 app.register_blueprint(email_auth_bp)
 app.register_blueprint(communications_bp)
 app.register_blueprint(posts_bp)
