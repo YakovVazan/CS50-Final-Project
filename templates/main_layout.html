@@ -177,17 +177,13 @@
             <!-- Account settings list -->
             <ul class="dropdown-menu dropdown-menu-end">
               {% if session["user_id"] %}
-              <li><a class="dropdown-item" href="/account_center">Account Center</a></li>
-              <hr class="solid">
               <li><a class="dropdown-item" href="/logout" id="logout-button">Log Out</a></li>
               <hr class="solid">
-              <li><a class="dropdown-item text-danger" href="/delete_account" id="logout-button">Delete Account</a></li>
+              <li><a class="dropdown-item" href="/account_center">Account Center</a></li>
               {% if session["app_owner"] %}
               <hr class="solid">
               <li id="admin-is-here"><a class="dropdown-item text-warning" href="/dashboard">Dashboard</a></li>
               {% endif %}
-              <hr class="solid">
-              <li class="text-muted text-center">{{session["version_numbering"]}}</li>
               {% else %}
               <li><a class="dropdown-item" href="/register">Register</a></li>
               <hr class="solid">
@@ -228,6 +224,11 @@
     <!-- Privacy Policy -->
     <span>&#8226;</span>
     <a href="/privacy_policy">Privacy Policy</a>
+    <!-- Version -->
+    {% if session["user_id"] %}
+    <span>&#8226;</span>
+    {{session["version_numbering"]}}
+    {% endif %}
     <!-- feedback -->
     <span id="bug-icon" data-bs-target="#fbAndBugsModal" data-bs-toggle="modal" style="cursor: pointer;">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bug"

@@ -5,6 +5,33 @@ import { passwordLength } from "./registrationLogics.js";
 
 let submitButton = document.querySelector("#submit-personal-changes");
 
+// set stats for accout_center
+if (document.querySelector("#account-center-block")) {
+  // Fetch current user details
+  fetch("/get_current_user_details")
+    .then((response) => response.json())
+    .then((data) => {
+      // Fetch details for the specific user using the retrieved ID
+      fetch(`/account_center/${data.id}`)
+        .then((res) => res.json())
+        .then((details) => {
+          // turn off spinners
+          document.querySelectorAll(".stats-spinner").forEach((spinner) => {
+            spinner.style.display = "none";
+          });
+
+          // Update the total posts count
+          document.querySelector("#total-posts").innerHTML =
+            details.posts[0]["COUNT(*)"];
+
+          // Update the total scheduled posts count
+          document.querySelector("#total-scheduled-posts").innerHTML =
+            details.scheduled_posts[0]["COUNT(*)"];
+        });
+    });
+}
+
+// edit personal details in account_center
 if (submitButton) {
   // name
   let oldName = document.querySelector("#username").innerHTML,

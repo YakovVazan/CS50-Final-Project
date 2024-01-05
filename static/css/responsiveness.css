@@ -1,20 +1,32 @@
 /* Desktop */
-@media screen and (max-width: 1024px) {
-    main {
-        padding-top: 1rem;
-    }
-
+@media screen and (min-width: 1024px) {
     #chat-window {
-        width: 75%;
+        width: 65%;
     }
 
     #login-director-card {
         width: 75%;
     }
+
+    .account-center-icon {
+        display: none;
+    }
+
+    .account-center-sub-header {
+        display: "";
+    }
 }
 
 /* Medium */
-@media screen and (min-width: 768px) and (max-width: 1024px) {}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .account-center-icon {
+        display: none;
+    }
+
+    .account-center-sub-header {
+        display: "";
+    }
+}
 
 /* Mobile */
 @media screen and (min-width: 375px) and (max-width: 768px) {
@@ -69,6 +81,14 @@
         right: 50%;
         transform: translateX(50%);
     }
+
+    .account-center-icon {
+        display: "";
+    }
+
+    .account-center-sub-header {
+        display: none;
+    }
 }
 
 /* Tiny */
@@ -78,5 +98,32 @@
         top: auto;
         bottom: 0;
         padding-bottom: 1.8em !important;
+    }
+
+    .account-center-icon {
+        display: "";
+    }
+
+    .account-center-sub-header {
+        display: none;
+    }
+}
+
+/* Tiny to medium */
+@media screen and (min-width: 0px) and (max-width: 768px) {
+    #stats-body {
+        display: block;
+    }
+
+    #stats-posts {
+        height: 66%;
+        width: 100%;
+        align-items: center;
+    }
+
+    #stats-session {
+        height: 33%;
+        width: 100%;
+        align-items: center;
     }
 }
