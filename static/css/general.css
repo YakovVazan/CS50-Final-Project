@@ -33,7 +33,7 @@ td {
 }
 
 #notifications-toasts-container {
-    position: absolute;
+    position: fixed;
     top: 4em;
     right: 0.8em;
 }
