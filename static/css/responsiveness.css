@@ -62,16 +62,6 @@
         width: 100%;
     }
 
-    #details-layout {
-        grid-template-areas:
-            "nameGeneral . nameSpecific"
-            "emailGeneral . emailSpecific"
-            ". . authentication-needed"
-            "passwordGeneral . passwordSpecific"
-            ". reset ."
-        ;
-    }
-
     footer {
         display: none;
     }
@@ -111,6 +101,23 @@
 
 /* Tiny to medium */
 @media screen and (min-width: 0px) and (max-width: 768px) {
+    main {
+        margin-top: 0;
+        padding-top: 1%;
+    }
+
+    .card-body {
+        height: 75%;
+    }
+
+    #stats {
+        height: 80%;
+    }
+
+    #stats-header {
+        margin-bottom: 0.1%;
+    }
+
     #stats-body {
         display: block;
     }
@@ -119,6 +126,11 @@
         height: 66%;
         width: 100%;
         align-items: center;
+        margin-bottom: 0.1%;
+    }
+
+    #stats-posts>* {
+        height: 43%;
     }
 
     #stats-session {
