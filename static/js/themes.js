@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let themePath = document.querySelector("#theme-path");
   handleTheme();
 
+  // iOS safari header color
+  let themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
+
   // Get a hold on the theme buttons
   let themeButtons = document.getElementsByClassName("theme_button");
 
@@ -42,6 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "data-bs-theme",
         localStorage.getItem("SocialHubTheme")
       );
+
+      themeColorMetaTag.setAttribute("content", "SocialHubTheme");
 
       handleTheme();
     });
