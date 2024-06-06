@@ -1,8 +1,6 @@
 # SocialHub
 #### Video Demo:  [Watch Here](https://youtu.be/6WXeL9CVYXA)
 #### Description:
-TODO
-
 ## Background
 SocialHub is an innovative web application designed to simplify the process of managing social media posts across multiple platforms. Instead of the tedious task of copying and pasting content from one platform to another, SocialHub allows users to post simultaneously to various social media platforms from a single, unified interface. This significantly streamlines the workflow for social media managers, marketers, and anyone who needs to maintain a consistent online presence across different networks.
 
