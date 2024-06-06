@@ -14,7 +14,7 @@ SocialHub's core feature is its ability to post content across multiple social m
 In addition to real-time posting, SocialHub allows users to schedule their posts for future publication. This feature is particularly useful for planning content in advance, ensuring a consistent posting schedule, and reaching audiences at optimal times.
 
 ### Account Center Statistics
-SocialHub provides users with comprehensive statistics within the Account Center. This includes data on post performance, audience engagement, and more, enabling users to track the effectiveness of their social media strategies and make data-driven decisions.
+SocialHub provides users with comprehensive statistics within the Account Center. This includes data on post performance and more, enabling users to track the effectiveness of their social media strategies and make data-driven decisions.
 
 ## Origin and Development
 SocialHub was originally built as a final project solution for the CS50 course, which is Harvard University's introductory course to computer science. The project has since evolved, incorporating more sophisticated features and integrations. The foundation laid by the CS50 project has been instrumental in the development of SocialHub, providing a robust framework upon which the current application is built.
