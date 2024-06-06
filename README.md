@@ -1,25 +1,32 @@
 # SocialHub
+#### Video Demo:  [Watch Here](https://youtu.be/6WXeL9CVYXA)
+#### Description:
+TODO
 
-## Description
+## Background
+SocialHub is an innovative web application designed to simplify the process of managing social media posts across multiple platforms. Instead of the tedious task of copying and pasting content from one platform to another, SocialHub allows users to post simultaneously to various social media platforms from a single, unified interface. This significantly streamlines the workflow for social media managers, marketers, and anyone who needs to maintain a consistent online presence across different networks.
 
-SocialHub is a versatile web application designed to streamline the social media management process by allowing users to post to multiple social accounts across different platforms with a single click. Instead of the cumbersome task of copying and pasting content multiple times across various social media platforms, SocialHub provides a unified solution to enhance productivity and maintain consistency in social media communication.
+## Current Development Status
+At this stage of development, SocialHub is integrated with the APIs of Twitter and Telegram. This means users can post directly to these platforms without leaving the SocialHub interface. While the application is not yet live for public use, significant progress has been made, and additional integrations with other social media platforms like Facebook, LinkedIn, and Instagram are planned for future updates.
 
-### Key Features
+## Key Features
+### Multi-Platform Posting
+SocialHub's core feature is its ability to post content across multiple social media platforms simultaneously. This eliminates the need to switch between different apps or websites, saving users valuable time and effort.
 
-1. **Multi-Platform Posting**: SocialHub supports a wide range of popular social media platforms, including Facebook, Twitter, Instagram, LinkedIn, and more. Users can compose a single post and instantly share it across all selected platforms without any additional effort.
+### Scheduling Posts
+In addition to real-time posting, SocialHub allows users to schedule their posts for future publication. This feature is particularly useful for planning content in advance, ensuring a consistent posting schedule, and reaching audiences at optimal times.
 
-2. **User-Friendly Interface**: The intuitive interface of SocialHub makes it easy for users of all experience levels to navigate and utilize its features. The dashboard provides a clear overview of connected accounts, upcoming scheduled posts, and recent activity.
+### Account Center Statistics
+SocialHub provides users with comprehensive statistics within the Account Center. This includes data on post performance, audience engagement, and more, enabling users to track the effectiveness of their social media strategies and make data-driven decisions.
 
-3. **Scheduling and Automation**: Users can schedule posts in advance, ensuring a consistent online presence without needing to manually post in real-time. Automated posting reduces the risk of human error and saves valuable time.
+## Origin and Development
+SocialHub was originally built as a final project solution for the CS50 course, which is Harvard University's introductory course to computer science. The project has since evolved, incorporating more sophisticated features and integrations. The foundation laid by the CS50 project has been instrumental in the development of SocialHub, providing a robust framework upon which the current application is built.
 
-4. **Content Management**: SocialHub offers robust content management tools, allowing users to save drafts, organize media files, and access a library of frequently used hashtags and templates. This feature simplifies the content creation process and ensures posts are engaging and relevant.
+## Future Plans
+As SocialHub continues to develop, the primary focus will be on expanding the range of supported social media platforms. Future updates will aim to integrate Facebook, LinkedIn, Instagram, and potentially other platforms such as Pinterest and Reddit. Additionally, enhancements to the user interface and further analytics capabilities are planned to provide a more comprehensive and user-friendly experience.
 
-5. **Analytics and Reporting**: Gain insights into the performance of your social media efforts with SocialHub's analytics and reporting tools. Track engagement metrics, monitor follower growth, and analyze the success of different types of content to optimize future posts.
+## Conclusion
+SocialHub represents a significant step forward in social media management, offering a powerful tool for anyone looking to efficiently manage their online presence. While it is still in development, the existing features and future plans position SocialHub as a promising solution for multi-platform social media posting and analytics. Stay tuned for updates as we work towards bringing SocialHub to a wider audience.
 
-### Benefits
-
-- **Efficiency**: Significantly reduce the time spent on managing multiple social media accounts.
-- **Consistency**: Maintain a consistent brand voice and message across all platforms.
-- **Insightful**: Use analytics to understand audience engagement and improve social media strategies.
-
-SocialHub is the ultimate tool for individuals and businesses looking to simplify their social media management and maximize their online presence.
+---
+For more information and updates, please watch our [Video Demo](https://youtu.be/6WXeL9CVYXA) and follow our development journey.
