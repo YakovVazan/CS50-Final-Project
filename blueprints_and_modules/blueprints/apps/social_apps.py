@@ -2,14 +2,14 @@ import json
 import sqlite3
 import requests
 from requests_oauthlib import OAuth1Session
-from socials.Telegram.secrets import token
+from config import TELEGRAM_TOKEN, X_API_KEY, X_KEY_SECRET
+from blueprints_and_modules.modules.apps_data.data import socials
+from blueprints_and_modules.blueprints.db.db import get_db_connection
 from flask import Blueprint, request, render_template, session, redirect
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
-from blueprints_and_modules.blueprints.db.db import get_db_connection
-from blueprints_and_modules.modules.apps_data.data import socials
-from socials.X.secrets import keys_and_tokens
 
-social_apps_bp = Blueprint("social_apps_bp", __name__, template_folder="../../../templates")
+social_apps_bp = Blueprint("social_apps_bp", __name__,
+                           template_folder="../../../templates")
 
 
 @social_apps_bp.route("/available_apps/telegram", methods=["GET", "POST"])
@@ -27,7 +27,7 @@ def telegram_login():
         channel_name = request.form.get("chat_name")
 
         response = requests.get(
-            f"https://api.telegram.org/bot{token}/getUpdates")
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates")
 
         # Parse JSON string into a dictionary
         dict_response = json.loads(response.text)
@@ -48,7 +48,7 @@ def telegram_login():
         conn.commit()
         conn.close()
         return redirect("/")
-    
+
 
 def find_id_by_name(json_data, channel_name):
     # Grab channel' ID from the bot's data by its name recursively
@@ -64,13 +64,13 @@ def find_id_by_name(json_data, channel_name):
             result = find_id_by_name(item, channel_name)
             if result is not None:
                 return result
-            
+
 
 @social_apps_bp.route("/available_apps/twitter", methods=["GET", "POST"])
 @login_required
 def twitter_login_and_authorize():
-    consumer_key = keys_and_tokens["API Key"]
-    consumer_secret = keys_and_tokens["API Key Secret"]
+    consumer_key = X_API_KEY
+    consumer_secret = X_KEY_SECRET
 
     if request.method == "GET":
         # Get twitter visuals

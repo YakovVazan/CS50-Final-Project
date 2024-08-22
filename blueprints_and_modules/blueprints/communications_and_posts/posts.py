@@ -1,16 +1,15 @@
-import sqlite3
 import json
+import sqlite3
 import requests
 import facebook
 from datetime import datetime, timedelta
-from flask import Blueprint, session, redirect, url_for
 from requests_oauthlib import OAuth1Session
-from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
+from flask import Blueprint, session, redirect, url_for
+from config import TELEGRAM_TOKEN, X_API_KEY, X_KEY_SECRET
 from blueprints_and_modules.blueprints.db.db import get_db_connection
-from blueprints_and_modules.blueprints.communications_and_posts.communications import get_social_names
 from blueprints_and_modules.modules.socketio.socketio_logics import send_toast
-from socials.Telegram.secrets import token
-from socials.X.secrets import keys_and_tokens
+from blueprints_and_modules.blueprints.auth_and_account.account import details_getter
+from blueprints_and_modules.blueprints.communications_and_posts.communications import get_social_names
 
 posts_bp = Blueprint(
     "posts_bp", __name__, template_folder="../../templates")
@@ -69,7 +68,7 @@ def monitor_interface_with_socials(content):
 
 def send_to_telegram_channel(chat_id, message):
     if chat_id and message:
-        url = f'https://api.telegram.org/bot{token}/sendMessage'
+        url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage'
 
         data = {
             'chat_id': chat_id,
@@ -85,8 +84,8 @@ def send_to_telegram_channel(chat_id, message):
 
 
 def send_to_twitter(content):
-    consumer_key = keys_and_tokens["API Key"]
-    consumer_secret = keys_and_tokens["API Key Secret"]
+    consumer_key = X_API_KEY
+    consumer_secret = X_KEY_SECRET
 
     # Get database
     conn = get_db_connection()

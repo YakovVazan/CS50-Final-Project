@@ -3,11 +3,12 @@ import secrets
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Blueprint, request, render_template, session, redirect
 from blueprints_and_modules.blueprints.db.db import get_db_connection
-from socials.Email.secrets import social_hub_email_details
-from socials.Email.secrets import email_visuals
+from flask import Blueprint, request, render_template, session, redirect
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
+
+from socials.Email.secrets import email_visuals
+from config import SOCIALHUB_APP_OFFICIAL_EMAIL, SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD
 
 email_auth_bp = Blueprint(
     "email_auth_bp", __name__, template_folder="../../templates")
@@ -50,8 +51,8 @@ def email_authentication():
 def email_authentication_logics(recipient, subject, body):
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
-    smtp_username = social_hub_email_details["email_address"]
-    smtp_password = social_hub_email_details["email_password"]
+    smtp_username = SOCIALHUB_APP_OFFICIAL_EMAIL
+    smtp_password = SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD
 
     smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
     smtp_connection.starttls()

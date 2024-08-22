@@ -1,11 +1,10 @@
 import sqlite3
+from blueprints_and_modules.blueprints.db.db import get_db_connection
+from config import SOCIALHUB_APP_OWNER_EMAIL, SOCIALHUB_VERSION_NUMBERING
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from blueprints_and_modules.modules.socketio.socketio_logics import connected_users_ids, update_connections_chart
-from blueprints_and_modules.blueprints.db.db import get_db_connection
-from socials.SocialHub.secrets import app_owner_email
-from socials.SocialHub.secrets import version_numbering
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
+from blueprints_and_modules.modules.socketio.socketio_logics import connected_users_ids, update_connections_chart
 
 auth_bp = Blueprint("auth_bp", __name__, template_folder="../../templates")
 
@@ -84,8 +83,8 @@ def login():
         # Store user details in flask's session
         session["user_id"] = rows[0]["id"]
         session["user_name"] = rows[0]["username"]
-        session["app_owner"] = True if user_dict[0]["email_address"] == app_owner_email else False
-        session["version_numbering"] = version_numbering
+        session["app_owner"] = True if user_dict[0]["email_address"] == SOCIALHUB_APP_OWNER_EMAIL else False
+        session["version_numbering"] = SOCIALHUB_VERSION_NUMBERING
 
         conn.commit()
 
@@ -109,11 +108,9 @@ def handleLogout(id):
 
     # Control charts
     global connected_users_ids
-    
+
     # remove and update charts when a user logs out
     connected_users_ids.remove(
         [user for user in connected_users_ids if user["id"] == id][0])
-    
-    update_connections_chart()
 
-    
+    update_connections_chart()

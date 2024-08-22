@@ -1,13 +1,14 @@
 import sqlite3
 import json
 import requests
-from socials.Telegram.secrets import token
+from config import TELEGRAM_TOKEN
 from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from blueprints_and_modules.modules.apps_data.data import socials
 
-social_hub_bp = Blueprint("social_hub_bp", __name__, template_folder="../../templates")
+social_hub_bp = Blueprint("social_hub_bp", __name__,
+                          template_folder="../../templates")
 
 
 @social_hub_bp.route("/available_apps", methods=["GET", "POST"])
@@ -46,7 +47,7 @@ def available_apps():
             return redirect(url_for("social_apps_bp.facebook_login"))
         else:
             return render_template("error.html", error_message=f"{social_app_name} is not available on SocialHub yet.", error_code=503)
-        
+
 
 @social_hub_bp.route("/has_social_accounts")
 def has_social_accounts():
@@ -108,7 +109,7 @@ def apps_logout():
 
         # Send request to leave Telegram channel
         print(requests.post(
-            f'https://api.telegram.org/bot{token}/leaveChat?chat_id={channel_id}').status_code)
+            f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/leaveChat?chat_id={channel_id}').status_code)
 
     # Default apps deletion from db
     cursor.execute(

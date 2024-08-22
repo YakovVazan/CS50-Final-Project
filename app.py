@@ -1,5 +1,5 @@
-from flask import Flask, render_template
 from flask_session import Session
+from flask import Flask, render_template
 from blueprints_and_modules.blueprints.db.db import init_db
 from blueprints_and_modules.modules.socketio.socketio_instance import socketio
 from blueprints_and_modules.modules.socketio.socketio_logics import *
