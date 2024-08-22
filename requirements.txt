@@ -6,4 +6,4 @@ requests
 requests_oauthlib
 facebook-sdk
 apscheduler
-dotenv
+python-dotenv
