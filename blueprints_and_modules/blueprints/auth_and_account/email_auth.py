@@ -5,10 +5,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from blueprints_and_modules.blueprints.db.db import get_db_connection
 from flask import Blueprint, request, render_template, session, redirect
+from config import SOCIALHUB_APP_OFFICIAL_EMAIL, SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD, email_visuals
 from blueprints_and_modules.blueprints.auth_and_account.login_required_decoration import login_required
-
-from socials.Email.secrets import email_visuals
-from config import SOCIALHUB_APP_OFFICIAL_EMAIL, SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD
 
 email_auth_bp = Blueprint(
     "email_auth_bp", __name__, template_folder="../../templates")

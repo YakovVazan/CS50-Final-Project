@@ -18,3 +18,8 @@ SOCIALHUB_APP_OFFICIAL_EMAIL = os.getenv("SOCIALHUB_APP_OFFICIAL_EMAIL")
 SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD = os.getenv(
     "SOCIALHUB_APP_OFFICIAL_EMAIL_PASSWORD")
 SOCIALHUB_VERSION_NUMBERING = os.getenv("SOCIALHUB_VERSION_NUMBERING")
+
+email_visuals = {
+    "src": "https://cdn.jim-nielsen.com/ios/1024/mail-2023-10-05.png",
+    "alt": "mail-logo"
+}
